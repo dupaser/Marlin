@@ -33,11 +33,16 @@
 
 /*-------------------------------------- System variable function --------------------------------------*/
 
+<<<<<<< HEAD
 void DWIN_Startup() {}
+=======
+void dwinStartup() {}
+>>>>>>> origin/release-2.1.3-beta2
 
 /*---------------------------------------- Drawing functions ----------------------------------------*/
 
 // Draw the degree (°) symbol
+<<<<<<< HEAD
 // Color: color
 //  x/y: Upper-left coordinate of the first pixel
 void DWIN_Draw_DegreeSymbol(uint16_t Color, uint16_t x, uint16_t y) {
@@ -49,6 +54,19 @@ void DWIN_Draw_DegreeSymbol(uint16_t Color, uint16_t x, uint16_t y) {
   DWIN_Draw_Point(Color, 1, 1, x + 3, y + 2);
   DWIN_Draw_Point(Color, 1, 1, x + 1, y + 3);
   DWIN_Draw_Point(Color, 1, 1, x + 2, y + 3);
+=======
+// color: color
+//  x/y: Upper-left coordinate of the first pixel
+void dwinDrawDegreeSymbol(uint16_t color, uint16_t x, uint16_t y) {
+  dwinDrawPoint(color, 1, 1, x + 1, y);
+  dwinDrawPoint(color, 1, 1, x + 2, y);
+  dwinDrawPoint(color, 1, 1, x, y + 1);
+  dwinDrawPoint(color, 1, 1, x + 3, y + 1);
+  dwinDrawPoint(color, 1, 1, x, y + 2);
+  dwinDrawPoint(color, 1, 1, x + 3, y + 2);
+  dwinDrawPoint(color, 1, 1, x + 1, y + 3);
+  dwinDrawPoint(color, 1, 1, x + 2, y + 3);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 /*---------------------------------------- Picture related functions ----------------------------------------*/
@@ -57,8 +75,13 @@ void DWIN_Draw_DegreeSymbol(uint16_t Color, uint16_t x, uint16_t y) {
 //  libID: Icon library ID
 //  picID: Icon ID
 //  x/y: Upper-left point
+<<<<<<< HEAD
 void DWIN_ICON_Show(uint8_t libID, uint8_t picID, uint16_t x, uint16_t y) {
   DWIN_ICON_Show(true, false, false, libID, picID, x, y);
+=======
+void dwinIconShow(uint8_t libID, uint8_t picID, uint16_t x, uint16_t y) {
+  dwinIconShow(true, false, false, libID, picID, x, y);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 #endif // DWIN_CREALITY_LCD_JYERSUI

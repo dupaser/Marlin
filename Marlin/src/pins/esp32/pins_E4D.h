@@ -30,9 +30,13 @@
 
 #include "env_validate.h"
 
+<<<<<<< HEAD
 #if EXTRUDERS > 1 || E_STEPPERS > 1
   #error "E4d@box only supports 1 E stepper."
 #elif HAS_MULTI_HOTEND
+=======
+#if HAS_MULTI_HOTEND || E_STEPPERS > 1
+>>>>>>> origin/release-2.1.3-beta2
   #error "E4d@box only supports 1 hotend / E stepper."
 #endif
 
@@ -90,7 +94,7 @@
 // Heaters / Fans
 //
 #define HEATER_0_PIN                           2
-#define FAN_PIN                                0
+#define FAN0_PIN                               0
 #define HEATER_BED_PIN                        15
 
 //

@@ -5,6 +5,10 @@
 /****************************************************************************
  *   Written By Mark Pelletier  2017 - Aleph Objects, Inc.                  *
  *   Written By Marcio Teixeira 2018 - Aleph Objects, Inc.                  *
+<<<<<<< HEAD
+=======
+ *   Written By Brian Kahl 2023 - FAME3D                                    *
+>>>>>>> origin/release-2.1.3-beta2
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -22,11 +26,20 @@
 
 #include "../config.h"
 #include "../screens.h"
+<<<<<<< HEAD
+
+#ifdef COCOA_ABOUT_SCREEN
+
+#define GRID_COLS 4
+#define GRID_ROWS 8
+=======
+#include "../../ui_api.h"
 
 #ifdef FTDI_ABOUT_SCREEN
 
 #define GRID_COLS 4
-#define GRID_ROWS 8
+#define GRID_ROWS 30
+>>>>>>> origin/release-2.1.3-beta2
 
 using namespace FTDI;
 using namespace Theme;
@@ -43,6 +56,7 @@ void AboutScreen::onRedraw(draw_mode_t) {
      .cmd(CLEAR(true,true,true))
      .cmd(COLOR_RGB(bg_text_enabled))
      .tag(0);
+<<<<<<< HEAD
 
   #define HEADING_POS BTN_POS(1,1), BTN_SIZE(4,2)
   #define FW_VERS_POS BTN_POS(1,3), BTN_SIZE(4,1)
@@ -76,7 +90,11 @@ void AboutScreen::onRedraw(draw_mode_t) {
     #endif
     , OPT_CENTER, font_xlarge
   );
+<<<<<<<< HEAD:Marlin/src/lcd/extui/ftdi_eve_touch_ui/generic/about_screen.cpp
   #if BOTH(TOUCH_UI_DEVELOPER_MENU, FTDI_DEVELOPER_MENU)
+========
+  #if ALL(TOUCH_UI_DEVELOPER_MENU, FTDI_DEVELOPER_MENU)
+>>>>>>>> origin/release-2.1.3-beta2:Marlin/src/lcd/extui/ftdi_eve_touch_ui/cocoa_press/about_screen.cpp
     cmd.tag(3);
   #endif
   draw_text_box(cmd, FW_VERS_POS,
@@ -91,7 +109,11 @@ void AboutScreen::onRedraw(draw_mode_t) {
   draw_text_box(cmd, LICENSE_POS, GET_TEXT_F(MSG_LICENSE), OPT_CENTER, font_tiny);
 
   cmd.font(font_medium);
+<<<<<<<< HEAD:Marlin/src/lcd/extui/ftdi_eve_touch_ui/generic/about_screen.cpp
   #if BOTH(PRINTCOUNTER, FTDI_STATISTICS_SCREEN)
+========
+  #if ENABLED(PRINTCOUNTER)
+>>>>>>>> origin/release-2.1.3-beta2:Marlin/src/lcd/extui/ftdi_eve_touch_ui/cocoa_press/about_screen.cpp
     cmd.colors(normal_btn)
        .tag(2).button(STATS_POS, GET_TEXT_F(MSG_INFO_STATS_MENU));
   #endif
@@ -105,7 +127,11 @@ bool AboutScreen::onTouchEnd(uint8_t tag) {
     #if BOTH(PRINTCOUNTER, FTDI_STATISTICS_SCREEN)
       case 2: GOTO_SCREEN(StatisticsScreen); break;
     #endif
+<<<<<<<< HEAD:Marlin/src/lcd/extui/ftdi_eve_touch_ui/generic/about_screen.cpp
     #if BOTH(TOUCH_UI_DEVELOPER_MENU, FTDI_DEVELOPER_MENU)
+========
+    #if ALL(TOUCH_UI_DEVELOPER_MENU, FTDI_DEVELOPER_MENU)
+>>>>>>>> origin/release-2.1.3-beta2:Marlin/src/lcd/extui/ftdi_eve_touch_ui/cocoa_press/about_screen.cpp
       case 3: GOTO_SCREEN(DeveloperMenu); break;
     #endif
     default: return false;
@@ -113,4 +139,66 @@ bool AboutScreen::onTouchEnd(uint8_t tag) {
   return true;
 }
 
-#endif // FTDI_ABOUT_SCREEN
+#endif // COCOA_ABOUT_SCREEN
+=======
+ #ifdef LULZBOT_LCD_MACHINE_NAME
+    draw_text_box(cmd, BTN_POS(1,1), BTN_SIZE(4,6), F(
+        #if ENABLED(LULZBOT_LONG_BED)
+          "" LULZBOT_LCD_MACHINE_NAME " \nWith Long Bed"
+        #elif ENABLED(LULZBOT_LONG_BED_V2)
+          "" LULZBOT_LCD_MACHINE_NAME " \nWith Long Bed V2"
+        #elif ENABLED(LULZBOT_BLTouch) && NONE(LULZBOT_LONG_BED_V2, TAZProV2)
+          "" LULZBOT_LCD_MACHINE_NAME " \nWith BLTouch"
+        #else
+          "" LULZBOT_LCD_MACHINE_NAME "\n"
+        #endif
+    ), OPT_CENTER, font_xxlarge);
+  #endif
+
+  #ifdef LULZBOT_LCD_MACHINE_NAME
+    cmd.tag(3);
+    draw_text_box(cmd, BTN_POS(1,7), BTN_SIZE(4,3), F(
+          "Firmware:"
+    ), OPT_CENTER, font_xlarge);
+
+    draw_text_box(cmd, BTN_POS(1,10), BTN_SIZE(4,2), F(
+          "" LULZBOT_M115_EXTRUDER_TYPE ""
+    ), OPT_CENTER, font_xlarge);
+  #endif
+
+  #if ENABLED(SHOW_TOOL_HEAD_ID)
+    draw_text_box(cmd, BTN_POS(1,13), BTN_SIZE(4,3), F(
+      "Tool Head:"
+    ), OPT_CENTER, font_xlarge);
+  #endif
+
+  draw_text_box(cmd, BTN_POS(1,19), BTN_SIZE(4,3), F(
+        "Version:"
+  ), OPT_CENTER, font_xlarge);
+
+  draw_text_box(cmd, BTN_POS(1,22), BTN_SIZE(4,2), F(
+    "Marlin " SHORT_BUILD_VERSION ""
+  ), OPT_CENTER, font_xlarge);
+
+
+  cmd.font(font_medium).colors(normal_btn).tag(1).button(BTN_POS(1,24), BTN_SIZE(4,3), GET_TEXT_F(MSG_INFO_PRINTER_STATS_MENU));
+
+  cmd.font(font_medium).colors(action_btn).tag(2).button(BTN_POS(1,27), BTN_SIZE(4,3), GET_TEXT_F(MSG_BUTTON_DONE));
+
+}
+
+bool AboutScreen::onTouchEnd(uint8_t tag) {
+  switch(tag) {
+    default: return false;
+    #if ALL(PRINTCOUNTER, FTDI_STATISTICS_SCREEN)
+      case 1: GOTO_SCREEN(StatisticsScreen); break;
+    #endif
+    case 2: GOTO_PREVIOUS(); return true;
+    #if ALL(TOUCH_UI_DEVELOPER_MENU, FTDI_DEVELOPER_MENU)
+      case 3: GOTO_SCREEN(DeveloperMenu); break;
+    #endif
+  }
+}
+
+#endif // EXTENSIBLE_UI
+>>>>>>> origin/release-2.1.3-beta2

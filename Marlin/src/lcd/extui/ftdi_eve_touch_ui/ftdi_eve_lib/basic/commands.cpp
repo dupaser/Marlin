@@ -178,6 +178,17 @@ void CLCD::mem_write_pgm(uint32_t reg_address, const void *data, uint16_t len, u
 }
 
 // Write 3-Byte Address, Multiple Bytes, plus padding bytes, from PROGMEM, reversing bytes (suitable for loading XBM images)
+<<<<<<< HEAD
+=======
+void CLCD::mem_write_xbm(uint32_t reg_address, const void *data, uint16_t len, uint8_t padding) {
+  spi_ftdi_select();
+  spi_write_addr(reg_address);
+  spi_write_bulk<xbm_write>(data, len, padding);
+  spi_ftdi_deselect();
+}
+
+// Write 3-Byte Address, Multiple Bytes, plus padding bytes, from PROGMEM, reversing bytes (suitable for loading XBM images)
+>>>>>>> origin/release-2.1.3-beta2
 void CLCD::mem_write_xbm(uint32_t reg_address, FSTR_P data, uint16_t len, uint8_t padding) {
   spi_ftdi_select();
   spi_write_addr(reg_address);

@@ -55,7 +55,11 @@
       "dfu",
       "jlink"
     ],
+<<<<<<< HEAD
 	"offset_address": "0x8008000",
+=======
+    "offset_address": "0x8008000",
+>>>>>>> origin/release-2.1.3-beta2
     "require_upload_port": true,
     "use_1200bps_touch": false,
     "wait_for_upload_port": false

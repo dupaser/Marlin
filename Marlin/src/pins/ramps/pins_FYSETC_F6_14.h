@@ -23,6 +23,8 @@
 
 //
 // FYSETC F6 v1.4 pin assignments
+// Schematic (1.4): https://github.com/FYSETC/FYSETC-F6/blob/master/Hardware/V1.4/F6%20V1.4%20Sch.pdf
+// ATmega2560
 //
 
 #define BOARD_INFO_NAME "FYSETC F6 1.4"
@@ -30,9 +32,15 @@
 #define Z_MAX_PIN                              2
 
 #if HAS_TMC_UART
+<<<<<<< HEAD
   /**
    * TMC2208/TMC2209 stepper drivers
    */
+=======
+  //
+  // TMC2208/TMC2209 stepper drivers
+  //
+>>>>>>> origin/release-2.1.3-beta2
   #define X_SERIAL_TX_PIN                     71
   #define X_SERIAL_RX_PIN                     72
 

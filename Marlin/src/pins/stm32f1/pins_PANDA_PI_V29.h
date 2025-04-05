@@ -31,13 +31,26 @@
 // Ignore temp readings during development.
 //#define BOGUS_TEMPERATURE_GRACE_PERIOD    2000
 
+<<<<<<< HEAD
 #if EITHER(NO_EEPROM_SELECTED, FLASH_EEPROM_EMULATION)
+=======
+#if ANY(NO_EEPROM_SELECTED, FLASH_EEPROM_EMULATION)
+>>>>>>> origin/release-2.1.3-beta2
   #define FLASH_EEPROM_EMULATION
   #define EEPROM_PAGE_SIZE     (0x800U)           // 2K
   #define EEPROM_START_ADDRESS (0x8000000UL + (STM32_FLASH_SIZE) * 1024UL - (EEPROM_PAGE_SIZE) * 2UL)
   #define MARLIN_EEPROM_SIZE    EEPROM_PAGE_SIZE  // 2K
 #endif
 
+<<<<<<< HEAD
+=======
+#if ENABLED(BD_SENSOR)
+  #define I2C_BD_SDA_PIN                    PC6
+  #define I2C_BD_SCL_PIN                    PB2
+  #define I2C_BD_DELAY 10                         // (seconds)
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 //
 // Servos
 //
@@ -82,6 +95,7 @@
 #define E0_DIR_PIN                          PB14
 
 //
+<<<<<<< HEAD
 // Software SPI pins for TMC2130 stepper drivers
 //
 #if ENABLED(TMC_USE_SW_SPI)
@@ -94,6 +108,18 @@
   #ifndef TMC_SW_SCK
     #define TMC_SW_SCK                      PB3
   #endif
+=======
+// SPI pins for TMC2130 stepper drivers
+//
+#ifndef TMC_SPI_MOSI
+  #define TMC_SPI_MOSI                      PB5
+#endif
+#ifndef TMC_SPI_MISO
+  #define TMC_SPI_MISO                      PB4
+#endif
+#ifndef TMC_SPI_SCK
+  #define TMC_SPI_SCK                       PB3
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 #if HAS_TMC_UART
@@ -109,6 +135,7 @@
   //#define E0_HARDWARE_SERIAL MSerial1
 
   #define X_SERIAL_TX_PIN                   PC10
+<<<<<<< HEAD
   #define X_SERIAL_RX_PIN        X_SERIAL_TX_PIN
 
   #define Y_SERIAL_TX_PIN                   PC11
@@ -123,6 +150,18 @@
   // Reduce baud rate to improve software serial reliability
   #define TMC_BAUD_RATE                    19200
 #endif
+=======
+  #define Y_SERIAL_TX_PIN                   PC11
+  #define Z_SERIAL_TX_PIN                   PC12
+  #define E0_SERIAL_TX_PIN                  PD2
+
+  // Reduce baud rate to improve software serial reliability
+  #ifndef TMC_BAUD_RATE
+    #define TMC_BAUD_RATE                  19200
+  #endif
+
+#endif // HAS_TMC_UART
+>>>>>>> origin/release-2.1.3-beta2
 
 //
 // Temperature Sensors
@@ -136,7 +175,11 @@
 //
 #define HEATER_0_PIN                        PB12  // "HE"
 #define HEATER_BED_PIN                      PB13  // "HB"
+<<<<<<< HEAD
 #define FAN_PIN                             PA8   // "FAN0"
+=======
+#define FAN0_PIN                            PA8   // "FAN0"
+>>>>>>> origin/release-2.1.3-beta2
 #define HEATER_1_PIN                        PA12
 
 //
@@ -161,12 +204,17 @@
 //
 // LCD / Controller
 //
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/release-2.1.3-beta2
 #if HAS_WIRED_LCD
   #define BTN_ENC                           PA0
   #define BTN_EN1                           PC4
   #define BTN_EN2                           PC5
 
   #define LCD_PINS_RS                       PC0
+<<<<<<< HEAD
   #define LCD_PINS_ENABLE                   PC2
   #define LCD_PINS_D4                       PC1
 #endif
@@ -176,6 +224,15 @@
   #ifndef NO_CONTROLLER_CUSTOM_WIRING_WARNING
     #error "CAUTION! LCD_FYSETC_TFT81050 requires wiring modifications. See 'pins_PANDA_PI_V29.h' for details. (Define NO_CONTROLLER_CUSTOM_WIRING_WARNING to suppress this warning.)"
   #endif
+=======
+  #define LCD_PINS_EN                       PC2
+  #define LCD_PINS_D4                       PC1
+#endif
+
+#if ALL(TOUCH_UI_FTDI_EVE, LCD_FYSETC_TFT81050)
+
+  CONTROLLER_WARNING("PANDA_PI_V29", "LCD_FYSETC_TFT81050")
+>>>>>>> origin/release-2.1.3-beta2
 
   /** FYSETC TFT TFT81050 display pinout
    *
@@ -212,7 +269,11 @@
   #define CLCD_MOD_RESET                    PA9
   #define CLCD_SPI_CS                       PB8
 
+<<<<<<< HEAD
   #if SD_CONNECTION_IS(LCD) && BOTH(TOUCH_UI_FTDI_EVE, LCD_FYSETC_TFT81050)
+=======
+  #if SD_CONNECTION_IS(LCD) && ALL(TOUCH_UI_FTDI_EVE, LCD_FYSETC_TFT81050)
+>>>>>>> origin/release-2.1.3-beta2
     #define SD_DETECT_PIN                   PA15
     #define SD_SS_PIN                       PA10
   #endif

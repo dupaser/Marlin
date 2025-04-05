@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2024 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -21,6 +21,7 @@
  */
 #pragma once
 
+<<<<<<< HEAD
 #include "env_validate.h"
 
 #if HOTENDS > 3 || E_STEPPERS > 3
@@ -77,46 +78,20 @@
 #ifndef FIL_RUNOUT_PIN
   #define FIL_RUNOUT_PIN                    PA1
 #endif
+=======
+#define BOARD_INFO_NAME "FYSETC S6"
+>>>>>>> origin/release-2.1.3-beta2
 
 //
 // Steppers
 //
-#define X_STEP_PIN                          PE11
-#define X_DIR_PIN                           PE10
-#ifndef X_ENABLE_PIN
-  #define X_ENABLE_PIN                      PE12
-#endif
-#define X_CS_PIN                            PE7
-
-#define Y_STEP_PIN                          PD8
-#define Y_DIR_PIN                           PB12
-#define Y_ENABLE_PIN                        PD9
-#define Y_CS_PIN                            PE15
-
-#define Z_STEP_PIN                          PD14
-#define Z_DIR_PIN                           PD13
-#define Z_ENABLE_PIN                        PD15
-#define Z_CS_PIN                            PD10
-
-#define E0_STEP_PIN                         PD5
-#define E0_DIR_PIN                          PD6
-#define E0_ENABLE_PIN                       PD4
-#define E0_CS_PIN                           PD7
-
-#define E1_STEP_PIN                         PE6
-#define E1_DIR_PIN                          PC13
-#define E1_ENABLE_PIN                       PE5
-#define E1_CS_PIN                           PC14
-
-#define E2_STEP_PIN                         PE2
-#define E2_DIR_PIN                          PE4
-#define E2_ENABLE_PIN                       PE3
-#define E2_CS_PIN                           PC15
+#define X_ENABLE_PIN                        PE12
 
 #if HAS_TMC_UART
   //
   // TMC2208/TMC2209 stepper drivers
   //
+<<<<<<< HEAD
 
   #ifndef X_SERIAL_TX_PIN
     #define X_SERIAL_TX_PIN                 PE9
@@ -338,3 +313,20 @@
 #ifndef RGB_LED_W_PIN
   #define RGB_LED_W_PIN                     -1
 #endif
+=======
+  #define X_SERIAL_TX_PIN                   PE9
+  #define X_SERIAL_RX_PIN                   PE8
+  #define Y_SERIAL_TX_PIN                   PE14
+  #define Y_SERIAL_RX_PIN                   PE13
+  #define Z_SERIAL_TX_PIN                   PD11
+  #define Z_SERIAL_RX_PIN                   PD12
+  #define E0_SERIAL_TX_PIN                  PD3
+  #define E0_SERIAL_RX_PIN                  PA15
+  #define E1_SERIAL_TX_PIN                  PC4
+  #define E1_SERIAL_RX_PIN                  PC5
+  #define E2_SERIAL_TX_PIN                  PE1
+  #define E2_SERIAL_RX_PIN                  PE0
+#endif
+
+#include "pins_FYSETC_S6_common.h"
+>>>>>>> origin/release-2.1.3-beta2

@@ -21,6 +21,8 @@
  */
 #pragma once
 
+<<<<<<< HEAD
+<<<<<<<< HEAD:Marlin/src/lcd/extui/dgus_reloaded/DGUSSetupHandler.h
 namespace DGUSSetupHandler {
 
   #if ENABLED(SDSUPPORT)
@@ -40,3 +42,37 @@ namespace DGUSSetupHandler {
   bool Infos();
 
 }
+========
+#define JOIN(A,B,C)         CAT(CAT(A, B), C)
+#define MENU_FONT_NAME      JOIN(FONT_FAMILY, _, FONT_SIZE)
+#define SYMBOLS_FONT_NAME   JOIN(FONT_FAMILY, _Symbols_, FONT_SIZE)
+
+extern const uint8_t MENU_FONT_NAME[];
+extern const uint8_t SYMBOLS_FONT_NAME[];
+
+#ifdef FONT_EXTRA
+  #define EXTRA_FONT_NAME   JOIN(FONT_FAMILY, JOIN(_, FONT_EXTRA, _), FONT_SIZE)
+  extern const uint8_t EXTRA_FONT_NAME[];
+#endif
+>>>>>>>> origin/release-2.1.3-beta2:Marlin/src/lcd/tft/tft_font.h
+=======
+namespace DGUSSetupHandler {
+
+  #if HAS_MEDIA
+    bool print();
+  #endif
+  bool printStatus();
+  bool printAdjust();
+  bool levelingMenu();
+  bool levelingOffset();
+  bool levelingManual();
+  bool levelingAutomatic();
+  bool levelingProbing();
+  bool filament();
+  bool move();
+  bool gcode();
+  bool pid();
+  bool infos();
+
+}
+>>>>>>> origin/release-2.1.3-beta2

@@ -23,8 +23,13 @@
 /**
  * Based on WEEDO 62A pin configuration
  * Copyright (c) 2019 WEEDO3D Perron
+<<<<<<< HEAD
  */
 
+=======
+ * ATmega2560
+ */
+>>>>>>> origin/release-2.1.3-beta2
 #pragma once
 
 #include "env_validate.h"
@@ -73,7 +78,11 @@
 //
 #define HEATER_0_PIN                          10  // EXTRUDER 1
 #define HEATER_BED_PIN                         8  // BED
+<<<<<<< HEAD
 #define FAN_PIN                                4  // IO pin. Buffer needed
+=======
+#define FAN0_PIN                               4  // IO pin. Buffer needed
+>>>>>>> origin/release-2.1.3-beta2
 
 //
 // Misc. Functions
@@ -84,7 +93,11 @@
 //
 // SD Support
 //
+<<<<<<< HEAD
 #if ENABLED(SDSUPPORT)
+=======
+#if HAS_MEDIA
+>>>>>>> origin/release-2.1.3-beta2
   #define SDSS                                53
   #define SD_DETECT_PIN                       49
 #endif
@@ -92,6 +105,10 @@
 //
 // LCD / Controller
 //
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/release-2.1.3-beta2
 #if HAS_WIRED_LCD
   #define BEEPER_PIN                          37
 

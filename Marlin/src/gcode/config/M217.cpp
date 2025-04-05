@@ -25,13 +25,18 @@
 #if HAS_MULTI_EXTRUDER
 
 #include "../gcode.h"
-#include "../../module/tool_change.h"
 
-#if ENABLED(TOOLCHANGE_MIGRATION_FEATURE)
-  #include "../../module/motion.h"
+#if HAS_TOOLCHANGE
+  #include "../../module/tool_change.h"
 #endif
 
+<<<<<<< HEAD
 #include "../../MarlinCore.h" // for SP_X_STR, etc.
+=======
+#if ENABLED(TOOLCHANGE_MIGRATION_FEATURE)
+  #include "../../module/motion.h" // for active_extruder
+#endif
+>>>>>>> origin/release-2.1.3-beta2
 
 /**
  * M217 - Set toolchange parameters
@@ -43,6 +48,7 @@
  *  S[linear]     Swap length
  *  B[linear]     Extra Swap resume length
  *  E[linear]     Extra Prime length (as used by M217 Q)
+<<<<<<< HEAD
  *  P[linear/min] Prime speed
  *  R[linear/min] Retract speed
  *  U[linear/min] UnRetract speed
@@ -53,6 +59,22 @@
  *  I[linear]     Park I (Requires TOOLCHANGE_PARK and NUM_AXES >= 4)
  *  J[linear]     Park J (Requires TOOLCHANGE_PARK and NUM_AXES >= 5)
  *  K[linear]     Park K (Requires TOOLCHANGE_PARK and NUM_AXES >= 6)
+=======
+ *  G[linear]     Cutting wipe retract length (<=100mm)
+ *  R[linear/min] Retract speed
+ *  U[linear/min] UnRetract speed
+ *  P[linear/min] Prime speed
+ *  V[linear]     0/1 Enable auto prime first extruder used
+ *  W[linear]     0/1 Enable park & Z Raise
+ *  X[linear]     Park X (Requires TOOLCHANGE_PARK)
+ *  Y[linear]     Park Y (Requires TOOLCHANGE_PARK and NUM_AXES >= 2)
+ *  I[linear]     Park I (Requires TOOLCHANGE_PARK and NUM_AXES >= 4)
+ *  J[linear]     Park J (Requires TOOLCHANGE_PARK and NUM_AXES >= 5)
+ *  K[linear]     Park K (Requires TOOLCHANGE_PARK and NUM_AXES >= 6)
+ *  C[linear]     Park U (Requires TOOLCHANGE_PARK and NUM_AXES >= 7)
+ *  H[linear]     Park V (Requires TOOLCHANGE_PARK and NUM_AXES >= 8)
+ *  O[linear]     Park W (Requires TOOLCHANGE_PARK and NUM_AXES >= 9)
+>>>>>>> origin/release-2.1.3-beta2
  *  Z[linear]     Z Raise
  *  F[speed]      Fan Speed 0-255
  *  D[seconds]    Fan time
@@ -76,6 +98,7 @@ void GcodeSuite::M217() {
     if (parser.seenval('B')) { const float v = parser.value_linear_units(); toolchange_settings.extra_resume = constrain(v, -10, 10); }
     if (parser.seenval('E')) { const float v = parser.value_linear_units(); toolchange_settings.extra_prime = constrain(v, 0, max_extrude); }
     if (parser.seenval('P')) { const int16_t v = parser.value_linear_units(); toolchange_settings.prime_speed = constrain(v, 10, 5400); }
+    if (parser.seenval('G')) { const int16_t v = parser.value_linear_units(); toolchange_settings.wipe_retract = constrain(v, 0, 100); }
     if (parser.seenval('R')) { const int16_t v = parser.value_linear_units(); toolchange_settings.retract_speed = constrain(v, 10, 5400); }
     if (parser.seenval('U')) { const int16_t v = parser.value_linear_units(); toolchange_settings.unretract_speed = constrain(v, 10, 5400); }
     #if TOOLCHANGE_FS_FAN >= 0 && HAS_FAN
@@ -90,11 +113,18 @@ void GcodeSuite::M217() {
 
   #if ENABLED(TOOLCHANGE_PARK)
     if (parser.seenval('W')) { toolchange_settings.enable_park = parser.value_linear_units(); }
+<<<<<<< HEAD
     if (parser.seenval('X')) { const int16_t v = parser.value_linear_units(); toolchange_settings.change_point.x = constrain(v, X_MIN_POS, X_MAX_POS); }
+=======
+    #if HAS_X_AXIS
+      if (parser.seenval('X')) { const int16_t v = parser.value_linear_units(); toolchange_settings.change_point.x = constrain(v, X_MIN_POS, X_MAX_POS); }
+    #endif
+>>>>>>> origin/release-2.1.3-beta2
     #if HAS_Y_AXIS
       if (parser.seenval('Y')) { const int16_t v = parser.value_linear_units(); toolchange_settings.change_point.y = constrain(v, Y_MIN_POS, Y_MAX_POS); }
     #endif
     #if HAS_I_AXIS
+<<<<<<< HEAD
       if (parser.seenval('I')) { const int16_t v = parser.value_linear_units(); toolchange_settings.change_point.i = constrain(v, I_MIN_POS, I_MAX_POS); }
     #endif
     #if HAS_J_AXIS
@@ -106,6 +136,28 @@ void GcodeSuite::M217() {
   #endif
 
   #if HAS_Z_AXIS
+=======
+      if (parser.seenval('I')) { const int16_t v = parser.TERN(AXIS4_ROTATES, value_int, value_linear_units)(); toolchange_settings.change_point.i = constrain(v, I_MIN_POS, I_MAX_POS); }
+    #endif
+    #if HAS_J_AXIS
+      if (parser.seenval('J')) { const int16_t v = parser.TERN(AXIS5_ROTATES, value_int, value_linear_units)(); toolchange_settings.change_point.j = constrain(v, J_MIN_POS, J_MAX_POS); }
+    #endif
+    #if HAS_K_AXIS
+      if (parser.seenval('K')) { const int16_t v = parser.TERN(AXIS6_ROTATES, value_int, value_linear_units)(); toolchange_settings.change_point.k = constrain(v, K_MIN_POS, K_MAX_POS); }
+    #endif
+    #if HAS_U_AXIS
+      if (parser.seenval('C')) { const int16_t v = parser.TERN(AXIS7_ROTATES, value_int, value_linear_units)(); toolchange_settings.change_point.u = constrain(v, U_MIN_POS, U_MAX_POS); }
+    #endif
+    #if HAS_V_AXIS
+      if (parser.seenval('H')) { const int16_t v = parser.TERN(AXIS8_ROTATES, value_int, value_linear_units)(); toolchange_settings.change_point.v = constrain(v, V_MIN_POS, V_MAX_POS); }
+    #endif
+    #if HAS_W_AXIS
+      if (parser.seenval('O')) { const int16_t v = parser.TERN(AXIS9_ROTATES, value_int, value_linear_units)(); toolchange_settings.change_point.w = constrain(v, W_MIN_POS, W_MAX_POS); }
+    #endif
+  #endif
+
+  #if HAS_Z_AXIS && HAS_TOOLCHANGE
+>>>>>>> origin/release-2.1.3-beta2
     if (parser.seenval('Z')) { toolchange_settings.z_raise = parser.value_linear_units(); }
   #endif
 
@@ -147,11 +199,17 @@ void GcodeSuite::M217() {
 }
 
 void GcodeSuite::M217_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+>>>>>>> origin/release-2.1.3-beta2
   report_heading_etc(forReplay, F(STR_TOOL_CHANGING));
 
   SERIAL_ECHOPGM("  M217");
 
   #if ENABLED(TOOLCHANGE_FILAMENT_SWAP)
+<<<<<<< HEAD
     SERIAL_ECHOPGM(" S", LINEAR_UNIT(toolchange_settings.swap_length));
     SERIAL_ECHOPGM_P(SP_B_STR, LINEAR_UNIT(toolchange_settings.extra_resume),
                      SP_E_STR, LINEAR_UNIT(toolchange_settings.extra_prime),
@@ -183,6 +241,46 @@ void GcodeSuite::M217_report(const bool forReplay/*=true*/) {
         #endif
       );
     }
+=======
+    SERIAL_ECHOPGM_P(
+      PSTR(" S"), LINEAR_UNIT(toolchange_settings.swap_length),
+        SP_B_STR, LINEAR_UNIT(toolchange_settings.extra_resume),
+        SP_E_STR, LINEAR_UNIT(toolchange_settings.extra_prime),
+        SP_P_STR, LINEAR_UNIT(toolchange_settings.prime_speed),
+      PSTR(" G"), LINEAR_UNIT(toolchange_settings.wipe_retract),
+      PSTR(" R"), LINEAR_UNIT(toolchange_settings.retract_speed),
+      PSTR(" U"), LINEAR_UNIT(toolchange_settings.unretract_speed),
+      PSTR(" F"), toolchange_settings.fan_speed,
+      PSTR(" D"), toolchange_settings.fan_time
+    );
+
+    #if ENABLED(TOOLCHANGE_MIGRATION_FEATURE)
+      SERIAL_ECHOPGM(" A", migration.automode, " L", LINEAR_UNIT(migration.last));
+    #endif
+
+    #if ENABLED(TOOLCHANGE_PARK)
+      SERIAL_ECHOPGM(" W", LINEAR_UNIT(toolchange_settings.enable_park));
+      #if NUM_AXES
+      {
+        SERIAL_ECHOPGM_P(
+          SP_X_STR, LINEAR_UNIT(toolchange_settings.change_point.x)
+          #if HAS_Y_AXIS
+            , SP_Y_STR, LINEAR_UNIT(toolchange_settings.change_point.y)
+          #endif
+          #if SECONDARY_AXES >= 1
+            , LIST_N(DOUBLE(SECONDARY_AXES)
+                , SP_I_STR,   I_AXIS_UNIT(toolchange_settings.change_point.i)
+                , SP_J_STR,   J_AXIS_UNIT(toolchange_settings.change_point.j)
+                , SP_K_STR,   K_AXIS_UNIT(toolchange_settings.change_point.k)
+                , SP_C_STR,   U_AXIS_UNIT(toolchange_settings.change_point.u)
+                , PSTR(" H"), V_AXIS_UNIT(toolchange_settings.change_point.v)
+                , PSTR(" O"), W_AXIS_UNIT(toolchange_settings.change_point.w)
+              )
+          #endif
+        );
+      }
+      #endif
+>>>>>>> origin/release-2.1.3-beta2
     #endif
 
     #if ENABLED(TOOLCHANGE_FS_PRIME_FIRST_USED)

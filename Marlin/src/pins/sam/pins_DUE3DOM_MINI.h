@@ -71,8 +71,17 @@
 #define TEMP_BED_PIN                           1  // Analog Input (BED thermistor)
 #define TEMP_BOARD_PIN                         5  // Analog Input (OnBoard thermistor beta 3950)
 
+<<<<<<< HEAD
 // SPI for MAX Thermocouple
 #if DISABLED(SDSUPPORT)
+=======
+#ifndef TEMP_BOARD_PIN
+  #define TEMP_BOARD_PIN                       5  // Analog Input (OnBoard thermistor beta 3950)
+#endif
+
+// SPI for MAX Thermocouple
+#if !HAS_MEDIA
+>>>>>>> origin/release-2.1.3-beta2
   #define TEMP_0_CS_PIN                       53
 #else
   #define TEMP_0_CS_PIN                       53
@@ -84,8 +93,8 @@
 #define HEATER_0_PIN                          13  // HOTEND0 MOSFET
 #define HEATER_BED_PIN                         7  // BED MOSFET
 
-#ifndef FAN_PIN
-  #define FAN_PIN                             11  // FAN1 header on board - PRINT FAN
+#ifndef FAN0_PIN
+  #define FAN0_PIN                            11  // FAN1 header on board - PRINT FAN
 #endif
 #define FAN1_PIN                              12  // FAN2 header on board - CONTROLLER FAN
 #define FAN2_PIN                               9  // FAN3 header on board - EXTRUDER0 FAN
@@ -100,10 +109,11 @@
 //
 // LCD / Controller
 //
+
 #if HAS_WIRED_LCD
 
   #define LCD_PINS_RS                         42
-  #define LCD_PINS_ENABLE                     43
+  #define LCD_PINS_EN                         43
   #define LCD_PINS_D4                         44
   #define LCD_PINS_D5                         45
   #define LCD_PINS_D6                         46
@@ -147,7 +157,7 @@
   #elif ENABLED(SPARK_FULL_GRAPHICS)
 
     #define LCD_PINS_D4                       29
-    #define LCD_PINS_ENABLE                   27
+    #define LCD_PINS_EN                       27
     #define LCD_PINS_RS                       25
 
     #define BTN_EN1                           35

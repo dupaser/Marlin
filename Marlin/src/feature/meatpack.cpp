@@ -140,7 +140,11 @@ void MeatPack::handle_output_char(const uint8_t c) {
   #if ENABLED(MP_DEBUG)
     if (chars_decoded < 1024) {
       ++chars_decoded;
+<<<<<<< HEAD
       DEBUG_ECHOLNPGM("RB: ", AS_CHAR(c));
+=======
+      DEBUG_ECHOLNPGM("RB: ", C(c));
+>>>>>>> origin/release-2.1.3-beta2
     }
   #endif
 }
@@ -171,7 +175,11 @@ void MeatPack::report_state() {
   // should not contain the "PV' substring, as this is used to indicate protocol version
   SERIAL_ECHOPGM("[MP] " MeatPack_ProtocolVersion " ");
   serialprint_onoff(TEST(state, MPConfig_Bit_Active));
+<<<<<<< HEAD
   SERIAL_ECHOF(TEST(state, MPConfig_Bit_NoSpaces) ? F(" NSP\n") : F(" ESP\n"));
+=======
+  SERIAL_ECHO(TEST(state, MPConfig_Bit_NoSpaces) ? F(" NSP\n") : F(" ESP\n"));
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 /**

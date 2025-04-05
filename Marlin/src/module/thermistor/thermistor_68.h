@@ -24,7 +24,11 @@
 #define REVERSE_TEMP_SENSOR_RANGE_68 1
 
 // PT100 amplifier board from Dyze Design
+<<<<<<< HEAD
 const temp_entry_t temptable_68[] PROGMEM = {
+=======
+constexpr temp_entry_t temptable_68[] PROGMEM = {
+>>>>>>> origin/release-2.1.3-beta2
   { OV(273), 0   },
   { OV(294), 20  },
   { OV(315), 40  },

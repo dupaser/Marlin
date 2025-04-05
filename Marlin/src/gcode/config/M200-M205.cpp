@@ -64,10 +64,10 @@
       if (parser.seenval('L')) {
         // Set volumetric limit (in mm^3/sec)
         const float lval = parser.value_float();
-        if (WITHIN(lval, 0, 20))
+        if (WITHIN(lval, 0, VOLUMETRIC_EXTRUDER_LIMIT_MAX))
           planner.set_volumetric_extruder_limit(target_extruder, lval);
         else
-          SERIAL_ECHOLNPGM("?L value out of range (0-20).");
+          SERIAL_ECHOLNPGM(GCODE_ERR_MSG("L value out of range (0-" STRINGIFY(VOLUMETRIC_EXTRUDER_LIMIT_MAX) ")."));
       }
     #endif
 
@@ -75,6 +75,11 @@
   }
 
   void GcodeSuite::M200_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
+=======
+    TERN_(MARLIN_SMALL_BUILD, return);
+
+>>>>>>> origin/release-2.1.3-beta2
     if (!forReplay) {
       report_heading(forReplay, F(STR_FILAMENT_SETTINGS), false);
       if (!parser.volumetric_enabled) SERIAL_ECHOPGM(" (Disabled):");
@@ -142,6 +147,7 @@ void GcodeSuite::M201() {
 }
 
 void GcodeSuite::M201_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
   report_heading_etc(forReplay, F(STR_MAX_ACCELERATION));
   SERIAL_ECHOLNPGM_P(
     LIST_N(DOUBLE(NUM_AXES),
@@ -158,6 +164,37 @@ void GcodeSuite::M201_report(const bool forReplay/*=true*/) {
   );
   #if ENABLED(DISTINCT_E_FACTORS)
     LOOP_L_N(i, E_STEPPERS) {
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+  report_heading_etc(forReplay, F(STR_MAX_ACCELERATION));
+  #if NUM_AXES
+    SERIAL_ECHOPGM_P(
+      LIST_N(DOUBLE(NUM_AXES),
+        PSTR("  M201 X"), LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[X_AXIS]),
+        SP_Y_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Y_AXIS]),
+        SP_Z_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Z_AXIS]),
+        SP_I_STR, I_AXIS_UNIT(planner.settings.max_acceleration_mm_per_s2[I_AXIS]),
+        SP_J_STR, J_AXIS_UNIT(planner.settings.max_acceleration_mm_per_s2[J_AXIS]),
+        SP_K_STR, K_AXIS_UNIT(planner.settings.max_acceleration_mm_per_s2[K_AXIS]),
+        SP_U_STR, U_AXIS_UNIT(planner.settings.max_acceleration_mm_per_s2[U_AXIS]),
+        SP_V_STR, V_AXIS_UNIT(planner.settings.max_acceleration_mm_per_s2[V_AXIS]),
+        SP_W_STR, W_AXIS_UNIT(planner.settings.max_acceleration_mm_per_s2[W_AXIS])
+      )
+    );
+  #endif
+
+  #if HAS_EXTRUDERS && DISABLED(DISTINCT_E_FACTORS)
+    SERIAL_ECHOPGM_P(SP_E_STR, VOLUMETRIC_UNIT(planner.settings.max_acceleration_mm_per_s2[E_AXIS]));
+  #endif
+
+  #if NUM_AXES || (HAS_EXTRUDERS && DISABLED(DISTINCT_E_FACTORS))
+    SERIAL_EOL();
+  #endif
+
+  #if ENABLED(DISTINCT_E_FACTORS)
+    for (uint8_t i = 0; i < E_STEPPERS; ++i) {
+>>>>>>> origin/release-2.1.3-beta2
       report_echo_start(forReplay);
       SERIAL_ECHOLNPGM_P(
           PSTR("  M201 T"), i
@@ -187,6 +224,7 @@ void GcodeSuite::M203() {
 }
 
 void GcodeSuite::M203_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
   report_heading_etc(forReplay, F(STR_MAX_FEEDRATES));
   SERIAL_ECHOLNPGM_P(
     LIST_N(DOUBLE(NUM_AXES),
@@ -203,6 +241,37 @@ void GcodeSuite::M203_report(const bool forReplay/*=true*/) {
   );
   #if ENABLED(DISTINCT_E_FACTORS)
     LOOP_L_N(i, E_STEPPERS) {
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+  report_heading_etc(forReplay, F(STR_MAX_FEEDRATES));
+  #if NUM_AXES
+    SERIAL_ECHOPGM_P(
+      LIST_N(DOUBLE(NUM_AXES),
+        PSTR("  M203 X"), LINEAR_UNIT(planner.settings.max_feedrate_mm_s[X_AXIS]),
+        SP_Y_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Y_AXIS]),
+        SP_Z_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Z_AXIS]),
+        SP_I_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[I_AXIS]),
+        SP_J_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[J_AXIS]),
+        SP_K_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[K_AXIS]),
+        SP_U_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[U_AXIS]),
+        SP_V_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[V_AXIS]),
+        SP_W_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[W_AXIS])
+      )
+    );
+  #endif
+
+  #if HAS_EXTRUDERS && DISABLED(DISTINCT_E_FACTORS)
+    SERIAL_ECHOPGM_P(SP_E_STR, VOLUMETRIC_UNIT(planner.settings.max_feedrate_mm_s[E_AXIS]));
+  #endif
+
+  #if NUM_AXES || (HAS_EXTRUDERS && DISABLED(DISTINCT_E_FACTORS))
+    SERIAL_EOL();
+  #endif
+
+  #if ENABLED(DISTINCT_E_FACTORS)
+    for (uint8_t i = 0; i < E_STEPPERS; ++i) {
+>>>>>>> origin/release-2.1.3-beta2
       if (!forReplay) SERIAL_ECHO_START();
       SERIAL_ECHOLNPGM_P(
           PSTR("  M203 T"), i
@@ -215,9 +284,9 @@ void GcodeSuite::M203_report(const bool forReplay/*=true*/) {
 /**
  * M204: Set Accelerations in units/sec^2 (M204 P1200 R3000 T3000)
  *
- *    P = Printing moves
- *    R = Retract only (no X, Y, Z) moves
- *    T = Travel (non printing) moves
+ *    P<accel> Printing moves
+ *    R<accel> Retract only (no X, Y, Z) moves
+ *    T<accel> Travel (non printing) moves
  */
 void GcodeSuite::M204() {
   if (!parser.seen("PRST"))
@@ -233,6 +302,11 @@ void GcodeSuite::M204() {
 }
 
 void GcodeSuite::M204_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+>>>>>>> origin/release-2.1.3-beta2
   report_heading_etc(forReplay, F(STR_ACCELERATION_P_R_T));
   SERIAL_ECHOLNPGM_P(
       PSTR("  M204 P"), LINEAR_UNIT(planner.settings.acceleration)
@@ -241,19 +315,37 @@ void GcodeSuite::M204_report(const bool forReplay/*=true*/) {
   );
 }
 
+<<<<<<< HEAD
+=======
+#if AXIS_COLLISION('B')
+  #define M205_MIN_SEG_TIME_PARAM 'D'
+  #define M205_MIN_SEG_TIME_STR "D"
+  #warning "Use 'M205 D' for Minimum Segment Time."
+#else
+  #define M205_MIN_SEG_TIME_PARAM 'B'
+  #define M205_MIN_SEG_TIME_STR "B"
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 /**
  * M205: Set Advanced Settings
  *
- *    B = Min Segment Time (µs)
- *    S = Min Feed Rate (units/s)
- *    T = Min Travel Feed Rate (units/s)
- *    X = Max X Jerk (units/sec^2)
- *    Y = Max Y Jerk (units/sec^2)
- *    Z = Max Z Jerk (units/sec^2)
- *    E = Max E Jerk (units/sec^2)
- *    J = Junction Deviation (mm) (If not using CLASSIC_JERK)
+ *    B<µs>          : Min Segment Time
+ *    S<units/s>     : Min Feed Rate
+ *    T<units/s>     : Min Travel Feed Rate
+ *
+ * With CLASSIC_JERK:
+ *    X<units/sec^2> : Max X Jerk
+ *    Y<units/sec^2> : Max Y Jerk
+ *    Z<units/sec^2> : Max Z Jerk
+ *               ... : etc
+ *    E<units/sec^2> : Max E Jerk
+ *
+ * Without CLASSIC_JERK:
+ *    J(mm)          : Junction Deviation
  */
 void GcodeSuite::M205() {
+<<<<<<< HEAD
   if (!parser.seen("BST" TERN_(HAS_JUNCTION_DEVIATION, "J") TERN_(HAS_CLASSIC_JERK, "XYZE")))
     return M205_report();
 
@@ -265,31 +357,54 @@ void GcodeSuite::M205() {
     #if HAS_CLASSIC_JERK && AXIS_COLLISION('J')
       #error "Can't set_max_jerk for 'J' axis because 'J' is used for Junction Deviation."
     #endif
+=======
+  if (!parser.seen_any()) return M205_report();
+
+  //planner.synchronize();
+  if (parser.seenval(M205_MIN_SEG_TIME_PARAM)) planner.settings.min_segment_time_us = parser.value_ulong();
+  if (parser.seenval('S')) planner.settings.min_feedrate_mm_s = parser.value_linear_units();
+  if (parser.seenval('T')) planner.settings.min_travel_feedrate_mm_s = parser.value_linear_units();
+  #if HAS_JUNCTION_DEVIATION
+>>>>>>> origin/release-2.1.3-beta2
     if (parser.seenval('J')) {
       const float junc_dev = parser.value_linear_units();
       if (WITHIN(junc_dev, 0.01f, 0.3f)) {
         planner.junction_deviation_mm = junc_dev;
-        TERN_(LIN_ADVANCE, planner.recalculate_max_e_jerk());
+        TERN_(HAS_LINEAR_E_JERK, planner.recalculate_max_e_jerk());
       }
       else
         SERIAL_ERROR_MSG("?J out of range (0.01 to 0.3)");
     }
   #endif
+<<<<<<< HEAD
   #if HAS_CLASSIC_JERK
+=======
+  #if ENABLED(CLASSIC_JERK)
+>>>>>>> origin/release-2.1.3-beta2
     bool seenZ = false;
     LOGICAL_AXIS_CODE(
       if (parser.seenval('E')) planner.set_max_jerk(E_AXIS, parser.value_linear_units()),
       if (parser.seenval('X')) planner.set_max_jerk(X_AXIS, parser.value_linear_units()),
       if (parser.seenval('Y')) planner.set_max_jerk(Y_AXIS, parser.value_linear_units()),
       if ((seenZ = parser.seenval('Z'))) planner.set_max_jerk(Z_AXIS, parser.value_linear_units()),
+<<<<<<< HEAD
       if (parser.seenval(AXIS4_NAME)) planner.set_max_jerk(I_AXIS, parser.value_linear_units()),
       if (parser.seenval(AXIS5_NAME)) planner.set_max_jerk(J_AXIS, parser.value_linear_units()),
       if (parser.seenval(AXIS6_NAME)) planner.set_max_jerk(K_AXIS, parser.value_linear_units())
+=======
+      if (parser.seenval(AXIS4_NAME)) planner.set_max_jerk(I_AXIS, parser.TERN(AXIS4_ROTATES, value_float, value_linear_units)()),
+      if (parser.seenval(AXIS5_NAME)) planner.set_max_jerk(J_AXIS, parser.TERN(AXIS5_ROTATES, value_float, value_linear_units)()),
+      if (parser.seenval(AXIS6_NAME)) planner.set_max_jerk(K_AXIS, parser.TERN(AXIS6_ROTATES, value_float, value_linear_units)()),
+      if (parser.seenval(AXIS7_NAME)) planner.set_max_jerk(U_AXIS, parser.TERN(AXIS7_ROTATES, value_float, value_linear_units)()),
+      if (parser.seenval(AXIS8_NAME)) planner.set_max_jerk(V_AXIS, parser.TERN(AXIS8_ROTATES, value_float, value_linear_units)()),
+      if (parser.seenval(AXIS9_NAME)) planner.set_max_jerk(W_AXIS, parser.TERN(AXIS9_ROTATES, value_float, value_linear_units)())
+>>>>>>> origin/release-2.1.3-beta2
     );
     #if HAS_MESH && DISABLED(LIMITED_JERK_EDITING)
       if (seenZ && planner.max_jerk.z <= 0.1f)
         SERIAL_ECHOLNPGM("WARNING! Low Z Jerk may lead to unwanted pauses.");
     #endif
+<<<<<<< HEAD
   #endif // HAS_CLASSIC_JERK
 }
 
@@ -301,26 +416,59 @@ void GcodeSuite::M205_report(const bool forReplay/*=true*/) {
       NUM_AXIS_GANG(
         " X<max_jerk>", " Y<max_jerk>", " Z<max_jerk>",
         " " STR_I "<max_jerk>", " " STR_J "<max_jerk>", " " STR_K "<max_jerk>"
+=======
+  #endif // CLASSIC_JERK
+}
+
+void GcodeSuite::M205_report(const bool forReplay/*=true*/) {
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+  report_heading_etc(forReplay, F(
+    "Advanced (" M205_MIN_SEG_TIME_STR "<min_segment_time_us> S<min_feedrate> T<min_travel_feedrate>"
+    TERN_(HAS_JUNCTION_DEVIATION, " J<junc_dev>")
+    #if ENABLED(CLASSIC_JERK)
+      NUM_AXIS_GANG(
+        " X<max_jerk>", " Y<max_jerk>", " Z<max_jerk>",
+        " " STR_I "<max_jerk>", " " STR_J "<max_jerk>", " " STR_K "<max_jerk>",
+        " " STR_U "<max_jerk>", " " STR_V "<max_jerk>", " " STR_W "<max_jerk>"
+>>>>>>> origin/release-2.1.3-beta2
       )
     #endif
     TERN_(HAS_CLASSIC_E_JERK, " E<max_jerk>")
     ")"
   ));
   SERIAL_ECHOLNPGM_P(
+<<<<<<< HEAD
       PSTR("  M205 B"), LINEAR_UNIT(planner.settings.min_segment_time_us)
+=======
+      PSTR("  M205 " M205_MIN_SEG_TIME_STR), LINEAR_UNIT(planner.settings.min_segment_time_us)
+>>>>>>> origin/release-2.1.3-beta2
     , PSTR(" S"), LINEAR_UNIT(planner.settings.min_feedrate_mm_s)
     , SP_T_STR, LINEAR_UNIT(planner.settings.min_travel_feedrate_mm_s)
     #if HAS_JUNCTION_DEVIATION
       , PSTR(" J"), LINEAR_UNIT(planner.junction_deviation_mm)
     #endif
+<<<<<<< HEAD
     #if HAS_CLASSIC_JERK
+=======
+    #if ENABLED(CLASSIC_JERK) && NUM_AXES
+>>>>>>> origin/release-2.1.3-beta2
       , LIST_N(DOUBLE(NUM_AXES),
         SP_X_STR, LINEAR_UNIT(planner.max_jerk.x),
         SP_Y_STR, LINEAR_UNIT(planner.max_jerk.y),
         SP_Z_STR, LINEAR_UNIT(planner.max_jerk.z),
+<<<<<<< HEAD
         SP_I_STR, LINEAR_UNIT(planner.max_jerk.i),
         SP_J_STR, LINEAR_UNIT(planner.max_jerk.j),
         SP_K_STR, LINEAR_UNIT(planner.max_jerk.k)
+=======
+        SP_I_STR, I_AXIS_UNIT(planner.max_jerk.i),
+        SP_J_STR, J_AXIS_UNIT(planner.max_jerk.j),
+        SP_K_STR, K_AXIS_UNIT(planner.max_jerk.k),
+        SP_U_STR, U_AXIS_UNIT(planner.max_jerk.u),
+        SP_V_STR, V_AXIS_UNIT(planner.max_jerk.v),
+        SP_W_STR, W_AXIS_UNIT(planner.max_jerk.w)
+>>>>>>> origin/release-2.1.3-beta2
       )
       #if HAS_CLASSIC_E_JERK
         , SP_E_STR, LINEAR_UNIT(planner.max_jerk.e)

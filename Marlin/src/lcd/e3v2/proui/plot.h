@@ -19,10 +19,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+<<<<<<< HEAD
+=======
+#pragma once
+>>>>>>> origin/release-2.1.3-beta2
 
 /**
  * DWIN Single var plot
  * Author: Miguel A. Risco-Castillo
+<<<<<<< HEAD
  * Version: 1.0
  * Date: 2022/01/30
  *
@@ -52,3 +57,25 @@ public:
 };
 
 extern PlotClass Plot;
+=======
+ * Version: 2.2.3
+ * Date: 2023/01/29
+ */
+
+#include "dwinui.h"
+
+class Plot {
+public:
+  static void draw(const frame_rect_t &frame, const_celsius_float_t max, const_celsius_float_t ref=0);
+  static void update(const_celsius_float_t value);
+
+private:
+  static struct PlotData {
+    uint16_t graphpoints, r, x2, y2, yP = 0;
+    frame_rect_t graphframe = {0};
+    float scale = 0;
+  } data;
+};
+
+extern Plot plot;
+>>>>>>> origin/release-2.1.3-beta2

@@ -30,9 +30,13 @@
 
 #include "env_validate.h"
 
+<<<<<<< HEAD
 #if EXTRUDERS > 1 || E_STEPPERS > 1
   #error "MRR ESPA only supports 1 E stepper."
 #elif HAS_MULTI_HOTEND
+=======
+#if HAS_MULTI_HOTEND || E_STEPPERS > 1
+>>>>>>> origin/release-2.1.3-beta2
   #error "MRR ESPA only supports 1 hotend / E stepper."
 #endif
 

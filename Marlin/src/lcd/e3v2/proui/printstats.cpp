@@ -22,14 +22,25 @@
 
 /**
  * Print Stats page for PRO UI
+<<<<<<< HEAD
  * Author: Miguel A. Risco-Castillo (MRISCOC)
  * Version: 1.3.0
  * Date: 2022/02/24
+=======
+ * Based on the original work of: Miguel Risco-Castillo (MRISCOC)
+ * https://github.com/mriscoc/Ender3V2S1
+ * Version: 1.4.0
+ * Date: 2022/12/03
+>>>>>>> origin/release-2.1.3-beta2
  */
 
 #include "../../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if BOTH(DWIN_LCD_PROUI, PRINTCOUNTER)
+=======
+#if ALL(DWIN_LCD_PROUI, PRINTCOUNTER)
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "printstats.h"
 
@@ -37,6 +48,7 @@
 #include "../../../MarlinCore.h"
 #include "../../marlinui.h"
 #include "../../../module/printcounter.h"
+<<<<<<< HEAD
 #include "dwin_lcd.h"
 #include "dwinui.h"
 #include "dwin_popup.h"
@@ -70,13 +82,56 @@ void PrintStatsClass::Draw() {
 }
 
 void PrintStatsClass::Reset() {
+=======
+#include "dwin.h"
+#include "dwin_popup.h"
+
+PrintStats printStats;
+
+void PrintStats::draw() {
+  char str[30] = "";
+  constexpr int8_t MRG = 30;
+
+  title.showCaption(GET_TEXT_F(MSG_INFO_STATS_MENU));
+  DWINUI::clearMainArea();
+  drawPopupBkgd();
+  DWINUI::drawButton(BTN_Continue, 86, 250);
+  printStatistics ps = print_job_timer.getStats();
+
+  DWINUI::drawString(MRG,  80, TS(GET_TEXT_F(MSG_INFO_PRINT_COUNT), F(": "), ps.totalPrints));
+  DWINUI::drawString(MRG, 100, TS(GET_TEXT_F(MSG_INFO_COMPLETED_PRINTS), F(": "), ps.finishedPrints));
+  duration_t(print_job_timer.getStats().printTime).toDigital(str, true);
+  DWINUI::drawString(MRG, 120, TS(GET_TEXT_F(MSG_INFO_PRINT_TIME), F(": "), str));
+  duration_t(print_job_timer.getStats().longestPrint).toDigital(str, true);
+  DWINUI::drawString(MRG, 140, TS(GET_TEXT_F(MSG_INFO_PRINT_LONGEST), F(": "), str));
+  DWINUI::drawString(MRG, 160, TS(GET_TEXT_F(MSG_INFO_PRINT_FILAMENT), F(": "), p_float_t(ps.filamentUsed / 1000, 2), F(" m")));
+}
+
+void PrintStats::reset() {
+>>>>>>> origin/release-2.1.3-beta2
   print_job_timer.initStats();
   DONE_BUZZ(true);
 }
 
+<<<<<<< HEAD
 void Goto_PrintStats() {
   PrintStats.Draw();
   HMI_SaveProcessID(WaitResponse);
 }
 
+=======
+void gotoPrintStats() {
+  printStats.draw();
+  hmiSaveProcessID(ID_WaitResponse);
+}
+
+// Print Stats Reset popup
+void popupResetStats() { dwinPopupConfirmCancel(ICON_Info_0, GET_TEXT_F(MSG_RESET_STATS)); }
+void onClickResetStats() {
+  if (hmiFlag.select_flag) printStats.reset();
+  hmiReturnScreen();
+}
+void printStatsReset() { gotoPopup(popupResetStats, onClickResetStats); }
+
+>>>>>>> origin/release-2.1.3-beta2
 #endif // DWIN_LCD_PROUI && PRINTCOUNTER

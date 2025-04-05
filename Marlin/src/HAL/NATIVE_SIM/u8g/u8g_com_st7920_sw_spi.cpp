@@ -100,6 +100,10 @@ static void u8g_com_st7920_write_byte_sw_spi(uint8_t rs, uint8_t val) {
   swSpiTransfer(val & 0x0F0, SPI_speed, SCK_pin_ST7920_HAL, -1, MOSI_pin_ST7920_HAL_HAL);
   swSpiTransfer(val << 4, SPI_speed, SCK_pin_ST7920_HAL, -1, MOSI_pin_ST7920_HAL_HAL);
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/release-2.1.3-beta2
 #ifdef __cplusplus
   extern "C" {
 #endif
@@ -128,7 +132,11 @@ uint8_t u8g_com_ST7920_sw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void 
       break;
 
     case U8G_COM_MSG_RESET:
+<<<<<<< HEAD
        if (U8G_PIN_NONE != u8g->pin_list[U8G_PI_RESET]) u8g_SetPILevel(u8g, U8G_PI_RESET, arg_val);
+=======
+      if (U8G_PIN_NONE != u8g->pin_list[U8G_PI_RESET]) u8g_SetPILevel(u8g, U8G_PI_RESET, arg_val);
+>>>>>>> origin/release-2.1.3-beta2
       break;
 
     case U8G_COM_MSG_ADDRESS:                     /* define cmd (arg_val = 0) or data mode (arg_val = 1) */
@@ -163,9 +171,17 @@ uint8_t u8g_com_ST7920_sw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void 
   }
   return 1;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/release-2.1.3-beta2
 #ifdef __cplusplus
   }
 #endif
 
 #endif // IS_U8GLIB_ST7920
+<<<<<<< HEAD
 #endif // TARGET_LPC1768
+=======
+#endif // __PLAT_NATIVE_SIM__
+>>>>>>> origin/release-2.1.3-beta2

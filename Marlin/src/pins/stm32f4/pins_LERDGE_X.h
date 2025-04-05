@@ -98,8 +98,8 @@
 #define HEATER_1_PIN                        -1
 #define HEATER_BED_PIN                      PA2
 
-//#ifndef FAN_PIN
-//  #define FAN_PIN                         PC15
+//#ifndef FAN0_PIN
+//  #define FAN0_PIN                        PC15
 //#endif
 #define FAN1_PIN                            PC15
 #define FAN2_PIN                            PA0
@@ -113,7 +113,21 @@
 //
 //#define CASE_LIGHT_PIN_CI                 -1
 //#define CASE_LIGHT_PIN_DO                 -1
-//#define NEOPIXEL_PIN                      -1
+
+//
+// SD support (On board)
+//
+#define ONBOARD_SDIO
+#define SD_DETECT_PIN                       PA8
+#define SDIO_CLOCK                       4800000
+#if DISABLED(ONBOARD_SDIO)
+  #define SOFTWARE_SPI
+  #define SD_SCK_PIN                        PC12
+  #define SD_MISO_PIN                       PC8
+  #define SD_MOSI_PIN                       PD2
+  #define SD_SS_PIN                         PC11
+  #define SDSS                              PC11
+#endif
 
 //
 // SD support (On board)
@@ -149,12 +163,21 @@
   #endif
   #define ST7796S_INVERTED
 
+<<<<<<< HEAD
   #define FSMC_CS_PIN                       PD7
   #define FSMC_RS_PIN                       PD11
+=======
+  // TODO: See if FSMC DMA can work
+  #define FSMC_CS_PIN                       PD7
+  #define FSMC_RS_PIN                       PD11
+  #define TFT_CS_PIN                 FSMC_CS_PIN
+  #define TFT_RS_PIN                 FSMC_RS_PIN
+>>>>>>> origin/release-2.1.3-beta2
 
   #define TFT_RESET_PIN                     PD6
   #define TFT_BACKLIGHT_PIN                 PD3
 
+<<<<<<< HEAD
   #define TFT_CS_PIN                 FSMC_CS_PIN
   #define TFT_RS_PIN                 FSMC_RS_PIN
 
@@ -164,6 +187,14 @@
   #define TOUCH_MISO_PIN                    PB4
 #endif
 
+=======
+  #define TOUCH_CS_PIN                      PB6
+  #define TOUCH_SCK_PIN                     PB3
+  #define TOUCH_MOSI_PIN                    PB5
+  #define TOUCH_MISO_PIN                    PB4
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 #if IS_NEWPANEL
   #define BEEPER_PIN                        PD12
   #define BTN_EN1                           PE4

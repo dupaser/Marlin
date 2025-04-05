@@ -46,7 +46,11 @@ static void event_handler(lv_obj_t *obj, lv_event_t event) {
     case ID_MACHINE_RETURN:       draw_return_ui(); break;
     case ID_MACHINE_ACCELERATION: lv_draw_acceleration_settings(); break;
     case ID_MACHINE_FEEDRATE:     lv_draw_max_feedrate_settings(); break;
+<<<<<<< HEAD
     #if HAS_CLASSIC_JERK
+=======
+    #if ENABLED(CLASSIC_JERK)
+>>>>>>> origin/release-2.1.3-beta2
       case ID_MACHINE_JERK:       lv_draw_jerk_settings(); break;
     #endif
   }
@@ -58,7 +62,11 @@ void lv_draw_machine_settings() {
   lv_screen_menu_item(scr, machine_menu.AccelerationConf, PARA_UI_POS_X, y, event_handler, ID_MACHINE_ACCELERATION, 0);
   y += PARA_UI_POS_Y;
   lv_screen_menu_item(scr, machine_menu.MaxFeedRateConf, PARA_UI_POS_X, y, event_handler, ID_MACHINE_FEEDRATE, 1);
+<<<<<<< HEAD
   #if HAS_CLASSIC_JERK
+=======
+  #if ENABLED(CLASSIC_JERK)
+>>>>>>> origin/release-2.1.3-beta2
     y += PARA_UI_POS_Y;
     lv_screen_menu_item(scr, machine_menu.JerkConf, PARA_UI_POS_X, y, event_handler, ID_MACHINE_JERK, 2);
   #endif

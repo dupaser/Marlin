@@ -34,22 +34,25 @@
 #include "HAL/shared/esp_wifi.h"
 #include "HAL/shared/cpu_exception/exception_hook.h"
 
+#if ENABLED(WIFISUPPORT)
+  #include "HAL/shared/esp_wifi.h"
+#endif
+
 #ifdef ARDUINO
   #include <pins_arduino.h>
 #endif
 #include <math.h>
 
-#include "core/utility.h"
-
+#include "module/endstops.h"
 #include "module/motion.h"
 #include "module/planner.h"
-#include "module/endstops.h"
-#include "module/temperature.h"
-#include "module/settings.h"
 #include "module/printcounter.h" // PrintCounter or Stopwatch
-
+#include "module/settings.h"
 #include "module/stepper.h"
-#include "module/stepper/indirection.h"
+#include "module/temperature.h"
+#if ENABLED(FT_MOTION)
+  #include "module/ft_motion.h"
+#endif
 
 #include "gcode/gcode.h"
 #include "gcode/parser.h"
@@ -74,10 +77,17 @@
   #include "lcd/e3v2/common/encoder.h"
   #if ENABLED(DWIN_CREALITY_LCD)
     #include "lcd/e3v2/creality/dwin.h"
+<<<<<<< HEAD
   #elif ENABLED(DWIN_LCD_PROUI)
     #include "lcd/e3v2/proui/dwin.h"
   #elif ENABLED(DWIN_CREALITY_LCD_JYERSUI)
     #include "lcd/e3v2/jyersui/dwin.h"
+=======
+  #elif ENABLED(DWIN_CREALITY_LCD_JYERSUI)
+    #include "lcd/e3v2/jyersui/dwin.h"
+  #elif ENABLED(SOVOL_SV06_RTS)
+    #include "lcd/sovol_rts/sovol_rts.h"
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 #endif
 
@@ -125,6 +135,10 @@
   #include "feature/bltouch.h"
 #endif
 
+#if ENABLED(BD_SENSOR)
+  #include "feature/bedlevel/bdl/bdl.h"
+#endif
+
 #if ENABLED(POLL_JOG)
   #include "feature/joystick.h"
 #endif
@@ -153,7 +167,7 @@
   #include "feature/spindle_laser.h"
 #endif
 
-#if ENABLED(SDSUPPORT)
+#if HAS_MEDIA
   CardReader card;
 #endif
 
@@ -168,6 +182,8 @@
   #include "module/polargraph.h"
 #elif IS_SCARA
   #include "module/scara.h"
+#elif ENABLED(POLAR)
+  #include "module/polar.h"
 #endif
 
 #if HAS_LEVELING
@@ -190,7 +206,7 @@
   #include "feature/runout.h"
 #endif
 
-#if EITHER(PROBE_TARE, HAS_Z_SERVO_PROBE)
+#if ANY(PROBE_TARE, HAS_Z_SERVO_PROBE)
   #include "module/probe.h"
 #endif
 
@@ -210,7 +226,13 @@
   #include "feature/fanmux.h"
 #endif
 
-#include "module/tool_change.h"
+#if HAS_TOOLCHANGE
+  #include "module/tool_change.h"
+#endif
+
+#if HAS_FANCHECK
+  #include "feature/fancheck.h"
+#endif
 
 #if HAS_FANCHECK
   #include "feature/fancheck.h"
@@ -220,23 +242,33 @@
   #include "feature/controllerfan.h"
 #endif
 
+<<<<<<< HEAD
 #if HAS_PRUSA_MMU1
   #include "feature/mmu/mmu.h"
 #endif
 
 #if HAS_PRUSA_MMU2
+=======
+#if HAS_PRUSA_MMU3
+  #include "feature/mmu3/mmu3.h"
+  #include "feature/mmu3/mmu3_reporting.h"
+  #include "feature/mmu3/SpoolJoin.h"
+#elif HAS_PRUSA_MMU2
+>>>>>>> origin/release-2.1.3-beta2
   #include "feature/mmu/mmu2.h"
-#endif
-
-#if HAS_L64XX
-  #include "libs/L64XX/L64XX_Marlin.h"
+#elif HAS_PRUSA_MMU1
+  #include "feature/mmu/mmu.h"
 #endif
 
 #if ENABLED(PASSWORD_FEATURE)
   #include "feature/password/password.h"
 #endif
 
+<<<<<<< HEAD
 #if ENABLED(DGUS_LCD_UI_MKS)
+=======
+#if DGUS_LCD_UI_MKS
+>>>>>>> origin/release-2.1.3-beta2
   #include "lcd/extui/dgus/DGUSScreenHandler.h"
 #endif
 
@@ -252,16 +284,27 @@
   #include "feature/easythreed_ui.h"
 #endif
 
+<<<<<<< HEAD
+=======
+#if ENABLED(MARLIN_TEST_BUILD)
+  #include "tests/marlin_tests.h"
+#endif
+
+#if HAS_RS485_SERIAL
+  #include "feature/rs485.h"
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 PGMSTR(M112_KILL_STR, "M112 Shutdown");
 
-MarlinState marlin_state = MF_INITIALIZING;
+MarlinState marlin_state = MarlinState::MF_INITIALIZING;
 
 // For M109 and M190, this flag may be cleared (by M108) to exit the wait loop
-bool wait_for_heatup = true;
+bool wait_for_heatup = false;
 
 // For M0/M1, this flag may be cleared (by M108) to exit the wait-for-user loop
 #if HAS_RESUME_CONTINUE
-  bool wait_for_user; // = false;
+  bool wait_for_user; // = false
 
   void wait_for_user_response(millis_t ms/*=0*/, const bool no_sleep/*=false*/) {
     UNUSED(no_sleep);
@@ -298,6 +341,7 @@ bool wait_for_heatup = true;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnarrowing"
+#pragma GCC diagnostic ignored "-Wsign-compare"
 
 #ifndef RUNTIME_ONLY_ANALOG_TO_DIGITAL
   template <pin_t ...D>
@@ -305,6 +349,7 @@ bool wait_for_heatup = true;
 #endif
 
 bool pin_is_protected(const pin_t pin) {
+<<<<<<< HEAD
   #ifdef RUNTIME_ONLY_ANALOG_TO_DIGITAL
     static const pin_t sensitive_pins[] PROGMEM = { SENSITIVE_PINS };
     const size_t pincount = COUNT(sensitive_pins);
@@ -316,13 +361,24 @@ bool pin_is_protected(const pin_t pin) {
     const pin_t * const pptr = &sensitive_pins[i];
     if (pin == (sizeof(pin_t) == 2 ? (pin_t)pgm_read_word(pptr) : (pin_t)pgm_read_byte(pptr))) return true;
   }
+=======
+  #define pgm_read_pin(P) (sizeof(pin_t) == 2 ? (pin_t)pgm_read_word(P) : (pin_t)pgm_read_byte(P))
+  for (uint8_t i = 0; i < COUNT(sensitive_dio); ++i)
+    if (pin == pgm_read_pin(&sensitive_dio[i])) return true;
+  for (uint8_t i = 0; i < COUNT(sensitive_aio); ++i)
+    if (pin == analogInputToDigitalPin(pgm_read_pin(&sensitive_aio[i]))) return true;
+>>>>>>> origin/release-2.1.3-beta2
   return false;
 }
 
 #pragma GCC diagnostic pop
 
 bool printer_busy() {
+<<<<<<< HEAD
   return planner.movesplanned() || printingIsActive();
+=======
+  return planner.has_blocks_queued() || printingIsActive();
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 /**
@@ -347,14 +403,13 @@ void startOrResumeJob() {
     TERN_(GCODE_REPEAT_MARKERS, repeat.reset());
     TERN_(CANCEL_OBJECTS, cancelable.reset());
     TERN_(LCD_SHOW_E_TOTAL, e_move_accumulator = 0);
-    #if BOTH(LCD_SET_PROGRESS_MANUALLY, USE_M73_REMAINING_TIME)
-      ui.reset_remaining_time();
-    #endif
+    TERN_(SET_REMAINING_TIME, ui.reset_remaining_time());
+    TERN_(HAS_PRUSA_MMU3, MMU3::operation_statistics.reset_per_print_stats());
   }
   print_job_timer.start();
 }
 
-#if ENABLED(SDSUPPORT)
+#if HAS_MEDIA
 
   inline void abortSDPrinting() {
     IF_DISABLED(NO_SD_AUTOSTART, card.autofile_cancel());
@@ -381,14 +436,21 @@ void startOrResumeJob() {
   }
 
   inline void finishSDPrinting() {
+<<<<<<< HEAD
     if (queue.enqueue_one(F("M1001"))) {  // Keep trying until it gets queued
       marlin_state = MF_RUNNING;          // Signal to stop trying
       TERN_(PASSWORD_AFTER_SD_PRINT_END, password.lock_machine());
       //TERN_(DGUS_LCD_UI_MKS, ScreenHandler.SDPrintingFinished());
+=======
+    if (queue.enqueue_one(F("M1001"))) {      // Keep trying until it gets queued
+      marlin_state = MarlinState::MF_RUNNING; // Signal to stop trying
+      TERN_(PASSWORD_AFTER_SD_PRINT_END, password.lock_machine());
+      TERN_(DGUS_LCD_UI_MKS, screen.sdPrintingFinished());
+>>>>>>> origin/release-2.1.3-beta2
     }
   }
 
-#endif // SDSUPPORT
+#endif // HAS_MEDIA
 
 /**
  * Minimal management of Marlin's core activities:
@@ -427,11 +489,16 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
   if (has_blocks) gcode.reset_stepper_timeout(ms);      // Reset timeout for M18/M84, M85 max 'kill', and laser.
 
   // M18 / M84 : Handle steppers inactive time timeout
+<<<<<<< HEAD
   #if HAS_DISABLE_INACTIVE_AXIS
+=======
+  #if HAS_DISABLE_IDLE_AXES
+>>>>>>> origin/release-2.1.3-beta2
     if (gcode.stepper_inactive_time) {
 
       static bool already_shutdown_steppers; // = false
 
+<<<<<<< HEAD
       #if ENABLED(DGUS_LCD_UI_MKS) 
         if (!has_blocks && !do_reset_timeout && gcode.stepper_inactive_timeout() && !ExtUI::isPrintingFromMedia()) { //   && !ExtUI::isPrintingFromMedia()  Свое добавил проверку на печать
       #else
@@ -452,6 +519,27 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
           TERN_(AUTO_BED_LEVELING_UBL, bedlevel.steppers_were_disabled());
         }
       } 
+=======
+      if (!has_blocks && !do_reset_timeout && gcode.stepper_inactive_timeout()) {
+        if (!already_shutdown_steppers) {
+          already_shutdown_steppers = true;
+
+          // Individual axes will be disabled if configured
+          TERN_(DISABLE_IDLE_X, stepper.disable_axis(X_AXIS));
+          TERN_(DISABLE_IDLE_Y, stepper.disable_axis(Y_AXIS));
+          TERN_(DISABLE_IDLE_Z, stepper.disable_axis(Z_AXIS));
+          TERN_(DISABLE_IDLE_I, stepper.disable_axis(I_AXIS));
+          TERN_(DISABLE_IDLE_J, stepper.disable_axis(J_AXIS));
+          TERN_(DISABLE_IDLE_K, stepper.disable_axis(K_AXIS));
+          TERN_(DISABLE_IDLE_U, stepper.disable_axis(U_AXIS));
+          TERN_(DISABLE_IDLE_V, stepper.disable_axis(V_AXIS));
+          TERN_(DISABLE_IDLE_W, stepper.disable_axis(W_AXIS));
+          TERN_(DISABLE_IDLE_E, stepper.disable_e_steppers());
+
+          TERN_(AUTO_BED_LEVELING_UBL, bedlevel.steppers_were_disabled());
+        }
+      }
+>>>>>>> origin/release-2.1.3-beta2
       else
         already_shutdown_steppers = false;
     }
@@ -468,11 +556,16 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
 
   #if HAS_KILL
 
-    // Check if the kill button was pressed and wait just in case it was an accidental
-    // key kill key press
+    // Check if the kill button was pressed and wait to ensure the signal is not noise
+    // typically caused by poor insulation and grounding on LCD cables.
+    // Lower numbers here will increase response time and therefore safety rating.
+    // It is recommended to set this as low as possibe without false triggers.
     // -------------------------------------------------------------------------------
+    #ifndef KILL_DELAY
+      #define KILL_DELAY 250
+    #endif
+
     static int killCount = 0;   // make the inactivity button a bit less responsive
-    const int KILL_DELAY = 750;
     if (kill_state())
       killCount++;
     else if (killCount > 0)
@@ -489,7 +582,11 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
     }
   #endif
 
+<<<<<<< HEAD
   #if HAS_FREEZE_PIN
+=======
+  #if ENABLED(FREEZE_FEATURE)
+>>>>>>> origin/release-2.1.3-beta2
     stepper.frozen = READ(FREEZE_PIN) == FREEZE_STATE;
   #endif
 
@@ -519,8 +616,13 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
         if (ELAPSED(ms, next_cub_ms_##N)) {                            \
           next_cub_ms_##N = ms + CUB_DEBOUNCE_DELAY_##N;               \
           CODE;                                                        \
+<<<<<<< HEAD
           queue.inject(F(BUTTON##N##_GCODE));                     \
           TERN_(HAS_MARLINUI_MENU, ui.quick_feedback());                    \
+=======
+          queue.inject(F(BUTTON##N##_GCODE));                          \
+          TERN_(HAS_MARLINUI_MENU, ui.quick_feedback());               \
+>>>>>>> origin/release-2.1.3-beta2
         }                                                              \
       }                                                                \
     }while(0)
@@ -663,11 +765,18 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
 
   TERN_(HOTEND_IDLE_TIMEOUT, hotend_idle.check());
 
+  #if ANY(PSU_CONTROL, AUTO_POWER_CONTROL) && PIN_EXISTS(PS_ON_EDM)
+    if ( ELAPSED(ms, powerManager.last_state_change_ms + PS_EDM_RESPONSE)
+      && (READ(PS_ON_PIN) != READ(PS_ON_EDM_PIN) || TERN0(PSU_OFF_REDUNDANT, extDigitalRead(PS_ON1_PIN) != extDigitalRead(PS_ON1_EDM_PIN)))
+    ) kill(GET_TEXT_F(MSG_POWER_EDM_FAULT));
+  #endif
+
   #if ENABLED(EXTRUDER_RUNOUT_PREVENT)
     if (thermalManager.degHotend(active_extruder) > (EXTRUDER_RUNOUT_MINTEMP)
       && ELAPSED(ms, gcode.previous_move_ms + SEC_TO_MS(EXTRUDER_RUNOUT_SECONDS))
       && !planner.has_blocks_queued()
     ) {
+<<<<<<< HEAD
       #if ENABLED(SWITCHING_EXTRUDER)
         bool oldstatus;
         switch (active_extruder) {
@@ -690,6 +799,11 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
           REPEAT(E_STEPPERS, _CASE_EN);
         }
       #endif
+=======
+      const int8_t e_stepper = TERN(HAS_SWITCHING_EXTRUDER, active_extruder >> 1, active_extruder);
+      const bool e_off = !stepper.AXIS_IS_ENABLED(E_AXIS, e_stepper);
+      if (e_off) stepper.ENABLE_EXTRUDER(e_stepper);
+>>>>>>> origin/release-2.1.3-beta2
 
       const float olde = current_position.e;
       current_position.e += EXTRUDER_RUNOUT_EXTRUDE;
@@ -698,6 +812,7 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
       planner.set_e_position_mm(olde);
       planner.synchronize();
 
+<<<<<<< HEAD
       #if ENABLED(SWITCHING_EXTRUDER)
         switch (active_extruder) {
           default: if (oldstatus) stepper.ENABLE_EXTRUDER(0); else stepper.DISABLE_EXTRUDER(0); break;
@@ -714,6 +829,9 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
           REPEAT(E_STEPPERS, _CASE_RESTORE);
         }
       #endif // !SWITCHING_EXTRUDER
+=======
+      if (e_off) stepper.DISABLE_EXTRUDER(e_stepper);
+>>>>>>> origin/release-2.1.3-beta2
 
       gcode.reset_stepper_timeout(ms);
     }
@@ -734,8 +852,6 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
 
   TERN_(MONITOR_DRIVER_STATUS, monitor_tmc_drivers());
 
-  TERN_(MONITOR_L6470_DRIVER_STATUS, L64xxManager.monitor_driver());
-
   // Limit check_axes_activity frequency to 10Hz
   static millis_t next_check_axes_ms = 0;
   if (ELAPSED(ms, next_check_axes_ms)) {
@@ -753,6 +869,10 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
     }
   #endif
 }
+
+#if ALL(EP_BABYSTEPPING, EMERGENCY_PARSER)
+  #include "feature/babystep.h"
+#endif
 
 /**
  * Standard idle routine keeps the machine alive:
@@ -776,11 +896,25 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
  *  - Update the Průša MMU2
  *  - Handle Joystick jogging
  */
+<<<<<<< HEAD
 void idle(bool no_stepper_sleep/*=false*/) {
   #if ENABLED(MARLIN_DEV_MODE)
     static uint16_t idle_depth = 0;
     if (++idle_depth > 5) SERIAL_ECHOLNPGM("idle() call depth: ", idle_depth);
+=======
+void idle(const bool no_stepper_sleep/*=false*/) {
+  #ifdef MAX7219_DEBUG_PROFILE
+    CodeProfiler idle_profiler;
+>>>>>>> origin/release-2.1.3-beta2
   #endif
+
+  #if ENABLED(MARLIN_DEV_MODE)
+    static uint16_t idle_depth = 0;
+    if (++idle_depth > 5) SERIAL_ECHOLNPGM("idle() call depth: ", idle_depth);
+  #endif
+
+  // Bed Distance Sensor task
+  TERN_(BD_SENSOR, bdl.process());
 
   // Core Marlin activities
   manage_inactivity(no_stepper_sleep);
@@ -792,14 +926,18 @@ void idle(bool no_stepper_sleep/*=false*/) {
   TERN_(MAX7219_DEBUG, max7219.idle_tasks());
 
   // Return if setup() isn't completed
-  if (marlin_state == MF_INITIALIZING) goto IDLE_DONE;
+  if (marlin_state == MarlinState::MF_INITIALIZING) goto IDLE_DONE;
 
   // TODO: Still causing errors
-  (void)check_tool_sensor_stats(active_extruder, true);
+  TERN_(TOOL_SENSOR, (void)check_tool_sensor_stats(active_extruder, true));
 
   // Handle filament runout sensors
   #if HAS_FILAMENT_SENSOR
+<<<<<<< HEAD
     if (TERN1(HAS_PRUSA_MMU2, !mmu2.enabled()))
+=======
+    if (TERN1(HAS_PRUSA_MMU2, !mmu2.enabled()) && TERN1(HAS_PRUSA_MMU3, !mmu3.enabled()))
+>>>>>>> origin/release-2.1.3-beta2
       runout.run();
   #endif
 
@@ -817,11 +955,15 @@ void idle(bool no_stepper_sleep/*=false*/) {
   // Run StallGuard endstop checks
   #if ENABLED(SPI_ENDSTOPS)
     if (endstops.tmc_spi_homing.any && TERN1(IMPROVE_HOMING_RELIABILITY, ELAPSED(millis(), sg_guard_period)))
+<<<<<<< HEAD
       LOOP_L_N(i, 4) if (endstops.tmc_spi_homing_check()) break; // Read SGT 4 times per idle loop
+=======
+      for (uint8_t i = 0; i < 4; ++i) if (endstops.tmc_spi_homing_check()) break; // Read SGT 4 times per idle loop
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 
   // Handle SD Card insert / remove
-  TERN_(SDSUPPORT, card.manage_media());
+  TERN_(HAS_MEDIA, card.manage_media());
 
   // Handle USB Flash Drive insert / remove
   TERN_(USB_FLASH_DRIVE_SUPPORT, card.diskIODriver()->idle());
@@ -836,7 +978,11 @@ void idle(bool no_stepper_sleep/*=false*/) {
   TERN_(HAS_BEEPER, buzzer.tick());
 
   // Handle UI input / draw events
-  TERN(DWIN_CREALITY_LCD, DWIN_Update(), ui.update());
+  #if ENABLED(SOVOL_SV06_RTS)
+    RTS_Update();
+  #else
+    ui.update();
+  #endif
 
   // Run i2c Position Encoders
   #if ENABLED(I2C_POSITION_ENCODERS)
@@ -864,10 +1010,19 @@ void idle(bool no_stepper_sleep/*=false*/) {
   #endif
 
   // Update the Průša MMU2
-  TERN_(HAS_PRUSA_MMU2, mmu2.mmu_loop());
+  #if HAS_PRUSA_MMU3
+    mmu3.mmu_loop();
+  #elif HAS_PRUSA_MMU2
+    mmu2.mmu_loop();
+  #endif
 
   // Handle Joystick jogging
   TERN_(POLL_JOG, joystick.inject_jog_moves());
+
+  // Async Babystepping via the Emergency Parser
+  #if ALL(EP_BABYSTEPPING, EMERGENCY_PARSER)
+    babystep.do_ep_steps();
+  #endif
 
   // Direct Stepping
   TERN_(DIRECT_STEPPING, page_manager.write_responses());
@@ -875,8 +1030,12 @@ void idle(bool no_stepper_sleep/*=false*/) {
   // Update the LVGL interface
   TERN_(HAS_TFT_LVGL_UI, LV_TASK_HANDLER());
 
+  // Manage Fixed-time Motion Control
+  TERN_(FT_MOTION, ftMotion.loop());
+
   IDLE_DONE:
   TERN_(MARLIN_DEV_MODE, idle_depth--);
+
   return;
 }
 
@@ -890,7 +1049,11 @@ void kill(FSTR_P const lcd_error/*=nullptr*/, FSTR_P const lcd_component/*=nullp
   TERN_(HAS_CUTTER, cutter.kill()); // Full cutter shutdown including ISR control
 
   // Echo the LCD message to serial for extra context
+<<<<<<< HEAD
   if (lcd_error) { SERIAL_ECHO_START(); SERIAL_ECHOLNF(lcd_error); }
+=======
+  if (lcd_error) { SERIAL_ECHO_START(); SERIAL_ECHOLN(lcd_error); }
+>>>>>>> origin/release-2.1.3-beta2
 
   #if HAS_DISPLAY
     ui.kill_screen(lcd_error ?: GET_TEXT_F(MSG_KILLED), lcd_component ?: FPSTR(NUL_STR));
@@ -932,7 +1095,7 @@ void minkill(const bool steppers_off/*=false*/) {
 
   TERN_(HAS_SUICIDE, suicide());
 
-  #if EITHER(HAS_KILL, SOFT_RESET_ON_KILL)
+  #if ANY(HAS_KILL, SOFT_RESET_ON_KILL)
 
     // Wait for both KILL and ENC to be released
     while (TERN0(HAS_KILL, kill_state()) || TERN0(SOFT_RESET_ON_KILL, ui.button_pressed()))
@@ -961,7 +1124,7 @@ void stop() {
 
   print_job_timer.stop();
 
-  #if EITHER(PROBING_FANS_OFF, ADVANCED_PAUSE_FANS_PAUSE)
+  #if ANY(PROBING_FANS_OFF, ADVANCED_PAUSE_FANS_PAUSE)
     thermalManager.set_fans_paused(false); // Un-pause fans for safety
   #endif
 
@@ -969,7 +1132,7 @@ void stop() {
     SERIAL_ERROR_MSG(STR_ERR_STOPPED);
     LCD_MESSAGE(MSG_STOPPED);
     safe_delay(350);       // allow enough time for messages to get out before stopping
-    marlin_state = MF_STOPPED;
+    marlin_state = MarlinState::MF_STOPPED;
   }
 }
 
@@ -1007,6 +1170,18 @@ inline void tmc_standby_setup() {
   #if PIN_EXISTS(K_STDBY)
     SET_INPUT_PULLDOWN(K_STDBY_PIN);
   #endif
+<<<<<<< HEAD
+=======
+  #if PIN_EXISTS(U_STDBY)
+    SET_INPUT_PULLDOWN(U_STDBY_PIN);
+  #endif
+  #if PIN_EXISTS(V_STDBY)
+    SET_INPUT_PULLDOWN(V_STDBY_PIN);
+  #endif
+  #if PIN_EXISTS(W_STDBY)
+    SET_INPUT_PULLDOWN(W_STDBY_PIN);
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
   #if PIN_EXISTS(E0_STDBY)
     SET_INPUT_PULLDOWN(E0_STDBY_PIN);
   #endif
@@ -1052,7 +1227,6 @@ inline void tmc_standby_setup() {
  *    • TMC220x Stepper Drivers (Serial)
  *    • PSU control
  *    • Power-loss Recovery
- *    • L64XX Stepper Drivers (SPI)
  *    • Stepper Driver Reset: DISABLE
  *    • TMC Stepper Drivers (SPI)
  *    • Run hal.init_board() for additional pins setup
@@ -1063,7 +1237,7 @@ inline void tmc_standby_setup() {
  *  - Init the buzzer, possibly a custom timer
  *  - Init more optional hardware:
  *    • Color LED illumination
- *    • Neopixel illumination
+ *    • NeoPixel illumination
  *    • Controller Fan
  *    • Creality DWIN LCD (show boot image)
  *    • Tare the Probe if possible
@@ -1139,7 +1313,7 @@ void setup() {
   #if ENABLED(MARLIN_DEV_MODE)
     auto log_current_ms = [&](PGM_P const msg) {
       SERIAL_ECHO_START();
-      SERIAL_CHAR('['); SERIAL_ECHO(millis()); SERIAL_ECHOPGM("] ");
+      TSS('[', millis(), F("] ")).echo();
       SERIAL_ECHOLNPGM_P(msg);
     };
     #define SETUP_LOG(M) log_current_ms(PSTR(M))
@@ -1151,6 +1325,12 @@ void setup() {
   MYSERIAL1.begin(BAUDRATE);
   millis_t serial_connect_timeout = millis() + 1000UL;
   while (!MYSERIAL1.connected() && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
+
+  #if ENABLED(SOVOL_SV06_RTS)
+    LCD_SERIAL.begin(BAUDRATE);
+    serial_connect_timeout = millis() + 1000UL;
+    while (!LCD_SERIAL.connected() && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
+  #endif
 
   #if HAS_MULTI_SERIAL && !HAS_ETHERNET
     #ifndef BAUDRATE_2
@@ -1215,11 +1395,25 @@ void setup() {
   SETUP_RUN(hal.init());
 
   // Init and disable SPI thermocouples; this is still needed
+<<<<<<< HEAD
   #if TEMP_SENSOR_0_IS_MAX_TC || (TEMP_SENSOR_REDUNDANT_IS_MAX_TC && REDUNDANT_TEMP_MATCH(SOURCE, E0))
     OUT_WRITE(TEMP_0_CS_PIN, HIGH);  // Disable
   #endif
   #if TEMP_SENSOR_1_IS_MAX_TC || (TEMP_SENSOR_REDUNDANT_IS_MAX_TC && REDUNDANT_TEMP_MATCH(SOURCE, E1))
     OUT_WRITE(TEMP_1_CS_PIN, HIGH);
+=======
+  #if TEMP_SENSOR_IS_MAX_TC(0) || (TEMP_SENSOR_IS_MAX_TC(REDUNDANT) && REDUNDANT_TEMP_MATCH(SOURCE, E0))
+    OUT_WRITE(TEMP_0_CS_PIN, HIGH);  // Disable
+  #endif
+  #if TEMP_SENSOR_IS_MAX_TC(1) || (TEMP_SENSOR_IS_MAX_TC(REDUNDANT) && REDUNDANT_TEMP_MATCH(SOURCE, E1))
+    OUT_WRITE(TEMP_1_CS_PIN, HIGH);
+  #endif
+  #if TEMP_SENSOR_IS_MAX_TC(2) || (TEMP_SENSOR_IS_MAX_TC(REDUNDANT) && REDUNDANT_TEMP_MATCH(SOURCE, E2))
+    OUT_WRITE(TEMP_2_CS_PIN, HIGH);
+  #endif
+  #if TEMP_SENSOR_IS_MAX_TC(BED)
+    OUT_WRITE(TEMP_BED_CS_PIN, HIGH);
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 
   #if ENABLED(DUET_SMART_EFFECTOR) && PIN_EXISTS(SMART_EFFECTOR_MOD)
@@ -1230,7 +1424,7 @@ void setup() {
     SETUP_RUN(runout.setup());
   #endif
 
-  #if HAS_TMC220x
+  #if HAS_TMC_UART
     SETUP_RUN(tmc_serial_begin());
   #endif
 
@@ -1241,6 +1435,7 @@ void setup() {
     SETUP_RUN(tmc_init_cs_pins());
   #endif
 
+<<<<<<< HEAD
   #if HAS_L64XX
     SETUP_RUN(L64xxManager.init());  // Set up SPI, init drivers
   #endif
@@ -1262,6 +1457,27 @@ void setup() {
 
   SETUP_RUN(esp_wifi_init());
 
+=======
+  #if ENABLED(PSU_CONTROL)
+    SETUP_LOG("PSU_CONTROL");
+    powerManager.init();
+  #endif
+
+  #if ENABLED(POWER_LOSS_RECOVERY)
+    SETUP_RUN(recovery.setup());
+  #endif
+
+  #if HAS_STEPPER_RESET
+    SETUP_RUN(disableStepperDrivers());
+  #endif
+
+  SETUP_RUN(hal.init_board());
+
+  #if ENABLED(WIFISUPPORT)
+    SETUP_RUN(esp_wifi_init());
+  #endif
+
+>>>>>>> origin/release-2.1.3-beta2
   // Report Reset Reason
   if (mcu & RST_POWER_ON)  SERIAL_ECHOLNPGM(STR_POWERUP);
   if (mcu & RST_EXTERNAL)  SERIAL_ECHOLNPGM(STR_EXTERNAL_RESET);
@@ -1271,7 +1487,11 @@ void setup() {
 
   // Identify myself as Marlin x.x.x
   SERIAL_ECHOLNPGM("Marlin " SHORT_BUILD_VERSION);
+<<<<<<< HEAD
   #if defined(STRING_DISTRIBUTION_DATE) && defined(STRING_CONFIG_H_AUTHOR)
+=======
+  #ifdef STRING_DISTRIBUTION_DATE
+>>>>>>> origin/release-2.1.3-beta2
     SERIAL_ECHO_MSG(
       " Last Updated: " STRING_DISTRIBUTION_DATE
       " | Author: " STRING_CONFIG_H_AUTHOR
@@ -1320,8 +1540,16 @@ if (csr_value & RCC_CSR_IWDGRSTF) {
 
   // UI must be initialized before EEPROM
   // (because EEPROM code calls the UI).
+<<<<<<< HEAD
 
   SETUP_RUN(ui.init());
+=======
+  #if ENABLED(SOVOL_SV06_RTS)
+    SETUP_RUN(RTS_Update());
+  #else
+    SETUP_RUN(ui.init());
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
 
   #if PIN_EXISTS(SAFE_POWER)
     #if HAS_DRIVER_SAFE_POWER_PROTECT
@@ -1332,18 +1560,36 @@ if (csr_value & RCC_CSR_IWDGRSTF) {
     #endif
   #endif
 
+<<<<<<< HEAD
   #if BOTH(SDSUPPORT, SDCARD_EEPROM_EMULATION)
     SETUP_RUN(card.mount());          // Mount media with settings before first_load
+=======
+  #if HAS_MEDIA && ANY(SDCARD_EEPROM_EMULATION, POWER_LOSS_RECOVERY)
+    SETUP_RUN(card.mount());          // Mount media with settings before first_load
+  #endif
+
+  // Prepare some LCDs to display early
+  #if HAS_EARLY_LCD_SETTINGS
+    SETUP_RUN(settings.load_lcd_state());
+  #endif
+
+  #if ALL(HAS_WIRED_LCD, SHOW_BOOTSCREEN)
+    SETUP_RUN(ui.show_bootscreen());
+    const millis_t bootscreen_ms = millis();
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 
   SETUP_RUN(settings.first_load());   // Load data from EEPROM if available (or use defaults)
                                       // This also updates variables in the planner, elsewhere
 
+<<<<<<< HEAD
   #if BOTH(HAS_WIRED_LCD, SHOW_BOOTSCREEN)
     SETUP_RUN(ui.show_bootscreen());
     const millis_t bootscreen_ms = millis();
   #endif
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
   #if ENABLED(PROBE_TARE)
     SETUP_RUN(probe.tare_init());
   #endif
@@ -1356,7 +1602,7 @@ if (csr_value & RCC_CSR_IWDGRSTF) {
     SETUP_RUN(touchBt.init());
   #endif
 
-  TERN_(HAS_M206_COMMAND, current_position += home_offset); // Init current position based on home_offset
+  TERN_(HAS_HOME_OFFSET, current_position += home_offset); // Init current position based on home_offset
 
   sync_plan_position();               // Vital to init stepper/planner equivalent for current_position
 
@@ -1414,7 +1660,7 @@ if (csr_value & RCC_CSR_IWDGRSTF) {
     SETUP_RUN(stepper_dac.init());
   #endif
 
-  #if EITHER(Z_PROBE_SLED, SOLENOID_PROBE) && HAS_SOLENOID_1
+  #if ANY(Z_PROBE_SLED, SOLENOID_PROBE) && HAS_SOLENOID_1
     OUT_WRITE(SOL1_PIN, LOW); // OFF
   #endif
 
@@ -1589,7 +1835,11 @@ if (csr_value & RCC_CSR_IWDGRSTF) {
     SETUP_RUN(stepper_driver_backward_report());
   #endif
 
-  #if HAS_PRUSA_MMU2
+  #if HAS_PRUSA_MMU3
+    if (mmu3.mmu_hw_enabled) SETUP_RUN(mmu3.start());
+    SETUP_RUN(mmu3.status());
+    SETUP_RUN(spooljoin.initStatus());
+  #elif HAS_PRUSA_MMU2
     SETUP_RUN(mmu2.init());
   #endif
 
@@ -1599,11 +1849,21 @@ if (csr_value & RCC_CSR_IWDGRSTF) {
     SERIAL_ECHO_TERNARY(err, "BL24CXX Check ", "failed", "succeeded", "!\n");
   #endif
 
+<<<<<<< HEAD
   #if HAS_DWIN_E3V2_BASIC
     SETUP_RUN(DWIN_InitScreen());
   #endif
 
   #if HAS_SERVICE_INTERVALS && !HAS_DWIN_E3V2_BASIC
+=======
+  #if ENABLED(DWIN_CREALITY_LCD)
+    SETUP_RUN(dwinInitScreen());
+  #elif ENABLED(SOVOL_SV06_RTS)
+    SETUP_RUN(rts.init());
+  #endif
+
+  #if HAS_SERVICE_INTERVALS && DISABLED(DWIN_CREALITY_LCD)
+>>>>>>> origin/release-2.1.3-beta2
     SETUP_RUN(ui.reset_status(true));  // Show service messages or keep current status
   #endif
 
@@ -1616,13 +1876,13 @@ if (csr_value & RCC_CSR_IWDGRSTF) {
   #endif
 
   #if HAS_TFT_LVGL_UI
-    #if ENABLED(SDSUPPORT)
+    #if HAS_MEDIA
       if (!card.isMounted()) SETUP_RUN(card.mount()); // Mount SD to load graphics and fonts
     #endif
     SETUP_RUN(tft_lvgl_init());
   #endif
 
-  #if BOTH(HAS_WIRED_LCD, SHOW_BOOTSCREEN)
+  #if ALL(HAS_WIRED_LCD, SHOW_BOOTSCREEN)
     const millis_t elapsed = millis() - bootscreen_ms;
     #if ENABLED(MARLIN_DEV_MODE)
       SERIAL_ECHOLNPGM("elapsed=", elapsed);
@@ -1634,6 +1894,7 @@ if (csr_value & RCC_CSR_IWDGRSTF) {
     SETUP_RUN(password.lock_machine());      // Will not proceed until correct password provided
   #endif
 
+<<<<<<< HEAD
   #if BOTH(HAS_MARLINUI_MENU, TOUCH_SCREEN_CALIBRATION) && EITHER(TFT_CLASSIC_UI, TFT_COLOR_UI)
     SETUP_RUN(ui.check_touch_calibration());
   #endif
@@ -1644,11 +1905,43 @@ if (csr_value & RCC_CSR_IWDGRSTF) {
 
   #if HAS_TRINAMIC_CONFIG && DISABLED(PSU_DEFAULT_OFF)
     SETUP_RUN(test_tmc_connection());
+=======
+  #if ALL(HAS_MARLINUI_MENU, TOUCH_SCREEN_CALIBRATION) && ANY(TFT_CLASSIC_UI, TFT_COLOR_UI)
+    SETUP_RUN(ui.check_touch_calibration());
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 
-  marlin_state = MF_RUNNING;
+  #if ENABLED(EASYTHREED_UI)
+    SETUP_RUN(easythreed_ui.init());
+  #endif
+
+  #if HAS_TRINAMIC_CONFIG && DISABLED(PSU_DEFAULT_OFF)
+    SETUP_RUN(test_tmc_connection());
+  #endif
+
+  #if ENABLED(BD_SENSOR)
+    SETUP_RUN(bdl.init(I2C_BD_SDA_PIN, I2C_BD_SCL_PIN, I2C_BD_DELAY));
+  #endif
+
+  #if HAS_RS485_SERIAL
+    SETUP_RUN(rs485_init());
+  #endif
+
+  #if ENABLED(FT_MOTION)
+    SETUP_RUN(ftMotion.init());
+  #endif
+
+  marlin_state = MarlinState::MF_RUNNING;
+
+  #ifdef STARTUP_TUNE
+    // Play a short startup tune before continuing.
+    constexpr uint16_t tune[] = STARTUP_TUNE;
+    for (uint8_t i = 0; i < COUNT(tune) - 1; i += 2) BUZZ(tune[i + 1], tune[i]);
+  #endif
 
   SETUP_LOG("setup() completed.");
+
+  TERN_(MARLIN_TEST_BUILD, runStartupTests());
 }
 
 /**
@@ -1668,20 +1961,26 @@ void loop() {
   do {
     idle();
 
-    #if ENABLED(SDSUPPORT)
+    #if HAS_MEDIA
       if (card.flag.abort_sd_printing) abortSDPrinting();
-      if (marlin_state == MF_SD_COMPLETE) finishSDPrinting();
+      if (marlin_state == MarlinState::MF_SD_COMPLETE) finishSDPrinting();
     #endif
     
     queue.advance();
 
+<<<<<<< HEAD
     #if EITHER(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+=======
+    #if ANY(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+>>>>>>> origin/release-2.1.3-beta2
       powerManager.checkAutoPowerOff();
     #endif
 
     endstops.event_handler();
 
     TERN_(HAS_TFT_LVGL_UI, printer_state_polling());    
+
+    TERN_(MARLIN_TEST_BUILD, runPeriodicTests());
 
   } while (ENABLED(__AVR__)); // Loop forever on slower (AVR) boards
 }

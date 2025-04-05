@@ -30,7 +30,11 @@
 #include <string.h>
 
 // A white component can be passed
+<<<<<<< HEAD
 #if EITHER(RGBW_LED, PCA9632_RGBW)
+=======
+#if ANY(RGBW_LED, PCA9632_RGBW)
+>>>>>>> origin/release-2.1.3-beta2
   #define HAS_WHITE_LED 1
 #endif
 
@@ -38,6 +42,21 @@
   #define _NEOPIXEL_INCLUDE_
   #include "neopixel.h"
   #undef _NEOPIXEL_INCLUDE_
+<<<<<<< HEAD
+=======
+#endif
+
+#if ENABLED(BLINKM)
+  #include "blinkm.h"
+#endif
+
+#if ENABLED(PCA9533)
+  #include "pca9533.h"
+#endif
+
+#if ENABLED(PCA9632)
+  #include "pca9632.h"
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 /**
@@ -107,6 +126,13 @@ typedef struct LEDColor {
 
 class LEDLights {
 public:
+  #if ANY(LED_CONTROL_MENU, PRINTER_EVENT_LEDS, CASE_LIGHT_IS_COLOR_LED)
+    static LEDColor color; // last non-off color
+    static bool lights_on; // the last set color was "on"
+  #else
+    static constexpr bool lights_on = true;
+  #endif
+
   LEDLights() {} // ctor
 
   static void setup(); // init()
@@ -140,21 +166,32 @@ public:
 
   #if ENABLED(PRINTER_EVENT_LEDS)
     static LEDColor get_color() { return lights_on ? color : LEDColorOff(); }
+<<<<<<< HEAD
   #endif
 
   #if ANY(LED_CONTROL_MENU, PRINTER_EVENT_LEDS, CASE_LIGHT_IS_COLOR_LED)
     static LEDColor color; // last non-off color
     static bool lights_on; // the last set color was "on"
+=======
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 
   #if ENABLED(LED_CONTROL_MENU)
     static void toggle();  // swap "off" with color
   #endif
+<<<<<<< HEAD
   #if EITHER(LED_CONTROL_MENU, CASE_LIGHT_USE_RGB_LED)
     static void update() { set_color(color); }
   #endif
 
   #if LED_POWEROFF_TIMEOUT > 0
+=======
+  #if ANY(LED_CONTROL_MENU, CASE_LIGHT_USE_RGB_LED, HAS_LED_POWEROFF_TIMEOUT)
+    static void update() { set_color(color); }
+  #endif
+
+  #if HAS_LED_POWEROFF_TIMEOUT
+>>>>>>> origin/release-2.1.3-beta2
     private:
       static millis_t led_off_time;
     public:

@@ -40,6 +40,11 @@ void GcodeSuite::M211() {
 }
 
 void GcodeSuite::M211_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+>>>>>>> origin/release-2.1.3-beta2
   report_heading_etc(forReplay, F(STR_SOFT_ENDSTOPS));
   SERIAL_ECHOPGM("  M211 S", AS_DIGIT(soft_endstop._enabled), " ; ");
   serialprintln_onoff(soft_endstop._enabled);
@@ -47,8 +52,13 @@ void GcodeSuite::M211_report(const bool forReplay/*=true*/) {
   report_echo_start(forReplay);
   const xyz_pos_t l_soft_min = soft_endstop.min.asLogical(),
                   l_soft_max = soft_endstop.max.asLogical();
+<<<<<<< HEAD
   print_pos(l_soft_min, F(STR_SOFT_MIN), F(" "));
   print_pos(l_soft_max, F(STR_SOFT_MAX));
+=======
+  print_xyz(l_soft_min, F(STR_SOFT_MIN), F(" "));
+  print_xyz(l_soft_max, F(STR_SOFT_MAX));
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 #endif // HAS_SOFTWARE_ENDSTOPS

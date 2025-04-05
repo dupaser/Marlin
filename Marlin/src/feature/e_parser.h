@@ -27,6 +27,7 @@
 
 #include "../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if ENABLED(HOST_PROMPT_SUPPORT)
   #include "host_actions.h"
 #endif
@@ -45,11 +46,13 @@ extern bool wait_for_user, wait_for_heatup;
   void HAL_reboot();
 #endif
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
 class EmergencyParser {
 
 public:
 
-  // Currently looking for: M108, M112, M410, M876 S[0-9], S000, P000, R000
+  // Currently looking for: M108, M112, M410, M524, M876 S[0-9], S000, P000, R000
   enum State : uint8_t {
     EP_RESET,
     EP_N,
@@ -58,6 +61,12 @@ public:
     EP_M10, EP_M108,
     EP_M11, EP_M112,
     EP_M4, EP_M41, EP_M410,
+    #if HAS_MEDIA
+      EP_M5, EP_M52, EP_M524,
+    #endif
+    #if ENABLED(EP_BABYSTEPPING)
+      EP_M2, EP_M29, EP_M293, EP_M294,
+    #endif
     #if ENABLED(HOST_PROMPT_SUPPORT)
       EP_M8, EP_M87, EP_M876, EP_M876S, EP_M876SN,
     #endif
@@ -76,6 +85,10 @@ public:
   static bool killed_by_M112;
   static bool quickstop_by_M410;
 
+  #if HAS_MEDIA
+    static bool sd_abort_by_M524;
+  #endif
+
   #if ENABLED(HOST_PROMPT_SUPPORT)
     static uint8_t M876_reason;
   #endif
@@ -85,6 +98,7 @@ public:
   FORCE_INLINE static void enable()  { enabled = true; }
   FORCE_INLINE static void disable() { enabled = false; }
 
+<<<<<<< HEAD
   FORCE_INLINE static void update(State &state, const uint8_t c) {
     switch (state) {
       case EP_RESET:
@@ -217,6 +231,9 @@ public:
         }
     }
   }
+=======
+  static void update(State &state, const uint8_t c);
+>>>>>>> origin/release-2.1.3-beta2
 
 private:
   static bool enabled;

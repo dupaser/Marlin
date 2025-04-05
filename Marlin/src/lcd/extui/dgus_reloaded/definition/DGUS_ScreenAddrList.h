@@ -21,12 +21,21 @@
  */
 #pragma once
 
+<<<<<<< HEAD
 #include "../config/DGUS_Screen.h"
 #include "../config/DGUS_Addr.h"
 
 struct DGUS_ScreenAddrList {
   DGUS_Screen       screen;
   const DGUS_Addr   *addr_list;
+=======
+#include "../config/DGUS_ScreenID.h"
+#include "../config/DGUS_Addr.h"
+
+struct DGUS_ScreenAddrList {
+  DGUS_ScreenID   screenID;
+  const DGUS_Addr *addr_list;
+>>>>>>> origin/release-2.1.3-beta2
 };
 
 extern const struct DGUS_ScreenAddrList screen_addr_list_map[];

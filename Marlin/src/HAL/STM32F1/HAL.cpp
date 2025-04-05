@@ -1,10 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- *
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
- * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
- * Copyright (c) 2015-2016 Nico Tonnhofer wurstnase.reprap@gmail.com
- * Copyright (c) 2017 Victor Perez
+ *
+ * Based on Sprinter and grbl.
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +29,11 @@
 #include "../../inc/MarlinConfig.h"
 #include "HAL.h"
 
-#include <STM32ADC.h>
+#include "adc.h"
+uint16_t adc_results[ADC_COUNT];
 
 // ------------------------
+<<<<<<< HEAD
 // Types
 // ------------------------
 
@@ -79,6 +80,8 @@
 #define SCB_AIRCR_PRIGROUP_Msk             (7UL << SCB_AIRCR_PRIGROUP_Pos)                /*!< SCB AIRCR: PRIGROUP Mask */
 
 // ------------------------
+=======
+>>>>>>> origin/release-2.1.3-beta2
 // Serial ports
 // ------------------------
 
@@ -169,6 +172,7 @@ uint16_t analogRead(const pin_t pin) {
 void analogWrite(const pin_t pin, int pwm_val8) {
   if (PWM_PIN(pin)) analogWrite(uint8_t(pin), pwm_val8);
 }
+<<<<<<< HEAD
 
 uint16_t MarlinHAL::adc_result;
 
@@ -186,12 +190,103 @@ static void NVIC_SetPriorityGrouping(uint32_t PriorityGroup) {
                 ((uint32_t)0x5FA << SCB_AIRCR_VECTKEY_Pos) |
                 (PriorityGroupTmp << 8));                                     // Insert write key & priority group
   SCB->AIRCR =  reg_value;
+=======
+
+uint16_t MarlinHAL::adc_result;
+
+#ifndef VOXELAB_N32
+
+#include <STM32ADC.h>
+
+// Init the AD in continuous capture mode
+void MarlinHAL::adc_init() {
+  static const uint8_t adc_pins[] = {
+    OPTITEM(HAS_TEMP_ADC_0, TEMP_0_PIN)
+    OPTITEM(HAS_TEMP_ADC_1, TEMP_1_PIN)
+    OPTITEM(HAS_TEMP_ADC_2, TEMP_2_PIN)
+    OPTITEM(HAS_TEMP_ADC_3, TEMP_3_PIN)
+    OPTITEM(HAS_TEMP_ADC_4, TEMP_4_PIN)
+    OPTITEM(HAS_TEMP_ADC_5, TEMP_5_PIN)
+    OPTITEM(HAS_TEMP_ADC_6, TEMP_6_PIN)
+    OPTITEM(HAS_TEMP_ADC_7, TEMP_7_PIN)
+    OPTITEM(HAS_HEATED_BED, TEMP_BED_PIN)
+    OPTITEM(HAS_TEMP_CHAMBER, TEMP_CHAMBER_PIN)
+    OPTITEM(HAS_TEMP_ADC_PROBE, TEMP_PROBE_PIN)
+    OPTITEM(HAS_TEMP_COOLER, TEMP_COOLER_PIN)
+    OPTITEM(HAS_TEMP_BOARD, TEMP_BOARD_PIN)
+    OPTITEM(HAS_TEMP_SOC, TEMP_SOC_PIN)
+    OPTITEM(FILAMENT_WIDTH_SENSOR, FILWIDTH_PIN)
+    OPTITEM(HAS_ADC_BUTTONS, ADC_KEYPAD_PIN)
+    OPTITEM(HAS_JOY_ADC_X, JOY_X_PIN)
+    OPTITEM(HAS_JOY_ADC_Y, JOY_Y_PIN)
+    OPTITEM(HAS_JOY_ADC_Z, JOY_Z_PIN)
+    OPTITEM(POWER_MONITOR_CURRENT, POWER_MONITOR_CURRENT_PIN)
+    OPTITEM(POWER_MONITOR_VOLTAGE, POWER_MONITOR_VOLTAGE_PIN)
+  };
+  static STM32ADC adc(ADC1);
+  // Configure the ADC
+  adc.calibrate();
+  adc.setSampleRate((F_CPU > 72000000) ? ADC_SMPR_71_5 : ADC_SMPR_41_5); // 71.5 or 41.5 ADC cycles
+  adc.setPins((uint8_t *)adc_pins, ADC_COUNT);
+  adc.setDMA(adc_results, uint16_t(ADC_COUNT), uint32_t(DMA_MINC_MODE | DMA_CIRC_MODE), nullptr);
+  adc.setScanMode();
+  adc.setContinuous();
+  adc.startConversion();
+}
+
+#endif // !VOXELAB_N32
+
+void MarlinHAL::adc_start(const pin_t pin) {
+  #define __TCASE(N,I) case N: pin_index = I; break;
+  #define _TCASE(C,N,I) TERN_(C, __TCASE(N, I))
+  ADCIndex pin_index;
+  switch (pin) {
+    default: return;
+    _TCASE(HAS_TEMP_ADC_0,        TEMP_0_PIN,                TEMP_0)
+    _TCASE(HAS_TEMP_ADC_1,        TEMP_1_PIN,                TEMP_1)
+    _TCASE(HAS_TEMP_ADC_2,        TEMP_2_PIN,                TEMP_2)
+    _TCASE(HAS_TEMP_ADC_3,        TEMP_3_PIN,                TEMP_3)
+    _TCASE(HAS_TEMP_ADC_4,        TEMP_4_PIN,                TEMP_4)
+    _TCASE(HAS_TEMP_ADC_5,        TEMP_5_PIN,                TEMP_5)
+    _TCASE(HAS_TEMP_ADC_6,        TEMP_6_PIN,                TEMP_6)
+    _TCASE(HAS_TEMP_ADC_7,        TEMP_7_PIN,                TEMP_7)
+    _TCASE(HAS_HEATED_BED,        TEMP_BED_PIN,              TEMP_BED)
+    _TCASE(HAS_TEMP_CHAMBER,      TEMP_CHAMBER_PIN,          TEMP_CHAMBER)
+    _TCASE(HAS_TEMP_ADC_PROBE,    TEMP_PROBE_PIN,            TEMP_PROBE)
+    _TCASE(HAS_TEMP_COOLER,       TEMP_COOLER_PIN,           TEMP_COOLER)
+    _TCASE(HAS_TEMP_BOARD,        TEMP_BOARD_PIN,            TEMP_BOARD)
+    _TCASE(HAS_TEMP_SOC,          TEMP_SOC_PIN,              TEMP_SOC)
+    _TCASE(HAS_JOY_ADC_X,         JOY_X_PIN,                 JOY_X)
+    _TCASE(HAS_JOY_ADC_Y,         JOY_Y_PIN,                 JOY_Y)
+    _TCASE(HAS_JOY_ADC_Z,         JOY_Z_PIN,                 JOY_Z)
+    _TCASE(FILAMENT_WIDTH_SENSOR, FILWIDTH_PIN,              FILWIDTH)
+    _TCASE(HAS_ADC_BUTTONS,       ADC_KEYPAD_PIN,            ADC_KEY)
+    _TCASE(POWER_MONITOR_CURRENT, POWER_MONITOR_CURRENT_PIN, POWERMON_CURRENT)
+    _TCASE(POWER_MONITOR_VOLTAGE, POWER_MONITOR_VOLTAGE_PIN, POWERMON_VOLTAGE)
+  }
+  adc_result = (adc_results[(int)pin_index] & 0xFFF) >> (12 - HAL_ADC_RESOLUTION); // shift out unused bits
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 // ------------------------
 // Public functions
 // ------------------------
 
+<<<<<<< HEAD
+=======
+void NVIC_SetPriorityGrouping(uint32_t PriorityGroup) {
+  uint32_t reg_value;
+  uint32_t PriorityGroupTmp = (PriorityGroup & (uint32_t)0x07);               // only values 0..7 are used
+
+  reg_value  =  SCB->AIRCR;                                                   // read old register configuration
+  reg_value &= ~(SCB_AIRCR_VECTKEY_Msk | SCB_AIRCR_PRIGROUP_Msk);             // clear bits to change
+  reg_value  =  (reg_value                                 |
+                ((uint32_t)0x5FA << SCB_AIRCR_VECTKEY_Pos) |
+                (PriorityGroupTmp << 8));                                     // Insert write key & priority group
+  SCB->AIRCR =  reg_value;
+}
+
+>>>>>>> origin/release-2.1.3-beta2
 void flashFirmware(const int16_t) { hal.reboot(); }
 
 //
@@ -224,7 +319,7 @@ void MarlinHAL::init() {
   #endif
   #if HAS_SD_HOST_DRIVE
     MSC_SD_init();
-  #elif BOTH(SERIAL_USB, EMERGENCY_PARSER)
+  #elif ALL(SERIAL_USB, EMERGENCY_PARSER)
     usb_cdcacm_set_hooks(USB_CDCACM_HOOK_RX, my_rx_callback);
   #endif
   #if PIN_EXISTS(USB_CONNECT)
@@ -238,21 +333,23 @@ void MarlinHAL::init() {
 // HAL idle task
 void MarlinHAL::idletask() {
   #if HAS_SHARED_MEDIA
-    // If Marlin is using the SD card we need to lock it to prevent access from
-    // a PC via USB.
-    // Other HALs use IS_SD_PRINTING() and IS_SD_FILE_OPEN() to check for access but
-    // this will not reliably detect delete operations. To be safe we will lock
-    // the disk if Marlin has it mounted. Unfortunately there is currently no way
-    // to unmount the disk from the LCD menu.
-    // if (IS_SD_PRINTING() || IS_SD_FILE_OPEN())
-    /* copy from lpc1768 framework, should be fixed later for process HAS_SD_HOST_DRIVE*/
-    // process USB mass storage device class loop
-    MarlinMSC.loop();
+    /**
+     * When Marlin is using the SD card it should be locked to prevent it being
+     * accessed from a PC over USB.
+     * Other HALs use (IS_SD_PRINTING() || IS_SD_FILE_OPEN()) to check for access
+     * but this won't reliably detect other file operations. To be safe we just lock
+     * the drive whenever Marlin has it mounted. LCDs should include an Unmount
+     * command so drives can be released as needed.
+     */
+    /* Copied from LPC1768 framework. Should be fixed later to process HAS_SD_HOST_DRIVE */
+    //if (!drive_locked()) // TODO
+    MarlinMSC.loop(); // Process USB mass storage device class loop
   #endif
 }
 
 void MarlinHAL::reboot() { nvic_sys_reset(); }
 
+<<<<<<< HEAD
 // ------------------------
 // Free Memory Accessor
 // ------------------------
@@ -384,4 +481,6 @@ void MarlinHAL::adc_start(const pin_t pin) {
   adc_result = (adc_results[(int)pin_index] & 0xFFF) >> (12 - HAL_ADC_RESOLUTION); // shift out unused bits
 }
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #endif // __STM32F1__

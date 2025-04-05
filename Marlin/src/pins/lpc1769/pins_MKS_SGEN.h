@@ -23,6 +23,7 @@
 
 /**
  * MKS SGen pin assignments
+ * Schematic: https://github.com/makerbase-mks/MKS-SGen/blob/master/Hardware/MKS%20SGEN%20V1.0_001/MKS%20SGEN%20V1.0_001%20SCH.pdf
  *
  * Pins diagram:
  * https://github.com/makerbase-mks/MKS-SGen/blob/master/Hardware/MKS%20SGEN%20V1.0_001/MKS%20SGEN%20V1.0_001%20PIN.pdf
@@ -35,6 +36,7 @@
 #include "../lpc1768/pins_MKS_SBASE.h"
 
 #if HAS_TMC_UART
+<<<<<<< HEAD
   /**
    * TMC2208/TMC2209 stepper drivers
    */
@@ -52,7 +54,20 @@
 
   #define E1_SERIAL_TX_PIN                 P4_28  // J8-6
   #define E1_SERIAL_RX_PIN      E1_SERIAL_TX_PIN
+=======
+  //
+  // TMC2208/TMC2209 stepper drivers
+  //
+  #define X_SERIAL_TX_PIN                  P1_22  // J8-2
+  #define Y_SERIAL_TX_PIN                  P1_23  // J8-3
+  #define Z_SERIAL_TX_PIN                  P2_12  // J8-4
+  #define E0_SERIAL_TX_PIN                 P2_11  // J8-5
+  #define E1_SERIAL_TX_PIN                 P4_28  // J8-6
+>>>>>>> origin/release-2.1.3-beta2
 
   // Reduce baud rate to improve software serial reliability
-  #define TMC_BAUD_RATE                    19200
-#endif
+  #ifndef TMC_BAUD_RATE
+    #define TMC_BAUD_RATE                  19200
+  #endif
+
+#endif // HAS_TMC_UART

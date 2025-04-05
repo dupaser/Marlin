@@ -11,7 +11,11 @@
  *******************************************************************************
  */
 
+<<<<<<< HEAD
 #if defined(STM32G0B1xx)
+=======
+#ifdef STM32G0B1xx
+>>>>>>> origin/release-2.1.3-beta2
 #include "pins_arduino.h"
 
 // Digital PinName array
@@ -130,6 +134,7 @@ WEAK void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   // Reset clock registers (in case bootloader has changed them)
+<<<<<<< HEAD
   RCC->CR |= RCC_CR_HSION;
   while (!(RCC->CR & RCC_CR_HSIRDY))
       ;
@@ -138,6 +143,9 @@ WEAK void SystemClock_Config(void)
   while (RCC->CR & RCC_CR_PLLRDY)
       ;
   RCC->PLLCFGR = 0x00001000;
+=======
+  SystemInit();
+>>>>>>> origin/release-2.1.3-beta2
 
   /** Configure the main internal regulator output voltage
   */

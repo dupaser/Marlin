@@ -47,7 +47,7 @@ bool FilamentMonitorBase::enabled = true,
 
 #if HAS_FILAMENT_RUNOUT_DISTANCE
   float RunoutResponseDelayed::runout_distance_mm = FILAMENT_RUNOUT_DISTANCE_MM;
-  volatile float RunoutResponseDelayed::runout_mm_countdown[NUM_RUNOUT_SENSORS];
+  countdown_t RunoutResponseDelayed::mm_countdown;
   #if ENABLED(FILAMENT_MOTION_SENSOR)
     uint8_t FilamentSensorEncoder::motion_detected;
   #endif
@@ -59,7 +59,7 @@ bool FilamentMonitorBase::enabled = true,
 // Filament Runout event handler
 //
 #include "../MarlinCore.h"
-#include "../feature/pause.h"
+#include "pause.h"
 #include "../gcode/queue.h"
 
 #if ENABLED(HOST_ACTION_COMMANDS)
@@ -108,12 +108,21 @@ void event_filament_runout(const uint8_t extruder) {
   const bool run_runout_script = !runout.host_handling;
 
   #if ENABLED(HOST_ACTION_COMMANDS)
-    if (run_runout_script
-      && ( strstr(FILAMENT_RUNOUT_SCRIPT, "M600")
+
+    const bool park_or_pause = (false
+      #ifdef FILAMENT_RUNOUT_SCRIPT
+        || strstr(FILAMENT_RUNOUT_SCRIPT, "M600")
         || strstr(FILAMENT_RUNOUT_SCRIPT, "M125")
         || TERN0(ADVANCED_PAUSE_FEATURE, strstr(FILAMENT_RUNOUT_SCRIPT, "M25"))
+<<<<<<< HEAD
       )
     ) {
+=======
+      #endif
+    );
+
+    if (run_runout_script && park_or_pause) {
+>>>>>>> origin/release-2.1.3-beta2
       hostui.paused(false);
     }
     else {
@@ -130,8 +139,10 @@ void event_filament_runout(const uint8_t extruder) {
     SERIAL_ECHOPGM(" " ACTION_REASON_ON_FILAMENT_RUNOUT " ");
     SERIAL_CHAR(tool);
     SERIAL_EOL();
+
   #endif // HOST_ACTION_COMMANDS
 
+<<<<<<< HEAD
   if (run_runout_script)  {
     #if MULTI_FILAMENT_SENSOR
       char script[strlen(FILAMENT_RUNOUT_SCRIPT) + 1];
@@ -155,6 +166,26 @@ void event_filament_runout(const uint8_t extruder) {
       }
     #endif
   }
+=======
+  #ifdef FILAMENT_RUNOUT_SCRIPT
+    if (run_runout_script) {
+      #if MULTI_FILAMENT_SENSOR
+        MString<strlen(FILAMENT_RUNOUT_SCRIPT)> script;
+        script.setf(F(FILAMENT_RUNOUT_SCRIPT), C(tool));
+        #if ENABLED(FILAMENT_RUNOUT_SENSOR_DEBUG)
+          SERIAL_ECHOLNPGM("Runout Command: ", &script);
+        #endif
+        queue.inject(&script);
+      #else
+        #if ENABLED(FILAMENT_RUNOUT_SENSOR_DEBUG)
+          SERIAL_ECHOPGM("Runout Command: ");
+          SERIAL_ECHOLNPGM(FILAMENT_RUNOUT_SCRIPT);
+        #endif
+        queue.inject(F(FILAMENT_RUNOUT_SCRIPT));
+      #endif
+    }
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 #endif // HAS_FILAMENT_SENSOR

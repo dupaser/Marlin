@@ -39,6 +39,7 @@
 
 /*-------------------------------------- System variable function --------------------------------------*/
 
+<<<<<<< HEAD
 void DWIN_Startup() {
   DEBUG_ECHOPGM("\r\nDWIN handshake ");
   delay(750);   // Delay here or init later in the boot process
@@ -48,6 +49,17 @@ void DWIN_Startup() {
   DWIN_Frame_Clear(Color_Bg_Black); // MarlinUI handles the bootscreen so just clear here
   DWIN_JPG_ShowAndCache(3);
   DWIN_UpdateLCD();
+=======
+void dwinStartup() {
+  DEBUG_ECHOPGM("\r\nDWIN handshake ");
+  delay(750);   // Delay here or init later in the boot process
+  const bool success = dwinHandshake();
+  if (success) DEBUG_ECHOLNPGM("ok."); else DEBUG_ECHOLNPGM("error.");
+  dwinFrameSetDir(TERN(DWIN_MARLINUI_LANDSCAPE, 0, 1));
+  dwinFrameClear(COLOR_BG_BLACK); // MarlinUI handles the bootscreen so just clear here
+  dwinJPGShowAndCache(3);
+  dwinUpdateLCD();
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 /*---------------------------------------- Picture related functions ----------------------------------------*/
@@ -56,8 +68,13 @@ void DWIN_Startup() {
 //  libID: Icon library ID
 //  picID: Icon ID
 //  x/y: Upper-left point
+<<<<<<< HEAD
 void DWIN_ICON_Show(uint8_t libID, uint8_t picID, uint16_t x, uint16_t y) {
   DWIN_ICON_Show(true, false, false, libID, picID, x, y);
+=======
+void dwinIconShow(uint8_t libID, uint8_t picID, uint16_t x, uint16_t y) {
+  dwinIconShow(true, false, false, libID, picID, x, y);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 #endif // IS_DWIN_MARLINUI

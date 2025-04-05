@@ -34,4 +34,7 @@ void u8g_i2c_stop();
 #ifdef __cplusplus
   }
 #endif
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/release-2.1.3-beta2

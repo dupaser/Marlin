@@ -26,7 +26,11 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if HAS_MARLINUI_MENU && EITHER(LED_CONTROL_MENU, CASE_LIGHT_MENU)
+=======
+#if HAS_MARLINUI_MENU && ANY(LED_CONTROL_MENU, CASE_LIGHT_MENU)
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "menu_item.h"
 
@@ -34,8 +38,25 @@
   #include "../../feature/power.h"
 #endif
 
+<<<<<<< HEAD
+=======
+#if ALL(CASE_LIGHT_MENU, CASELIGHT_USES_BRIGHTNESS)
+  #include "../../feature/caselight.h"
+  void menu_case_light() {
+    START_MENU();
+    BACK_ITEM(MSG_CONFIGURATION);
+    EDIT_ITEM(percent, MSG_CASE_LIGHT_BRIGHTNESS, &caselight.brightness, 0, 255, caselight.update_brightness, true);
+    EDIT_ITEM(bool, MSG_CASE_LIGHT, &caselight.on, caselight.update_enabled);
+    END_MENU();
+  }
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 #if ENABLED(LED_CONTROL_MENU)
+
   #include "../../feature/leds/leds.h"
+
+  #define MSG_LIGHT2_PRESETS TERN(BIQU_BX_TFT70, MSG_LIGHT_ENCODER_PRESETS, MSG_NEO2_PRESETS)
 
   #if ENABLED(LED_COLOR_PRESETS)
 
@@ -56,14 +77,14 @@
       END_MENU();
     }
 
-  #endif
+  #endif // LED_COLOR_PRESETS
 
   #if ENABLED(NEO2_COLOR_PRESETS)
 
     void menu_leds2_presets() {
       START_MENU();
       #if LCD_HEIGHT > 2
-        STATIC_ITEM(MSG_NEO2_PRESETS, SS_DEFAULT|SS_INVERT);
+        STATIC_ITEM(MSG_LIGHT2_PRESETS, SS_DEFAULT|SS_INVERT);
       #endif
       BACK_ITEM(MSG_LED_CONTROL);
       ACTION_ITEM(MSG_SET_LEDS_WHITE,  leds2.set_white);
@@ -77,11 +98,12 @@
       END_MENU();
     }
 
-  #endif
+  #endif // NEO2_COLOR_PRESETS
 
   void menu_led_custom() {
     START_MENU();
     BACK_ITEM(MSG_LED_CONTROL);
+
     #if ENABLED(NEOPIXEL2_SEPARATE)
       STATIC_ITEM_N(1, MSG_LED_CHANNEL_N, SS_DEFAULT|SS_INVERT);
     #endif
@@ -90,10 +112,17 @@
     EDIT_ITEM(uint8, MSG_INTENSITY_B, &leds.color.b, 0, 255, leds.update, true);
     #if HAS_WHITE_LED
       EDIT_ITEM(uint8, MSG_INTENSITY_W, &leds.color.w, 0, 255, leds.update, true);
+<<<<<<< HEAD
+    #endif
+    #if ENABLED(NEOPIXEL_LED)
+      EDIT_ITEM(uint8, MSG_LED_BRIGHTNESS, &leds.color.i, 0, 255, leds.update, true);
+=======
+>>>>>>> origin/release-2.1.3-beta2
     #endif
     #if ENABLED(NEOPIXEL_LED)
       EDIT_ITEM(uint8, MSG_LED_BRIGHTNESS, &leds.color.i, 0, 255, leds.update, true);
     #endif
+
     #if ENABLED(NEOPIXEL2_SEPARATE)
       STATIC_ITEM_N(2, MSG_LED_CHANNEL_N, SS_DEFAULT|SS_INVERT);
       EDIT_ITEM(uint8, MSG_INTENSITY_R, &leds2.color.r, 0, 255, leds2.update, true);
@@ -104,10 +133,11 @@
       #endif
       EDIT_ITEM(uint8, MSG_NEO2_BRIGHTNESS, &leds2.color.i, 0, 255, leds2.update, true);
     #endif
+
     END_MENU();
   }
-#endif
 
+<<<<<<< HEAD
 #if ENABLED(CASE_LIGHT_MENU)
   #include "../../feature/caselight.h"
 
@@ -129,44 +159,67 @@ void menu_led() {
   BACK_ITEM(MSG_MAIN);
 
   #if ENABLED(LED_CONTROL_MENU)
+=======
+  void menu_led() {
+    #if ENABLED(CASE_LIGHT_MENU)
+      const bool has_bright = TERN0(CASELIGHT_USES_BRIGHTNESS, caselight.has_brightness());
+    #endif
+
+    START_MENU();
+    BACK_ITEM(MSG_MAIN_MENU);
+
+>>>>>>> origin/release-2.1.3-beta2
     if (TERN1(PSU_CONTROL, powerManager.psu_on)) {
       editable.state = leds.lights_on;
-      EDIT_ITEM(bool, MSG_LEDS, &editable.state, leds.toggle);
+      #if ENABLED(NEOPIXEL2_SEPARATE) && DISABLED(BIQU_BX_TFT70)
+        EDIT_ITEM_N(bool, 1, MSG_LIGHT_N, &editable.state, leds.toggle);
+      #else
+        EDIT_ITEM(bool, MSG_LIGHTS, &editable.state, leds.toggle);
+      #endif
     }
 
     #if ENABLED(LED_COLOR_PRESETS)
-      ACTION_ITEM(MSG_SET_LEDS_DEFAULT, leds.set_default);
+      ACTION_ITEM(MSG_SET_LEDS_DEFAULT, [] { leds.set_default(); ui.refresh(); } );
+      SUBMENU(MSG_LED_PRESETS, menu_led_presets);
     #endif
 
     #if ENABLED(NEOPIXEL2_SEPARATE)
       editable.state = leds2.lights_on;
-      EDIT_ITEM(bool, MSG_LEDS2, &editable.state, leds2.toggle);
+      #if ENABLED(BIQU_BX_TFT70)
+        EDIT_ITEM(bool, MSG_LIGHT_ENCODER, &editable.state, leds2.toggle);
+      #else
+        EDIT_ITEM_N(bool, 2, MSG_LIGHT_N, &editable.state, leds2.toggle);
+      #endif
       #if ENABLED(NEO2_COLOR_PRESETS)
         ACTION_ITEM(MSG_SET_LEDS_DEFAULT, leds2.set_default);
+        SUBMENU(MSG_LIGHT2_PRESETS, menu_leds2_presets);
       #endif
     #endif
-    #if ENABLED(LED_COLOR_PRESETS)
-      SUBMENU(MSG_LED_PRESETS, menu_led_presets);
-    #endif
-    #if ENABLED(NEO2_COLOR_PRESETS)
-      SUBMENU(MSG_NEO2_PRESETS, menu_leds2_presets);
-    #endif
+
+    //
+    // Directly set RGBW and Brightness
+    //
     SUBMENU(MSG_CUSTOM_LEDS, menu_led_custom);
-  #endif
 
-  //
-  // Set Case light on/off/brightness
-  //
-  #if ENABLED(CASE_LIGHT_MENU)
-    #if CASELIGHT_USES_BRIGHTNESS
-      if (caselight.has_brightness())
-        SUBMENU(MSG_CASE_LIGHT, menu_case_light);
+    //
+    // Set Case light on/off/brightness
+    //
+    #if ENABLED(CASE_LIGHT_MENU)
+      if (has_bright) {
+        #if CASELIGHT_USES_BRIGHTNESS
+          SUBMENU(MSG_CASE_LIGHT, menu_case_light);
+        #endif
+      }
       else
+        EDIT_ITEM(bool, MSG_CASE_LIGHT, &caselight.on, caselight.update_enabled);
     #endif
-        CASELIGHT_TOGGLE_ITEM();
-  #endif
 
-  END_MENU();
-}
+    END_MENU();
+  }
 
+<<<<<<< HEAD
+=======
+#endif // LED_CONTROL_MENU
+
+>>>>>>> origin/release-2.1.3-beta2
 #endif // HAS_MARLINUI_MENU && LED_CONTROL_MENU

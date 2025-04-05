@@ -165,7 +165,11 @@ void MarlinHAL::init_board() {
 }
 
 void MarlinHAL::idletask() {
+<<<<<<< HEAD
   #if BOTH(WIFISUPPORT, OTASUPPORT)
+=======
+  #if ALL(WIFISUPPORT, OTASUPPORT)
+>>>>>>> origin/release-2.1.3-beta2
     OTA_handle();
   #endif
   TERN_(ESP3D_WIFISUPPORT, esp3dlib.idletask());
@@ -175,7 +179,11 @@ uint8_t MarlinHAL::get_reset_source() { return rtc_get_reset_reason(1); }
 
 void MarlinHAL::reboot() { ESP.restart(); }
 
+<<<<<<< HEAD
 void _delay_ms(int delay_ms) { delay(delay_ms); }
+=======
+void _delay_ms(const int ms) { delay(ms); }
+>>>>>>> origin/release-2.1.3-beta2
 
 // return free memory between end of heap (or end bss) and whatever is current
 int MarlinHAL::freeMemory() { return ESP.getFreeHeap(); }
@@ -208,17 +216,23 @@ int MarlinHAL::freeMemory() { return ESP.getFreeHeap(); }
 // ------------------------
 // ADC
 // ------------------------
+<<<<<<< HEAD
 
 #define ADC1_CHANNEL(pin) ADC1_GPIO ## pin ## _CHANNEL
+=======
+>>>>>>> origin/release-2.1.3-beta2
 
+// https://docs.espressif.com/projects/esp-idf/en/release-v4.4/esp32/api-reference/peripherals/adc.html
 adc1_channel_t get_channel(int pin) {
   switch (pin) {
-    case 39: return ADC1_CHANNEL(39);
-    case 36: return ADC1_CHANNEL(36);
-    case 35: return ADC1_CHANNEL(35);
-    case 34: return ADC1_CHANNEL(34);
-    case 33: return ADC1_CHANNEL(33);
-    case 32: return ADC1_CHANNEL(32);
+    case 39: return ADC1_CHANNEL_3;
+    case 36: return ADC1_CHANNEL_0;
+    case 35: return ADC1_CHANNEL_7;
+    case 34: return ADC1_CHANNEL_6;
+    case 33: return ADC1_CHANNEL_5;
+    case 32: return ADC1_CHANNEL_4;
+    case 37: return ADC1_CHANNEL_1;
+    case 38: return ADC1_CHANNEL_2;
   }
   return ADC1_CHANNEL_MAX;
 }
@@ -342,6 +356,7 @@ void MarlinHAL::set_pwm_duty(const pin_t pin, const uint16_t v, const uint16_t v
       }
       else
         pindata.pwm_duty_ticks = duty; // PWM duty count = # of 4µs ticks per full PWM cycle
+<<<<<<< HEAD
     }
     else
   #endif
@@ -352,6 +367,18 @@ void MarlinHAL::set_pwm_duty(const pin_t pin, const uint16_t v, const uint16_t v
         ledcWrite(cid, duty);
       }
     }
+=======
+
+      return;
+    }
+  #endif
+
+  const int8_t cid = get_pwm_channel(pin, PWM_FREQUENCY, PWM_RESOLUTION);
+  if (cid >= 0) {
+    const uint32_t duty = map(invert ? v_size - v : v, 0, v_size, 0, _BV(PWM_RESOLUTION)-1);
+    ledcWrite(cid, duty);
+  }
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 int8_t MarlinHAL::set_pwm_frequency(const pin_t pin, const uint32_t f_desired) {
@@ -360,6 +387,7 @@ int8_t MarlinHAL::set_pwm_frequency(const pin_t pin, const uint32_t f_desired) {
       pwm_pin_data[pin & 0x7F].pwm_cycle_ticks = 1000000UL / f_desired / 4; // # of 4µs ticks per full PWM cycle
       return 0;
     }
+<<<<<<< HEAD
     else
   #endif
     {
@@ -371,6 +399,17 @@ int8_t MarlinHAL::set_pwm_frequency(const pin_t pin, const uint32_t f_desired) {
       }
       return get_pwm_channel(pin, f_desired, PWM_RESOLUTION); // try for new one
     }
+=======
+  #endif
+
+  const int8_t cid = channel_for_pin(pin);
+  if (cid >= 0) {
+    if (f_desired == ledcReadFreq(cid)) return cid; // no freq change
+    ledcDetachPin(chan_pin[cid]);
+    chan_pin[cid] = 0;              // remove old freq channel
+  }
+  return get_pwm_channel(pin, f_desired, PWM_RESOLUTION); // try for new one
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 // use hardware PWM if avail, if not then ISR

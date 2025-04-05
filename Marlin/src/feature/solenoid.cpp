@@ -22,12 +22,16 @@
 
 #include "../inc/MarlinConfig.h"
 
-#if EITHER(EXT_SOLENOID, MANUAL_SOLENOID_CONTROL)
+#if ANY(EXT_SOLENOID, MANUAL_SOLENOID_CONTROL)
 
 #include "solenoid.h"
 
 #include "../module/motion.h" // for active_extruder
+<<<<<<< HEAD
 #include "../module/tool_change.h"
+=======
+#include "../module/tool_change.h" // for parking_extruder_set_parked
+>>>>>>> origin/release-2.1.3-beta2
 
 // Used primarily with MANUAL_SOLENOID_CONTROL
 static void set_solenoid(const uint8_t num, const uint8_t state) {

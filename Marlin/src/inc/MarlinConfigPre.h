@@ -21,16 +21,16 @@
  */
 #pragma once
 
-#ifndef __MARLIN_FIRMWARE__
-#define __MARLIN_FIRMWARE__
-#endif
-
 //
 // Prefix header to acquire configurations
 //
-#include <stdint.h>
+#include "Conditionals-1-axes.h"
+#include "Conditionals-2-LCD.h"
+#include "Conditionals-3-etc.h"
+#include "Conditionals-4-adv.h"
 
 #ifndef __MARLIN_DEPS__
+<<<<<<< HEAD
   #include "../HAL/platforms.h"
 #endif
 
@@ -59,4 +59,7 @@
 
 #ifndef __MARLIN_DEPS__
   #include HAL_PATH(../HAL, inc/Conditionals_adv.h)
+=======
+  #include HAL_PATH(.., inc/Conditionals_adv.h)
+>>>>>>> origin/release-2.1.3-beta2
 #endif

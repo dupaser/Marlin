@@ -51,22 +51,28 @@
 #define E2END                             0xFFFF  // EEPROM end address AT24C256 (32kB)
 */
 
-#if EITHER(NO_EEPROM_SELECTED, FLASH_EEPROM_EMULATION)
+#if ANY(NO_EEPROM_SELECTED, FLASH_EEPROM_EMULATION)
   #define FLASH_EEPROM_EMULATION
   #define EEPROM_PAGE_SIZE                0x800U  // 2K
   #define EEPROM_START_ADDRESS  (0x8000000UL + (STM32_FLASH_SIZE) * 1024UL - (EEPROM_PAGE_SIZE) * 2UL)
   #define MARLIN_EEPROM_SIZE    EEPROM_PAGE_SIZE  // 2K
 #endif
 
-#define SPI_DEVICE                             2
+#define SPI_DEVICE                             2  // Maple
 
 //
 // Limit Switches
 //
 #define X_MIN_PIN                           PD6
+<<<<<<< HEAD
 #define X_MAX_PIN                           PG15 // To double check
 #define Y_MIN_PIN                           PG9
 #define Y_MAX_PIN                           PG14 // To double check
+=======
+#define X_MAX_PIN                           PG15  // To double check
+#define Y_MIN_PIN                           PG9
+#define Y_MAX_PIN                           PG14  // To double check
+>>>>>>> origin/release-2.1.3-beta2
 #define Z_MIN_PIN                           PG10
 #define Z_MAX_PIN                           PG13
 
@@ -111,7 +117,7 @@
 #define HEATER_0_PIN                        PB0
 #define HEATER_BED_PIN                      PB1
 
-#define FAN_PIN                             PA0   // FAN
+#define FAN0_PIN                            PA0   // FAN
 
 //
 // SD Card
@@ -120,7 +126,7 @@
   #define SDCARD_CONNECTION              ONBOARD
 #endif
 
-#define SDIO_SUPPORT
+#define ONBOARD_SDIO
 #define SDIO_CLOCK                       4500000  // 4.5 MHz
 #define SDIO_READ_RETRIES                     16
 
@@ -137,6 +143,7 @@
 // TFT with FSMC interface
 //
 #if HAS_FSMC_TFT
+<<<<<<< HEAD
   #define TFT_RESET_PIN                     PF15
   #define TFT_BACKLIGHT_PIN                 PF11
 
@@ -145,6 +152,13 @@
   #define FSMC_RS_PIN                       PG0   // A0
   #define FSMC_DMA_DEV                      DMA2
   #define FSMC_DMA_CHANNEL               DMA_CH5
+=======
+  #define LCD_USE_DMA_FSMC
+  #define FSMC_CS_PIN                       PD7   // NE4
+  #define FSMC_RS_PIN                       PG0   // A0
+  #define TFT_CS_PIN                 FSMC_CS_PIN
+  #define TFT_RS_PIN                 FSMC_RS_PIN
+>>>>>>> origin/release-2.1.3-beta2
 
   #define TFT_CS_PIN                 FSMC_CS_PIN
   #define TFT_RS_PIN                 FSMC_RS_PIN

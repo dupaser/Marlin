@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../../../inc/MarlinConfigPre.h"
+<<<<<<< HEAD
 #include "../bedlevel.h" // Свое
 
 #if HAS_BED_PROBE
@@ -58,6 +59,20 @@ private:
   static void extrapolate_one_point(const uint8_t x, const uint8_t y, const int8_t xdir, const int8_t ydir);
   static bool are_new_meshes_filled();
   static bed_mesh_new_t& get_mesh_from_type(Mesh mesh_type);
+=======
+
+class LevelingBilinear {
+public:
+  static bed_mesh_t z_values;
+  static xy_pos_t grid_spacing, grid_start;
+
+private:
+  static xy_float_t grid_factor;
+  static xy_pos_t cached_rel;
+  static xy_int8_t cached_g;
+
+  static void extrapolate_one_point(const uint8_t x, const uint8_t y, const int8_t xdir, const int8_t ydir);
+>>>>>>> origin/release-2.1.3-beta2
 
   #if ENABLED(ABL_BILINEAR_SUBDIVISION)
     #define ABL_GRID_POINTS_VIRT_X (GRID_MAX_CELLS_X * (BILINEAR_SUBDIVISIONS) + 1)
@@ -67,6 +82,7 @@ private:
     static xy_pos_t grid_spacing_virt;
     static xy_float_t grid_factor_virt;
 
+<<<<<<< HEAD
     static float bed_level_virt_coord(const uint8_t x, const uint8_t y);
     static float bed_level_virt_cmr(const float p[4], const uint8_t i, const float t);
     static float bed_level_virt_2cmr(const uint8_t x, const uint8_t y, const_float_t tx, const_float_t ty);
@@ -93,6 +109,19 @@ public:
   static void set_grid(const xy_pos_t& _grid_spacing, const xy_pos_t& _grid_start);
   static void extrapolate_unprobed_bed_level();
   static void print_leveling_grid(const bed_mesh_new_t* _z_values = nullptr);
+=======
+    static float virt_coord(const uint8_t x, const uint8_t y);
+    static float virt_cmr(const float p[4], const uint8_t i, const float t);
+    static float virt_2cmr(const uint8_t x, const uint8_t y, const_float_t tx, const_float_t ty);
+    static void subdivide_mesh();
+  #endif
+
+public:
+  static void reset();
+  static void set_grid(const xy_pos_t& _grid_spacing, const xy_pos_t& _grid_start);
+  static void extrapolate_unprobed_bed_level();
+  static void print_leveling_grid(const bed_mesh_t *_z_values=nullptr);
+>>>>>>> origin/release-2.1.3-beta2
   static void refresh_bed_level();
   static bool has_mesh() { return !!grid_spacing.x; }
   static bool mesh_is_valid() { return has_mesh(); }
@@ -107,4 +136,7 @@ public:
 };
 
 extern LevelingBilinear bedlevel;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> origin/release-2.1.3-beta2

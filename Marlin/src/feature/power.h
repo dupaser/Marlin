@@ -24,8 +24,15 @@
 /**
  * power.h - power control
  */
+#if PIN_EXISTS(PS_ON_EDM) || (PIN_EXISTS(PS_ON1_EDM) && ENABLED(PSU_OFF_REDUNDANT))
+  #define PSU_TRACK_STATE_MS 1
+#endif
 
+<<<<<<< HEAD
 #if EITHER(AUTO_POWER_CONTROL, POWER_OFF_TIMER)
+=======
+#if ANY(AUTO_POWER_CONTROL, POWER_OFF_TIMER, PSU_TRACK_STATE_MS)
+>>>>>>> origin/release-2.1.3-beta2
   #include "../core/millis_t.h"
 #endif
 
@@ -37,7 +44,15 @@ class Power {
     static void power_on();
     static void power_off();
 
+<<<<<<< HEAD
     #if EITHER(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+=======
+    #if PSU_TRACK_STATE_MS
+      static millis_t last_state_change_ms;
+    #endif
+
+    #if ANY(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+>>>>>>> origin/release-2.1.3-beta2
       #if ENABLED(POWER_OFF_TIMER)
         static millis_t power_off_time;
         static void setPowerOffTimer(const millis_t delay_ms);

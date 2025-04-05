@@ -44,21 +44,17 @@
 //   Kanji (an other Japanese symbol set) uses far more than two codepages. So currently I don't see a chance to map the Unicodes. Its not
 //   impossible to have a close to direct mapping but will need giant conversion tables and fonts (we don't want to have in a embedded system).
 
-
 // Select the better font for full graphic displays.
 //#define DISPLAY_CHARSET_ISO10646_1
 //#define DISPLAY_CHARSET_ISO10646_5
 //#define DISPLAY_CHARSET_ISO10646_GREEK
 //#define DISPLAY_CHARSET_ISO10646_KANA
 
-
-
 // next 5 lines select variants in this file only
 #define DISPLAYTEST
 //#define WEST
 //#define CYRIL
 //#define KANA
-
 
 // TESTSTRINGS
 
@@ -116,7 +112,11 @@
 namespace Language_test {
   using namespace Language_en; // Inherit undefined strings from English
 
+<<<<<<< HEAD
   constexpr uint8_t CHARSIZE                  = 1;
+=======
+  constexpr uint8_t CHARSIZE                = 1;
+>>>>>>> origin/release-2.1.3-beta2
 
   #if ENABLED(DISPLAYTEST)
     LSTR WELCOME_MSG                        = _UxGT("Language TEST");
@@ -133,7 +133,11 @@ namespace Language_test {
     LSTR MSG_PREPARE                        = _UxGT("UTF8");
     LSTR MSG_CONTROL                        = _UxGT("ASCII");
 
+<<<<<<< HEAD
     LSTR MSG_MAIN                           = _UxGT("..");
+=======
+    LSTR MSG_MAIN_MENU                      = _UxGT("..");
+>>>>>>> origin/release-2.1.3-beta2
     LSTR MSG_DISABLE_STEPPERS               = STRG_C2_8;
     LSTR MSG_AUTO_HOME                      = STRG_C2_9;
     LSTR MSG_SET_HOME_OFFSETS               = STRG_C2_a;
@@ -143,7 +147,11 @@ namespace Language_test {
     LSTR MSG_SWITCH_PS_OFF                  = STRG_C3_a;
     LSTR MSG_MOVE_AXIS                      = STRG_C3_b;
 
+<<<<<<< HEAD
     LSTR MSG_MAIN                           = STRG_OKTAL_2;
+=======
+    LSTR MSG_MAIN_MENU                      = STRG_OKTAL_2;
+>>>>>>> origin/release-2.1.3-beta2
     LSTR MSG_TEMPERATURE                    = STRG_OKTAL_3;
     LSTR MSG_MOTION                         = STRG_OKTAL_4;
     LSTR MSG_FILAMENT                       = STRG_OKTAL_5;
@@ -170,7 +178,11 @@ namespace Language_test {
     LSTR MSG_PREPARE                        = _UxGT("UTF8");
     LSTR MSG_CONTROL                        = _UxGT("ASCII");
 
+<<<<<<< HEAD
     LSTR MSG_MAIN                           = _UxGT("..");
+=======
+    LSTR MSG_MAIN_MENU                      = _UxGT("..");
+>>>>>>> origin/release-2.1.3-beta2
     LSTR MSG_DISABLE_STEPPERS               = STRG_D0_8;
     LSTR MSG_AUTO_HOME                      = STRG_D0_9;
     LSTR MSG_SET_HOME_OFFSETS               = STRG_D0_a;
@@ -180,7 +192,11 @@ namespace Language_test {
     LSTR MSG_SWITCH_PS_OFF                  = STRG_D1_a;
     LSTR MSG_MOVE_AXIS                      = STRG_D1_b;
 
+<<<<<<< HEAD
     LSTR MSG_MAIN                           = STRG_OKTAL_2;
+=======
+    LSTR MSG_MAIN_MENU                      = STRG_OKTAL_2;
+>>>>>>> origin/release-2.1.3-beta2
     LSTR MSG_TEMPERATURE                    = STRG_OKTAL_3;
     LSTR MSG_MOTION                         = STRG_OKTAL_4;
     LSTR MSG_FILAMENT                       = STRG_OKTAL_5;
@@ -206,7 +222,11 @@ namespace Language_test {
     LSTR MSG_PREPARE                        = _UxGT("UTF8");
     LSTR MSG_CONTROL                        = _UxGT("ASCII");
 
+<<<<<<< HEAD
     LSTR MSG_MAIN                           = _UxGT("..");
+=======
+    LSTR MSG_MAIN_MENU                      = _UxGT("..");
+>>>>>>> origin/release-2.1.3-beta2
     LSTR MSG_DISABLE_STEPPERS               = STRG_E382_8;
     LSTR MSG_AUTO_HOME                      = STRG_E382_9;
     LSTR MSG_SET_HOME_OFFSETS               = STRG_E382_a;
@@ -216,7 +236,11 @@ namespace Language_test {
     LSTR MSG_SWITCH_PS_OFF                  = STRG_E383_a;
     LSTR MSG_MOVE_AXIS                      = STRG_E383_b;
 
+<<<<<<< HEAD
     LSTR MSG_MAIN                           = STRG_OKTAL_2;
+=======
+    LSTR MSG_MAIN_MENU                      = STRG_OKTAL_2;
+>>>>>>> origin/release-2.1.3-beta2
     LSTR MSG_TEMPERATURE                    = STRG_OKTAL_3;
     LSTR MSG_MOTION                         = STRG_OKTAL_4;
     LSTR MSG_FILAMENT                       = STRG_OKTAL_5;

@@ -24,15 +24,24 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if ENABLED(SDSUPPORT)
+=======
+#if HAS_MEDIA
+>>>>>>> origin/release-2.1.3-beta2
   #include "../../../../sd/SdFile.h"
   #include "../../../../sd/cardreader.h"
 #endif
 
 class MediaFileReader {
   private:
+<<<<<<< HEAD
     #if ENABLED(SDSUPPORT)
       SdFile root, file;
+=======
+    #if HAS_MEDIA
+      MediaFile root, file;
+>>>>>>> origin/release-2.1.3-beta2
     #endif
 
   public:

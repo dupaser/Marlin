@@ -26,7 +26,11 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if BOTH(HAS_MARLINUI_MENU, BACKLASH_GCODE)
+=======
+#if ALL(HAS_MARLINUI_MENU, BACKLASH_GCODE)
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "menu_item.h"
 
@@ -34,12 +38,16 @@
 
 void menu_backlash() {
   START_MENU();
-  BACK_ITEM(MSG_MAIN);
+  BACK_ITEM(MSG_MAIN_MENU);
 
   editable.uint8 = backlash.get_correction_uint8();
   EDIT_ITEM_FAST(percent, MSG_BACKLASH_CORRECTION, &editable.uint8, backlash.all_off, backlash.all_on, []{ backlash.set_correction_uint8(editable.uint8); });
 
+<<<<<<< HEAD
   #if DISABLED(CORE_BACKLASH) || EITHER(MARKFORGED_XY, MARKFORGED_YX)
+=======
+  #if DISABLED(CORE_BACKLASH) || ANY(MARKFORGED_XY, MARKFORGED_YX)
+>>>>>>> origin/release-2.1.3-beta2
     #define _CAN_CALI AXIS_CAN_CALIBRATE
   #else
     #define _CAN_CALI(A) true
@@ -50,7 +58,13 @@ void menu_backlash() {
     EDIT_ITEM_FAST_N(float43, _AXIS(N), MSG_BACKLASH_N, &editable.decimal, 0.0f, 9.9f, []{ backlash.set_distance_mm(_AXIS(N), editable.decimal); }); \
   } while (0);
 
+<<<<<<< HEAD
   if (_CAN_CALI(A)) EDIT_BACKLASH_DISTANCE(A);
+=======
+  #if HAS_X_AXIS && _CAN_CALI(A)
+    EDIT_BACKLASH_DISTANCE(A);
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
   #if HAS_Y_AXIS && _CAN_CALI(B)
     EDIT_BACKLASH_DISTANCE(B);
   #endif
@@ -66,6 +80,18 @@ void menu_backlash() {
   #if HAS_K_AXIS && _CAN_CALI(K)
     EDIT_BACKLASH_DISTANCE(K);
   #endif
+<<<<<<< HEAD
+=======
+  #if HAS_U_AXIS && _CAN_CALI(U)
+    EDIT_BACKLASH_DISTANCE(U);
+  #endif
+  #if HAS_V_AXIS && _CAN_CALI(V)
+    EDIT_BACKLASH_DISTANCE(V);
+  #endif
+  #if HAS_W_AXIS && _CAN_CALI(W)
+    EDIT_BACKLASH_DISTANCE(W);
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
 
   #ifdef BACKLASH_SMOOTHING_MM
     editable.decimal = backlash.get_smoothing_mm();

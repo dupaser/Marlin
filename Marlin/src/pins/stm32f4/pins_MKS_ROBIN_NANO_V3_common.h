@@ -19,7 +19,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #pragma once
 
 //
@@ -34,7 +37,11 @@
 // Use one of these or SDCard-based Emulation will be used
 //#define SRAM_EEPROM_EMULATION                   // Use BackSRAM-based EEPROM emulation
 //#define FLASH_EEPROM_EMULATION                  // Use Flash-based EEPROM emulation
+<<<<<<< HEAD
 #if EITHER(NO_EEPROM_SELECTED, I2C_EEPROM)
+=======
+#if ANY(NO_EEPROM_SELECTED, I2C_EEPROM)
+>>>>>>> origin/release-2.1.3-beta2
   #define I2C_EEPROM
   #define MARLIN_EEPROM_SIZE              0x1000  // 4K
   #define I2C_SCL_PIN                       PB6
@@ -66,6 +73,16 @@
 #define Z_MAX_PIN                    E0_DIAG_PIN
 
 //
+<<<<<<< HEAD
+=======
+// Probe enable
+//
+#if ENABLED(PROBE_ENABLE_DISABLE) && !defined(PROBE_ENABLE_PIN)
+  #define PROBE_ENABLE_PIN            SERVO0_PIN
+#endif
+
+//
+>>>>>>> origin/release-2.1.3-beta2
 // Steppers
 //
 #define X_ENABLE_PIN                        PE4
@@ -94,6 +111,7 @@
   // No Hardware serial for steppers
   //
   #define X_SERIAL_TX_PIN                   PD5
+<<<<<<< HEAD
   #define X_SERIAL_RX_PIN        X_SERIAL_TX_PIN
 
   #define Y_SERIAL_TX_PIN                   PD7
@@ -111,6 +129,19 @@
   // Reduce baud rate to improve software serial reliability
   #define TMC_BAUD_RATE                    19200
 #endif
+=======
+  #define Y_SERIAL_TX_PIN                   PD7
+  #define Z_SERIAL_TX_PIN                   PD4
+  #define E0_SERIAL_TX_PIN                  PD9
+  #define E1_SERIAL_TX_PIN                  PD8
+
+  // Reduce baud rate to improve software serial reliability
+  #ifndef TMC_BAUD_RATE
+    #define TMC_BAUD_RATE                  19200
+  #endif
+
+#endif // HAS_TMC_UART
+>>>>>>> origin/release-2.1.3-beta2
 
 //
 // Temperature Sensors
@@ -134,7 +165,11 @@
 #define HEATER_1_PIN                        PB0   // HEATER2
 #define HEATER_BED_PIN                      PA0   // HOT BED
 
+<<<<<<< HEAD
 #define FAN_PIN                             PC14  // FAN
+=======
+#define FAN0_PIN                            PC14  // FAN
+>>>>>>> origin/release-2.1.3-beta2
 #define FAN1_PIN                            PB1   // FAN1
 
 //
@@ -147,6 +182,7 @@
 // Misc. Functions
 //
 #if HAS_TFT_LVGL_UI
+<<<<<<< HEAD
   #define MT_DET_1_PIN                      PA4   // MT_DET
   #define MT_DET_2_PIN                      PE6
   #define MT_DET_PIN_STATE                  LOW
@@ -157,6 +193,17 @@
 #endif
 #ifndef FIL_RUNOUT2_PIN
   #define FIL_RUNOUT2_PIN                   PE6
+=======
+  #ifndef FIL_RUNOUT_PIN
+    #define FIL_RUNOUT_PIN                  PA4   // MT_DET_1
+  #endif
+  #ifndef FIL_RUNOUT2_PIN
+    #define FIL_RUNOUT2_PIN                 PE6   // MT_DET_2
+  #endif
+  #ifndef FIL_RUNOUT_STATE
+    #define FIL_RUNOUT_STATE                LOW
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 #ifndef POWER_LOSS_PIN
@@ -186,33 +233,60 @@
   #define KILL_PIN_STATE                    HIGH
 #endif
 
+<<<<<<< HEAD
 // Random Info
 #define USB_SERIAL              -1  // USB Serial
 #define WIFI_SERIAL              3  // USART3
 #define MKS_WIFI_MODULE_SERIAL   1  // USART1
 #define MKS_WIFI_MODULE_SPI      2  // SPI2
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #ifndef SDCARD_CONNECTION
   #define SDCARD_CONNECTION              ONBOARD
 #endif
 
+<<<<<<< HEAD
 // MKS WIFI MODULE
+=======
+//
+// MKS WiFi Module
+//
+>>>>>>> origin/release-2.1.3-beta2
 #if ENABLED(MKS_WIFI_MODULE)
   #define WIFI_IO0_PIN                      PC13
   #define WIFI_IO1_PIN                      PC7
   #define WIFI_RESET_PIN                    PE9
+<<<<<<< HEAD
 #endif
 
 // MKS TEST
 #if ENABLED(MKS_TEST)
+=======
+  #define MKS_WIFI_MODULE_SERIAL               1  // USART1
+  #define MKS_WIFI_MODULE_SPI                  2  // SPI2
+#else
+  #define WIFI_SERIAL_PORT                     3  // USART3
+#endif
+
+//
+// MKS Testing for code in lcd/extui/mks_ui
+//
+#if ALL(TFT_LVGL_UI, MKS_TEST)
+>>>>>>> origin/release-2.1.3-beta2
   #define MKS_TEST_POWER_LOSS_PIN           PA13  // PW_DET
   #define MKS_TEST_PS_ON_PIN                PB2   // PW_OFF
 #endif
 
 //
 // Onboard SD card
+<<<<<<< HEAD
 //
 // detect pin doesn't work when ONBOARD and NO_SD_HOST_DRIVE disabled
+=======
+// Detect pin doesn't work when ONBOARD and NO_SD_HOST_DRIVE disabled
+//
+>>>>>>> origin/release-2.1.3-beta2
 #if SD_CONNECTION_IS(ONBOARD)
   #define ENABLE_SPI3
   #define SD_SS_PIN                         -1
@@ -225,6 +299,7 @@
 
 #define SPI_FLASH
 #if ENABLED(SPI_FLASH)
+<<<<<<< HEAD
   #define HAS_SPI_FLASH                        1
   #define SPI_DEVICE                           2
   #define SPI_FLASH_SIZE               0x1000000
@@ -232,6 +307,14 @@
   #define SPI_FLASH_MOSI_PIN                PC3
   #define SPI_FLASH_MISO_PIN                PC2
   #define SPI_FLASH_SCK_PIN                 PB13
+=======
+  #define SPI_DEVICE                           2  // Maple
+  #define SPI_FLASH_SIZE               0x1000000  // 16MB
+  #define SPI_FLASH_CS_PIN                  PB12
+  #define SPI_FLASH_SCK_PIN                 PB13
+  #define SPI_FLASH_MISO_PIN                PC2
+  #define SPI_FLASH_MOSI_PIN                PC3
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 /**
@@ -277,6 +360,10 @@
 //
 // LCD / Controller
 //
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/release-2.1.3-beta2
 #if ANY(TFT_COLOR_UI, TFT_LVGL_UI, TFT_CLASSIC_UI)
   #define TFT_CS_PIN                 EXP1_07_PIN
   #define TFT_SCK_PIN                EXP2_02_PIN
@@ -308,7 +395,11 @@
   #define LCD_READ_ID                       0xD3
   #define LCD_USE_DMA_SPI
 
+<<<<<<< HEAD
   #define TFT_BUFFER_SIZE                  14400
+=======
+  #define TFT_BUFFER_WORDS                 14400
+>>>>>>> origin/release-2.1.3-beta2
 
   #ifndef TOUCH_CALIBRATION_X
     #define TOUCH_CALIBRATION_X           -17253
@@ -328,7 +419,11 @@
 
 #elif HAS_WIRED_LCD
 
+<<<<<<< HEAD
   #define LCD_PINS_ENABLE            EXP1_03_PIN
+=======
+  #define LCD_PINS_EN                EXP1_03_PIN
+>>>>>>> origin/release-2.1.3-beta2
   #define LCD_PINS_RS                EXP1_04_PIN
   #define LCD_BACKLIGHT_PIN                 -1
 
@@ -343,7 +438,10 @@
 
     // Required for MKS_MINI_12864 with this board
     //#define MKS_LCD12864B
+<<<<<<< HEAD
     //#undef SHOW_BOOTSCREEN
+=======
+>>>>>>> origin/release-2.1.3-beta2
 
   #elif ENABLED(FYSETC_MINI_12864_2_1)
     #define LCD_PINS_DC              EXP1_04_PIN
@@ -359,10 +457,17 @@
     #endif
     //#define LCD_SCREEN_ROTATE              180  // 0, 90, 180, 270
 
+<<<<<<< HEAD
   #else                                           // !MKS_MINI_12864
 
     #define LCD_PINS_D4              EXP1_05_PIN
     #if ENABLED(ULTIPANEL)
+=======
+  #else // !MKS_MINI_12864
+
+    #define LCD_PINS_D4              EXP1_05_PIN
+    #if IS_ULTIPANEL
+>>>>>>> origin/release-2.1.3-beta2
       #define LCD_PINS_D5            EXP1_06_PIN
       #define LCD_PINS_D6            EXP1_07_PIN
       #define LCD_PINS_D7            EXP1_08_PIN

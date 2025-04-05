@@ -23,7 +23,11 @@
 
 // TODO: Make AVR-compatible with separate ROM / RAM string methods
 
+<<<<<<< HEAD
 #include "../../fontutils.h"
+=======
+#include "../../utf8.h"
+>>>>>>> origin/release-2.1.3-beta2
 #include "../../marlinui.h"
 
 #include <stdint.h>
@@ -55,7 +59,11 @@ class DWIN_String {
     //static void add_glyphs(const uint8_t *font);
 
     //static font_t *font() { return font_header; };
+<<<<<<< HEAD
     //static uint16_t font_height() { return font_header->FontAscent - font_header->FontDescent; }
+=======
+    //static uint16_t font_height() { return font_header->fontAscent - font_header->fontDescent; }
+>>>>>>> origin/release-2.1.3-beta2
     //static glyph_t *glyph(uint8_t character) { return glyphs[character] ?: glyphs[0x3F]; }  /* Use '?' for unknown glyphs */
     //static glyph_t *glyph(uint8_t *character) { return glyph(*character); }
 
@@ -525,7 +533,10 @@ const dwin_charmap_t g_dwin_charmap_device[] PROGMEM = {
     {IV('⭢'), 0xC7, 0},
     {IV('⭣'), 0xC6, 0},
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
     {IV('⯆'), 0xF5, 0},
     {IV('⯇'), 0xF7, 0}, // ⯅
     {IV('⯈'), 0xF6, 0},
@@ -576,7 +587,10 @@ const dwin_charmap_t g_dwin_charmap_device[] PROGMEM = {
     //{IV(''), 0x9E, 0},
     //{IV(''), 0x9F, 0},
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
     {IV('¼'), 0xF0, 0}, // 00BC
     {IV('⅓'), 0xF1, 0},
     {IV('½'), 0xF2, 0}, // 00BD

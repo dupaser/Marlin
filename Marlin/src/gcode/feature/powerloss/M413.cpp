@@ -35,6 +35,9 @@
  * Parameters
  *   S[bool] - Flag to enable / disable.
  *             If omitted, report current state.
+ *
+ * With PLR_BED_THRESHOLD:
+ *   B         Bed Temperature above which recovery will proceed without asking permission.
  */
 void GcodeSuite::M413() {
 
@@ -42,6 +45,14 @@ void GcodeSuite::M413() {
     recovery.enable(parser.value_bool());
   else
     M413_report();
+<<<<<<< HEAD
+=======
+
+  #if HAS_PLR_BED_THRESHOLD
+    if (parser.seenval('B'))
+      recovery.bed_temp_threshold = parser.value_celsius();
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
 
   #if ENABLED(DEBUG_POWER_LOSS_RECOVERY)
     if (parser.seen("RL")) recovery.load();
@@ -50,14 +61,31 @@ void GcodeSuite::M413() {
     if (parser.seen_test('D')) recovery.debug(F("M413"));
     if (parser.seen_test('O')) recovery._outage(true);
     if (parser.seen_test('C')) (void)recovery.check();
+<<<<<<< HEAD
     if (parser.seen_test('E')) SERIAL_ECHOF(recovery.exists() ? F("PLR Exists\n") : F("No PLR\n"));
     if (parser.seen_test('V')) SERIAL_ECHOF(recovery.valid() ? F("Valid\n") : F("Invalid\n"));
+=======
+    if (parser.seen_test('E')) SERIAL_ECHO(recovery.exists() ? F("PLR Exists\n") : F("No PLR\n"));
+    if (parser.seen_test('V')) SERIAL_ECHO(recovery.valid() ? F("Valid\n") : F("Invalid\n"));
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 }
 
 void GcodeSuite::M413_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
   report_heading_etc(forReplay, F(STR_POWER_LOSS_RECOVERY));
   SERIAL_ECHOPGM("  M413 S", AS_DIGIT(recovery.enabled), " ; ");
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+  report_heading_etc(forReplay, F(STR_POWER_LOSS_RECOVERY));
+  SERIAL_ECHOPGM("  M413 S", AS_DIGIT(recovery.enabled)
+    #if HAS_PLR_BED_THRESHOLD
+      , " B", recovery.bed_temp_threshold
+    #endif
+  );
+  SERIAL_ECHO(" ; ");
+>>>>>>> origin/release-2.1.3-beta2
   serialprintln_onoff(recovery.enabled);
 }
 

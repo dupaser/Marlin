@@ -30,7 +30,7 @@
 
 #include "leds.h"
 
-#if EITHER(NEOPIXEL_STARTUP_TEST, NEOPIXEL2_STARTUP_TEST)
+#if ANY(NEOPIXEL_STARTUP_TEST, NEOPIXEL2_STARTUP_TEST)
   #include "../../core/utility.h"
 #endif
 
@@ -47,6 +47,14 @@ Adafruit_NeoPixel Marlin_NeoPixel::adaneo1(NEOPIXEL_PIXELS, NEOPIXEL_PIN, NEOPIX
   void Marlin_NeoPixel::set_background_color(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t w) {
     for (int background_led = NEOPIXEL_BKGD_INDEX_FIRST; background_led <= NEOPIXEL_BKGD_INDEX_LAST; background_led++)
       set_pixel_color(background_led, adaneo1.Color(r, g, b, w));
+<<<<<<< HEAD
+  }
+
+  void Marlin_NeoPixel::reset_background_color() {
+    constexpr uint8_t background_color[4] = NEOPIXEL_BKGD_COLOR;
+    set_background_color(background_color);
+=======
+>>>>>>> origin/release-2.1.3-beta2
   }
 
   void Marlin_NeoPixel::reset_background_color() {
@@ -54,7 +62,15 @@ Adafruit_NeoPixel Marlin_NeoPixel::adaneo1(NEOPIXEL_PIXELS, NEOPIXEL_PIN, NEOPIX
     set_background_color(background_color);
   }
 
-#endif
+  void Marlin_NeoPixel::set_background_off() {
+    #ifndef NEOPIXEL_BKGD_TIMEOUT_COLOR
+      #define NEOPIXEL_BKGD_TIMEOUT_COLOR { 0, 0, 0, 0 }
+    #endif
+    constexpr uint8_t background_color_off[4] = NEOPIXEL_BKGD_TIMEOUT_COLOR;
+    set_background_color(background_color_off);
+  }
+
+#endif // NEOPIXEL_BKGD_INDEX_FIRST
 
 void Marlin_NeoPixel::set_color(const uint32_t color) {
   if (neoindex >= 0) {
@@ -108,7 +124,11 @@ void Marlin_NeoPixel::init() {
   set_color(adaneo1.Color
     TERN(LED_USER_PRESET_STARTUP,
       (LED_USER_PRESET_RED, LED_USER_PRESET_GREEN, LED_USER_PRESET_BLUE, LED_USER_PRESET_WHITE),
+<<<<<<< HEAD
       (255, 255, 255, 255))
+=======
+      (0, 0, 0, 0))
+>>>>>>> origin/release-2.1.3-beta2
   );
 }
 

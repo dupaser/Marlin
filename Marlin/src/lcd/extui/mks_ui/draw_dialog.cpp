@@ -85,12 +85,16 @@ static void btn_ok_event_cb(lv_obj_t *btn, lv_event_t event) {
     lv_clear_dialog();
     lv_draw_printing();
 
-    #if ENABLED(SDSUPPORT)
+    #if HAS_MEDIA
       if (!gcode_preview_over) {
         char *cur_name;
         cur_name = strrchr(list_file.file_name[sel_id], '/');
 
+<<<<<<< HEAD
         SdFile file, *curDir;
+=======
+        MediaFile file, *curDir;
+>>>>>>> origin/release-2.1.3-beta2
         card.abortFilePrintNow();
         const char * const fname = card.diveToFile(false, curDir, cur_name);
         if (!fname) return;
@@ -102,12 +106,17 @@ static void btn_ok_event_cb(lv_obj_t *btn, lv_event_t event) {
         card.openFileRead(cur_name);
         if (card.isFileOpen()) {
           feedrate_percentage = 100;
+<<<<<<< HEAD
           planner.flow_percentage[0] = 100;
           planner.e_factor[0] = planner.flow_percentage[0] * 0.01f;
           #if HAS_MULTI_EXTRUDER
             planner.flow_percentage[1] = 100;
             planner.e_factor[1] = planner.flow_percentage[1] * 0.01f;
           #endif
+=======
+          TERN_(HAS_EXTRUDERS, planner.set_flow(0, 100));
+          TERN_(HAS_MULTI_EXTRUDER, planner.set_flow(1, 100));
+>>>>>>> origin/release-2.1.3-beta2
           card.startOrResumeFilePrinting();
           TERN_(POWER_LOSS_RECOVERY, recovery.prepare());
           once_flag = false;
@@ -121,7 +130,11 @@ static void btn_ok_event_cb(lv_obj_t *btn, lv_event_t event) {
     lv_clear_dialog();
     lv_draw_ready_print();
 
+<<<<<<< HEAD
     #if ENABLED(SDSUPPORT)
+=======
+    #if HAS_MEDIA
+>>>>>>> origin/release-2.1.3-beta2
       uiCfg.print_state = IDLE;
       card.abortFilePrintSoon();
     #endif
@@ -380,6 +393,7 @@ void lv_draw_dialog(uint8_t type) {
     lv_label_set_text(labelDialog, DIALOG_UPDATE_NO_DEVICE_EN);
     lv_obj_align(labelDialog, nullptr, LV_ALIGN_CENTER, 0, -20);
   }
+
   #if ENABLED(MKS_WIFI_MODULE)
     else if (DIALOG_IS(TYPE_UPLOAD_FILE)) {
       if (upload_result == 1) {
@@ -391,6 +405,7 @@ void lv_draw_dialog(uint8_t type) {
         lv_obj_align(labelDialog, nullptr, LV_ALIGN_CENTER, 0, -20);
       }
       else if (upload_result == 3) {
+<<<<<<< HEAD
         char buf[200];
         int _index = 0;
 
@@ -413,6 +428,14 @@ void lv_draw_dialog(uint8_t type) {
         buf[_index++] = ':';
         sprintf_P(&buf[_index], PSTR(" %d KBytes/s\n"), (int)(upload_size / upload_time_sec / 1024));
 
+=======
+        MString<200> buf(
+          F(DIALOG_UPLOAD_FINISH_EN), '\n',
+          F(DIALOG_UPLOAD_SIZE_EN), F(": "), int(upload_size / 1024), F(" KBytes\n"),
+          F(DIALOG_UPLOAD_TIME_EN), F(": "), int(upload_time_sec), F(" s\n"),
+          F(DIALOG_UPLOAD_SPEED_EN), F(": "), int(upload_size / upload_time_sec / 1024), F(" KBytes/s\n")
+        );
+>>>>>>> origin/release-2.1.3-beta2
         lv_label_set_text(labelDialog, buf);
         lv_obj_align(labelDialog, nullptr, LV_ALIGN_CENTER, 0, -20);
       }
@@ -422,6 +445,7 @@ void lv_draw_dialog(uint8_t type) {
       lv_obj_align(labelDialog, nullptr, LV_ALIGN_CENTER, 0, -20);
     }
   #endif // MKS_WIFI_MODULE
+
   else if (DIALOG_IS(TYPE_FILAMENT_LOAD_HEAT)) {
     lv_label_set_text(labelDialog, filament_menu.filament_dialog_load_heat);
     lv_obj_align(labelDialog, nullptr, LV_ALIGN_CENTER, 0, -20);
@@ -491,7 +515,11 @@ void filament_dialog_handle() {
     planner.synchronize();
     uiCfg.filament_loading_time_flg = true;
     uiCfg.filament_loading_time_cnt = 0;
-    sprintf_P(public_buf_m, PSTR("T%d\nG91\nG1 E%d F%d\nG90"), uiCfg.extruderIndex, gCfgItems.filamentchange_load_length, gCfgItems.filamentchange_load_speed);
+    #if HAS_TOOLCHANGE
+      sprintf_P(public_buf_m, PSTR("T%d\nG91\nG1 E%d F%d\nG90"), uiCfg.extruderIndex, gCfgItems.filamentchange_load_length, gCfgItems.filamentchange_load_speed);
+    #else
+      sprintf_P(public_buf_m, PSTR("G91\nG1 E%d F%d\nG90"), gCfgItems.filamentchange_load_length, gCfgItems.filamentchange_load_speed);
+    #endif
     queue.inject(public_buf_m);
   }
   if (uiCfg.filament_heat_completed_unload) {
@@ -501,7 +529,11 @@ void filament_dialog_handle() {
     planner.synchronize();
     uiCfg.filament_unloading_time_flg = true;
     uiCfg.filament_unloading_time_cnt = 0;
-    sprintf_P(public_buf_m, PSTR("T%d\nG91\nG1 E-%d F%d\nG90"), uiCfg.extruderIndex, gCfgItems.filamentchange_unload_length, gCfgItems.filamentchange_unload_speed);
+    #if HAS_TOOLCHANGE
+      sprintf_P(public_buf_m, PSTR("T%d\nG91\nG1 E-%d F%d\nG90"), uiCfg.extruderIndex, gCfgItems.filamentchange_unload_length, gCfgItems.filamentchange_unload_speed);
+    #else
+      sprintf_P(public_buf_m, PSTR("G91\nG1 E-%d F%d\nG90"), gCfgItems.filamentchange_unload_length, gCfgItems.filamentchange_unload_speed);
+    #endif
     queue.inject(public_buf_m);
   }
 

@@ -26,7 +26,11 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if BOTH(HAS_MARLINUI_MENU, SDSUPPORT)
+=======
+#if ALL(HAS_MARLINUI_MENU, HAS_MEDIA)
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "menu_item.h"
 #include "../../sd/cardreader.h"
@@ -73,6 +77,7 @@ class MenuItem_sdfile : public MenuItem_sdbase {
       #endif
       #if ENABLED(SD_MENU_CONFIRM_START)
         MenuItem_submenu::action(fstr, []{
+<<<<<<< HEAD
           char * const longest = card.longest_filename();
           char buffer[strlen(longest) + 2];
           buffer[0] = ' ';
@@ -81,6 +86,13 @@ class MenuItem_sdfile : public MenuItem_sdbase {
             GET_TEXT_F(MSG_BUTTON_PRINT), GET_TEXT_F(MSG_BUTTON_CANCEL),
             sdcard_start_selected_file, nullptr,
             GET_TEXT_F(MSG_START_PRINT), buffer, F("?")
+=======
+          char * const filename = card.longest_filename();
+          MenuItem_confirm::select_screen(
+            GET_TEXT_F(MSG_BUTTON_PRINT), GET_TEXT_F(MSG_BUTTON_CANCEL),
+            sdcard_start_selected_file, nullptr,
+            GET_TEXT_F(MSG_START_PRINT), filename, F("?")
+>>>>>>> origin/release-2.1.3-beta2
           );
         });
       #else
@@ -98,7 +110,7 @@ class MenuItem_sdfolder : public MenuItem_sdbase {
     static void action(FSTR_P const, CardReader &theCard) {
       card.cd(theCard.filename);
       encoderTopLine = 0;
-      ui.encoderPosition = 2 * (ENCODER_STEPS_PER_MENU_ITEM);
+      ui.encoderPosition = (card.get_num_items() ? 2 : 1) * (ENCODER_STEPS_PER_MENU_ITEM);
       ui.screen_changed = true;
       TERN_(HAS_MARLINUI_U8GLIB, ui.drawing_screen = false);
       ui.refresh();
@@ -109,17 +121,21 @@ void menu_media_filelist() {
   ui.encoder_direction_menus();
 
   #if HAS_MARLINUI_U8GLIB
-    static uint16_t fileCnt;
-    if (ui.first_page) fileCnt = card.get_num_Files();
+    static int16_t fileCnt;
+    if (ui.first_page) fileCnt = card.get_num_items();
   #else
-    const uint16_t fileCnt = card.get_num_Files();
+    const int16_t fileCnt = card.get_num_items();
   #endif
 
   START_MENU();
   #if ENABLED(MULTI_VOLUME)
     ACTION_ITEM(MSG_BACK, []{ ui.goto_screen(menu_media); });
   #else
+<<<<<<< HEAD
     BACK_ITEM_F(TERN1(BROWSE_MEDIA_ON_INSERT, screen_history_depth) ? GET_TEXT_F(MSG_MAIN) : GET_TEXT_F(MSG_BACK));
+=======
+    BACK_ITEM_F(TERN1(BROWSE_MEDIA_ON_INSERT, screen_history_depth) ? GET_TEXT_F(MSG_MAIN_MENU) : GET_TEXT_F(MSG_BACK));
+>>>>>>> origin/release-2.1.3-beta2
   #endif
   if (card.flag.workDirIsRoot) {
     #if !HAS_SD_DETECT
@@ -129,16 +145,18 @@ void menu_media_filelist() {
   else if (card.isMounted())
     ACTION_ITEM_F(F(LCD_STR_FOLDER " .."), lcd_sd_updir);
 
-  if (ui.should_draw()) for (uint16_t i = 0; i < fileCnt; i++) {
-    if (_menuLineNr == _thisItemNr) {
-      card.getfilename_sorted(SD_ORDER(i, fileCnt));
-      if (card.flag.filenameIsDir)
-        MENU_ITEM(sdfolder, MSG_MEDIA_MENU, card);
-      else
-        MENU_ITEM(sdfile, MSG_MEDIA_MENU, card);
+  if (ui.should_draw()) {
+    for (int16_t i = 0; i < fileCnt; i++) {
+      if (_menuLineNr != _thisItemNr)
+        SKIP_ITEM();
+      else {
+        card.selectFileByIndexSorted(i);
+        if (card.flag.filenameIsDir)
+          MENU_ITEM(sdfolder, MSG_MEDIA_MENU, card);
+        else
+          MENU_ITEM(sdfile, MSG_MEDIA_MENU, card);
+      }
     }
-    else
-      SKIP_ITEM();
   }
   END_MENU();
 }
@@ -146,7 +164,11 @@ void menu_media_filelist() {
 #if ENABLED(MULTI_VOLUME)
   void menu_media_select() {
     START_MENU();
+<<<<<<< HEAD
     BACK_ITEM_F(TERN1(BROWSE_MEDIA_ON_INSERT, screen_history_depth) ? GET_TEXT_F(MSG_MAIN) : GET_TEXT_F(MSG_BACK));
+=======
+    BACK_ITEM_F(TERN1(BROWSE_MEDIA_ON_INSERT, screen_history_depth) ? GET_TEXT_F(MSG_MAIN_MENU) : GET_TEXT_F(MSG_BACK));
+>>>>>>> origin/release-2.1.3-beta2
     #if ENABLED(VOLUME_SD_ONBOARD)
       ACTION_ITEM(MSG_SD_CARD, []{ card.changeMedia(&card.media_driver_sdcard); card.mount(); ui.goto_screen(menu_media_filelist); });
     #endif
@@ -161,4 +183,8 @@ void menu_media() {
   TERN(MULTI_VOLUME, menu_media_select, menu_media_filelist)();
 }
 
+<<<<<<< HEAD
 #endif // HAS_MARLINUI_MENU && SDSUPPORT
+=======
+#endif // HAS_MARLINUI_MENU && HAS_MEDIA
+>>>>>>> origin/release-2.1.3-beta2

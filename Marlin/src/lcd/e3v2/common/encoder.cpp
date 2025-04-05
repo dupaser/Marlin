@@ -42,10 +42,9 @@
 
 #include <stdlib.h>
 
-#ifndef ENCODER_PULSES_PER_STEP
-  #define ENCODER_PULSES_PER_STEP 4
-#endif
+EncoderRate encoderRate;
 
+<<<<<<< HEAD
 ENCODER_Rate EncoderRate;
 
 // TODO: Replace with ui.quick_feedback
@@ -71,14 +70,24 @@ void Encoder_Configuration() {
 
 // Analyze encoder value and return state
 EncoderState Encoder_ReceiveAnalyze() {
+=======
+// TODO: Replace with ui.quick_feedback
+void Encoder_tick() {
+  TERN_(HAS_BEEPER, if (ui.sound_on) buzzer.click(10));
+}
+
+// Analyze encoder value and return state
+EncoderState encoderReceiveAnalyze() {
+>>>>>>> origin/release-2.1.3-beta2
   const millis_t now = millis();
-  static uint8_t lastEncoderBits;
-  uint8_t newbutton = 0;
-  static signed char temp_diff = 0;
+  static int8_t temp_diff = 0; // Cleared on each full step, as configured
 
   EncoderState temp_diffState = ENCODER_DIFF_NO;
+<<<<<<< HEAD
   if (BUTTON_PRESSED(EN1)) newbutton |= EN_A;
   if (BUTTON_PRESSED(EN2)) newbutton |= EN_B;
+=======
+>>>>>>> origin/release-2.1.3-beta2
   if (BUTTON_PRESSED(ENC)) {
     static millis_t next_click_update_ms;
     if (ELAPSED(now, next_click_update_ms)) {
@@ -87,44 +96,43 @@ EncoderState Encoder_ReceiveAnalyze() {
       #if PIN_EXISTS(LCD_LED)
         //LED_Action();
       #endif
+<<<<<<< HEAD
       if (!ui.backlight) ui.refresh_brightness();
+=======
+      TERN_(HAS_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout());
+      if (!ui.backlight) {
+        ui.refresh_brightness();
+        return ENCODER_DIFF_NO;
+      }
+>>>>>>> origin/release-2.1.3-beta2
       const bool was_waiting = wait_for_user;
       wait_for_user = false;
       return was_waiting ? ENCODER_DIFF_NO : ENCODER_DIFF_ENTER;
     }
     else return ENCODER_DIFF_NO;
   }
-  if (newbutton != lastEncoderBits) {
-    switch (newbutton) {
-      case ENCODER_PHASE_0:
-             if (lastEncoderBits == ENCODER_PHASE_3) temp_diff++;
-        else if (lastEncoderBits == ENCODER_PHASE_1) temp_diff--;
-        break;
-      case ENCODER_PHASE_1:
-             if (lastEncoderBits == ENCODER_PHASE_0) temp_diff++;
-        else if (lastEncoderBits == ENCODER_PHASE_2) temp_diff--;
-        break;
-      case ENCODER_PHASE_2:
-             if (lastEncoderBits == ENCODER_PHASE_1) temp_diff++;
-        else if (lastEncoderBits == ENCODER_PHASE_3) temp_diff--;
-        break;
-      case ENCODER_PHASE_3:
-             if (lastEncoderBits == ENCODER_PHASE_2) temp_diff++;
-        else if (lastEncoderBits == ENCODER_PHASE_0) temp_diff--;
-        break;
-    }
-    lastEncoderBits = newbutton;
-  }
 
+<<<<<<< HEAD
   if (ABS(temp_diff) >= ENCODER_PULSES_PER_STEP) {
     if (temp_diff > 0) temp_diffState = TERN(REVERSE_ENCODER_DIRECTION, ENCODER_DIFF_CCW, ENCODER_DIFF_CW);
     else temp_diffState = TERN(REVERSE_ENCODER_DIRECTION, ENCODER_DIFF_CW, ENCODER_DIFF_CCW);
+=======
+  temp_diff += ui.get_encoder_delta();
+
+  const int8_t abs_diff = ABS(temp_diff);
+  if (abs_diff >= ENCODER_PULSES_PER_STEP) {
+    temp_diffState = temp_diff > 0
+      ? TERN(REVERSE_ENCODER_DIRECTION, ENCODER_DIFF_CCW, ENCODER_DIFF_CW)
+      : TERN(REVERSE_ENCODER_DIRECTION, ENCODER_DIFF_CW,  ENCODER_DIFF_CCW);
+
+    int32_t encoder_multiplier = 1;
+>>>>>>> origin/release-2.1.3-beta2
 
     #if ENABLED(ENCODER_RATE_MULTIPLIER)
 
-      millis_t ms = millis();
-      int32_t encoderMultiplier = 1;
+      const millis_t ms = millis();
 
+<<<<<<< HEAD
       // if must encoder rati multiplier
       if (EncoderRate.enabled) {
         const float abs_diff = ABS(temp_diff),
@@ -140,20 +148,34 @@ EncoderState Encoder_ReceiveAnalyze() {
           #endif
         }
         EncoderRate.lastEncoderTime = ms;
+=======
+      // Encoder rate multiplier
+      if (encoderRate.enabled) {
+        // Note that the rate is always calculated between two passes through the
+        // loop and that the abs of the temp_diff value is tracked.
+        const float encoderStepRate = ((float(abs_diff) / float(ENCODER_PULSES_PER_STEP)) * 1000.0f) / float(ms - encoderRate.lastEncoderTime);
+        encoderRate.lastEncoderTime = ms;
+        if (ENCODER_100X_STEPS_PER_SEC > 0 && encoderStepRate >= ENCODER_100X_STEPS_PER_SEC)
+          encoder_multiplier = 100;
+        else if (ENCODER_10X_STEPS_PER_SEC > 0 && encoderStepRate >= ENCODER_10X_STEPS_PER_SEC)
+          encoder_multiplier = 10;
+        else if (ENCODER_5X_STEPS_PER_SEC > 0 && encoderStepRate >= ENCODER_5X_STEPS_PER_SEC)
+          encoder_multiplier = 5;
+>>>>>>> origin/release-2.1.3-beta2
       }
-
-    #else
-
-      constexpr int32_t encoderMultiplier = 1;
 
     #endif
 
-    // EncoderRate.encoderMoveValue += (temp_diff * encoderMultiplier) / (ENCODER_PULSES_PER_STEP);
-    EncoderRate.encoderMoveValue = (temp_diff * encoderMultiplier) / (ENCODER_PULSES_PER_STEP);
-    if (EncoderRate.encoderMoveValue < 0) EncoderRate.encoderMoveValue = -EncoderRate.encoderMoveValue;
+    encoderRate.encoderMoveValue = abs_diff * encoder_multiplier / (ENCODER_PULSES_PER_STEP);
 
     temp_diff = 0;
   }
+
+  if (temp_diffState != ENCODER_DIFF_NO) {
+    TERN_(HAS_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout());
+    if (!ui.backlight) ui.refresh_brightness();
+  }
+
   return temp_diffState;
 }
 
@@ -164,9 +186,9 @@ EncoderState Encoder_ReceiveAnalyze() {
 
   // LED light operation
   void LED_Action() {
-    LED_Control(RGB_SCALE_WARM_WHITE,0x0F);
+    LED_Control(RGB_SCALE_WARM_WHITE, 0x0F);
     delay(30);
-    LED_Control(RGB_SCALE_WARM_WHITE,0x00);
+    LED_Control(RGB_SCALE_WARM_WHITE, 0x00);
   }
 
   // LED initialization

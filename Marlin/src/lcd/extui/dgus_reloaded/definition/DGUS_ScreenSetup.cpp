@@ -22,7 +22,11 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if ENABLED(DGUS_LCD_UI_RELOADED)
+=======
+#if DGUS_LCD_UI_RELOADED
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "DGUS_ScreenSetup.h"
 
@@ -30,6 +34,7 @@
 
 #include "../../ui_api.h"
 
+<<<<<<< HEAD
 #define SETUP_HELPER(SCREEN, SETUP) \
   { .screen = SCREEN, \
   .setup_fn = SETUP }
@@ -52,6 +57,28 @@ const struct DGUS_ScreenSetup screen_setup_list[] PROGMEM = {
   SETUP_HELPER(DGUS_Screen::INFOS,              &DGUSSetupHandler::Infos),
 
   SETUP_HELPER((DGUS_Screen)0, nullptr)
+=======
+#define SETUP_HELPER(SCREEN, SETUP) { .screenID = SCREEN, .setup_fn = SETUP }
+
+const struct DGUS_ScreenSetup screen_setup_list[] PROGMEM = {
+  #if HAS_MEDIA
+    SETUP_HELPER(DGUS_ScreenID::PRINT,            &DGUSSetupHandler::print),
+  #endif
+  SETUP_HELPER(DGUS_ScreenID::PRINT_STATUS,       &DGUSSetupHandler::printStatus),
+  SETUP_HELPER(DGUS_ScreenID::PRINT_ADJUST,       &DGUSSetupHandler::printAdjust),
+  SETUP_HELPER(DGUS_ScreenID::LEVELING_MENU,      &DGUSSetupHandler::levelingMenu),
+  SETUP_HELPER(DGUS_ScreenID::LEVELING_OFFSET,    &DGUSSetupHandler::levelingOffset),
+  SETUP_HELPER(DGUS_ScreenID::LEVELING_MANUAL,    &DGUSSetupHandler::levelingManual),
+  SETUP_HELPER(DGUS_ScreenID::LEVELING_AUTOMATIC, &DGUSSetupHandler::levelingAutomatic),
+  SETUP_HELPER(DGUS_ScreenID::LEVELING_PROBING,   &DGUSSetupHandler::levelingProbing),
+  SETUP_HELPER(DGUS_ScreenID::FILAMENT,           &DGUSSetupHandler::filament),
+  SETUP_HELPER(DGUS_ScreenID::MOVE,               &DGUSSetupHandler::move),
+  SETUP_HELPER(DGUS_ScreenID::GCODE,              &DGUSSetupHandler::gcode),
+  SETUP_HELPER(DGUS_ScreenID::PID,                &DGUSSetupHandler::pid),
+  SETUP_HELPER(DGUS_ScreenID::INFOS,              &DGUSSetupHandler::infos),
+
+  SETUP_HELPER((DGUS_ScreenID)0, nullptr)
+>>>>>>> origin/release-2.1.3-beta2
 };
 
 #endif // DGUS_LCD_UI_RELOADED

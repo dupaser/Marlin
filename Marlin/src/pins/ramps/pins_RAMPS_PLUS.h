@@ -22,7 +22,12 @@
 #pragma once
 
 /**
+<<<<<<< HEAD
  * Arduino Mega with RAMPS v1.4Plus, also known as 3DYMY version, pin assignments
+=======
+ * Arduino Mega with RAMPS v1.4Plus, aka 3DYMY version
+ * ATmega2560, ATmega1280
+>>>>>>> origin/release-2.1.3-beta2
  *
  * Applies to the following boards:
  *
@@ -63,6 +68,7 @@
 #define E1_ENABLE_PIN                         24
 #define E1_CS_PIN                             -1
 
+<<<<<<< HEAD
 /**             3DYMY Expansion Headers
  *         ------                     ------
  *     37 | 1  2 | 35      (MISO) 50 | 1  2 | 52 (SCK)
@@ -90,5 +96,34 @@
 #define EXP2_06_PIN                           51
 #define EXP2_07_PIN                           49
 #define EXP2_08_PIN                           27
+=======
+/**                   3DYMY Expansion Headers
+ *              ------                            ------
+ *   (BEEP) 37 | 1  2 | 35 (ENC)       (MISO) 50 | 1  2 | 52 (SCK)
+ * (LCD_EN) 31 | 3  4 | 41 (LCD_RS)     (EN1) 29 | 3  4 | 53 (SDSS)
+ * (LCD_D4) 33   5  6 | 23 (LCD_D5)     (EN2) 25   5  6 | 51 (MOSI)
+ * (LCD_D6) 42 | 7  8 | 44 (LCD_D7)  (SD_DET) 49 | 7  8 | 27 (KILL)
+ *         GND | 9 10 | 5V                   GND | 9 10 | --
+ *              ------                            ------
+ *               EXP1                              EXP2
+ */
+#define EXP1_01_PIN                           37  // BEEPER
+#define EXP1_02_PIN                           35  // ENC
+#define EXP1_03_PIN                           31  // LCD_EN
+#define EXP1_04_PIN                           41  // LCD_RS
+#define EXP1_05_PIN                           33  // LCD_D4
+#define EXP1_06_PIN                           23  // LCD_D5
+#define EXP1_07_PIN                           42  // LCD_D6
+#define EXP1_08_PIN                           44  // LCD_D7
+
+#define EXP2_01_PIN                           50  // MISO
+#define EXP2_02_PIN                           52  // SCK
+#define EXP2_03_PIN                           29  // EN1
+#define EXP2_04_PIN                           53  // SDSS
+#define EXP2_05_PIN                           25  // EN2
+#define EXP2_06_PIN                           51  // MOSI
+#define EXP2_07_PIN                           49  // SD_DET
+#define EXP2_08_PIN                           27  // KILL
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "pins_RAMPS.h"

@@ -73,11 +73,14 @@ void GcodeSuite::M191() {
 
   const bool is_heating = thermalManager.isHeatingChamber();
   if (is_heating || !no_wait_for_cooling) {
+<<<<<<< HEAD
 
     #if ENABLED(DGUS_LCD_UI_MKS)
     dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_CHAMBER_HEATING), VP_Status_LEN); //Свое
     #endif
     
+=======
+>>>>>>> origin/release-2.1.3-beta2
     ui.set_status(is_heating ? GET_TEXT_F(MSG_CHAMBER_HEATING) : GET_TEXT_F(MSG_CHAMBER_COOLING));
     thermalManager.wait_for_chamber(false);
   }

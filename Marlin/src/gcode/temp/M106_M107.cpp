@@ -61,9 +61,13 @@
 void GcodeSuite::M106() {
   const uint8_t pfan = parser.byteval('P', _ALT_P);
   if (pfan >= _CNT_P) return;
+<<<<<<< HEAD
   #if REDUNDANT_PART_COOLING_FAN
     if (pfan == REDUNDANT_PART_COOLING_FAN) return;
   #endif
+=======
+  if (FAN_IS_REDUNDANT(pfan)) return;
+>>>>>>> origin/release-2.1.3-beta2
 
   #if ENABLED(EXTRA_FAN_SPEED)
     const uint16_t t = parser.intval('T');
@@ -85,11 +89,21 @@ void GcodeSuite::M106() {
   if (!got_preset && parser.seenval('S'))
     speed = parser.value_ushort();
 
+<<<<<<< HEAD
   // Set speed, with constraint
   thermalManager.set_fan_speed(pfan, speed);
 
   TERN_(LASER_SYNCHRONOUS_M106_M107, planner.buffer_sync_block(BLOCK_BIT_SYNC_FANS));
 
+=======
+  TERN_(FOAMCUTTER_XYUV, speed *= 2.55f); // Get command in % of max heat
+
+  // Set speed, with constraint
+  thermalManager.set_fan_speed(pfan, speed);
+
+  TERN_(LASER_SYNCHRONOUS_M106_M107, planner.buffer_sync_block(BLOCK_BIT_SYNC_FANS));
+
+>>>>>>> origin/release-2.1.3-beta2
   if (TERN0(DUAL_X_CARRIAGE, idex_is_duplicating()))  // pfan == 0 when duplicating
     thermalManager.set_fan_speed(1 - pfan, speed);
 }
@@ -100,9 +114,13 @@ void GcodeSuite::M106() {
 void GcodeSuite::M107() {
   const uint8_t pfan = parser.byteval('P', _ALT_P);
   if (pfan >= _CNT_P) return;
+<<<<<<< HEAD
   #if REDUNDANT_PART_COOLING_FAN
     if (pfan == REDUNDANT_PART_COOLING_FAN) return;
   #endif
+=======
+  if (FAN_IS_REDUNDANT(pfan)) return;
+>>>>>>> origin/release-2.1.3-beta2
 
   thermalManager.set_fan_speed(pfan, 0);
 

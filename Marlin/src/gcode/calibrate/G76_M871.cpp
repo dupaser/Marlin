@@ -34,7 +34,10 @@
 #include "../../module/probe.h"
 #include "../../feature/bedlevel/bedlevel.h"
 #include "../../module/temperature.h"
+<<<<<<< HEAD
 #include "../../module/probe.h"
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #include "../../feature/probe_temp_comp.h"
 #include "../../lcd/marlinui.h"
 
@@ -82,7 +85,11 @@
  *  - `P` - Run probe temperature calibration.
  */
 
+<<<<<<< HEAD
 #if BOTH(PTC_PROBE, PTC_BED)
+=======
+#if ALL(PTC_PROBE, PTC_BED)
+>>>>>>> origin/release-2.1.3-beta2
 
   static void say_waiting_for()               { SERIAL_ECHOPGM("Waiting for "); }
   static void say_waiting_for_probe_heating() { say_waiting_for(); SERIAL_ECHOLNPGM("probe heating."); }
@@ -108,14 +115,21 @@
     };
 
     auto g76_probe = [](const TempSensorID sid, celsius_t &targ, const xy_pos_t &nozpos) {
+<<<<<<< HEAD
       do_z_clearance(5.0); // Raise nozzle before probing
+=======
+>>>>>>> origin/release-2.1.3-beta2
       ptc.set_enabled(false);
       const float measured_z = probe.probe_at_point(nozpos, PROBE_PT_STOW, 0, false);  // verbose=0, probe_relative=false
       ptc.set_enabled(true);
       if (isnan(measured_z))
         SERIAL_ECHOLNPGM("!Received NAN. Aborting.");
       else {
+<<<<<<< HEAD
         SERIAL_ECHOLNPAIR_F("Measured: ", measured_z);
+=======
+        SERIAL_ECHOLNPGM("Measured: ", p_float_t(measured_z, 2));
+>>>>>>> origin/release-2.1.3-beta2
         if (targ == ProbeTempComp::cali_info[sid].start_temp)
           ptc.prepare_new_calibration(measured_z);
         else
@@ -258,7 +272,11 @@
 
         say_waiting_for_probe_heating();
         SERIAL_ECHOLNPGM(" Bed:", target_bed, " Probe:", target_probe);
+<<<<<<< HEAD
         const millis_t probe_timeout_ms = millis() + SEC_TO_MS(900UL);
+=======
+        const millis_t probe_timeout_ms = millis() + MIN_TO_MS(15);
+>>>>>>> origin/release-2.1.3-beta2
         while (thermalManager.degProbe() < target_probe) {
           if (report_temps(next_temp_report, probe_timeout_ms)) {
             SERIAL_ECHOLNPGM("!Probe heating timed out.");

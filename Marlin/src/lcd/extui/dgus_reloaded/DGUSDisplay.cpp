@@ -24,7 +24,11 @@
 
 #include "../../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if ENABLED(DGUS_LCD_UI_RELOADED)
+=======
+#if DGUS_LCD_UI_RELOADED
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "DGUSDisplay.h"
 
@@ -50,6 +54,7 @@ uint8_t DGUSDisplay::rx_datagram_len = 0;
 
 bool DGUSDisplay::initialized = false;
 
+<<<<<<< HEAD
 void DGUSDisplay::Loop() {
   ProcessRx();
 }
@@ -62,14 +67,35 @@ void DGUSDisplay::Init() {
 
 void DGUSDisplay::Read(uint16_t addr, uint8_t size) {
   WriteHeader(addr, DGUS_READVAR, size);
+=======
+void DGUSDisplay::loop() {
+  processRx();
+}
+
+void DGUSDisplay::init() {
+  LCD_SERIAL.begin(LCD_BAUDRATE);
+
+  readVersions();
+}
+
+void DGUSDisplay::read(uint16_t addr, uint8_t size) {
+  writeHeader(addr, DGUS_READVAR, size);
+>>>>>>> origin/release-2.1.3-beta2
 
   LCD_SERIAL.write(size);
 }
 
+<<<<<<< HEAD
 void DGUSDisplay::Write(uint16_t addr, const void* data_ptr, uint8_t size) {
   if (!data_ptr) return;
 
   WriteHeader(addr, DGUS_WRITEVAR, size);
+=======
+void DGUSDisplay::write(uint16_t addr, const void* data_ptr, uint8_t size) {
+  if (!data_ptr) return;
+
+  writeHeader(addr, DGUS_WRITEVAR, size);
+>>>>>>> origin/release-2.1.3-beta2
 
   const char* data = static_cast<const char*>(data_ptr);
 
@@ -78,10 +104,17 @@ void DGUSDisplay::Write(uint16_t addr, const void* data_ptr, uint8_t size) {
   }
 }
 
+<<<<<<< HEAD
 void DGUSDisplay::WriteString(uint16_t addr, const void* data_ptr, uint8_t size, bool left, bool right, bool use_space) {
   if (!data_ptr) return;
 
   WriteHeader(addr, DGUS_WRITEVAR, size);
+=======
+void DGUSDisplay::writeString(uint16_t addr, const void* data_ptr, uint8_t size, bool left, bool right, bool use_space) {
+  if (!data_ptr) return;
+
+  writeHeader(addr, DGUS_WRITEVAR, size);
+>>>>>>> origin/release-2.1.3-beta2
 
   const char* data = static_cast<const char*>(data_ptr);
   size_t len = strlen(data);
@@ -118,6 +151,7 @@ void DGUSDisplay::WriteString(uint16_t addr, const void* data_ptr, uint8_t size,
   }
 }
 
+<<<<<<< HEAD
 void DGUSDisplay::WriteStringPGM(uint16_t addr, const void* data_ptr, uint8_t size, bool left, bool right, bool use_space) {
   if (!data_ptr) return;
 
@@ -127,6 +161,16 @@ void DGUSDisplay::WriteStringPGM(uint16_t addr, const void* data_ptr, uint8_t si
   size_t len = strlen_P(data);
   uint8_t left_spaces = 0;
   uint8_t right_spaces = 0;
+=======
+void DGUSDisplay::writeStringPGM(uint16_t addr, const void* data_ptr, uint8_t size, bool left, bool right, bool use_space) {
+  if (!data_ptr) return;
+
+  writeHeader(addr, DGUS_WRITEVAR, size);
+
+  const char* data = static_cast<const char*>(data_ptr);
+  size_t len = strlen_P(data);
+  uint8_t left_spaces = 0, right_spaces = 0;
+>>>>>>> origin/release-2.1.3-beta2
 
   if (len < size) {
     if (!len) {
@@ -147,6 +191,7 @@ void DGUSDisplay::WriteStringPGM(uint16_t addr, const void* data_ptr, uint8_t si
     len = size;
   }
 
+<<<<<<< HEAD
   while (left_spaces--) {
     LCD_SERIAL.write(' ');
   }
@@ -221,12 +266,77 @@ void DGUSDisplay::SetVolume(uint8_t new_volume) {
 }
 
 void DGUSDisplay::ProcessRx() {
+=======
+  while (left_spaces--) LCD_SERIAL.write(' ');
+  while (len--) LCD_SERIAL.write(pgm_read_byte(data++));
+  while (right_spaces--) LCD_SERIAL.write(use_space ? ' ' : '\0');
+}
+
+void DGUSDisplay::readVersions() {
+  if (gui_version != 0 && os_version != 0) return;
+  read(DGUS_VERSION, 1);
+}
+
+void DGUSDisplay::switchScreen(const DGUS_ScreenID screenID) {
+  const uint8_t command[] = { 0x5A, 0x01, 0x00, (uint8_t)screenID };
+  write(0x84, command, sizeof(command));
+}
+
+void DGUSDisplay::playSound(uint8_t start, uint8_t len, uint8_t volume) {
+  if (volume == 0) volume = DGUSDisplay::volume;
+  if (volume == 0) return;
+  const uint8_t command[] = { start, len, volume, 0x00 };
+  write(0xA0, command, sizeof(command));
+}
+
+void DGUSDisplay::enableControl(const DGUS_ScreenID screenID, DGUS_ControlType type, DGUS_Control control) {
+  const uint8_t command[] = { 0x5A, 0xA5, 0x00, (uint8_t)screenID, (uint8_t)control, type, 0x00, 0x01 };
+  write(0xB0, command, sizeof(command));
+
+  flushTx();
+  delay(50);
+}
+
+void DGUSDisplay::disableControl(const DGUS_ScreenID screenID, DGUS_ControlType type, DGUS_Control control) {
+  const uint8_t command[] = { 0x5A, 0xA5, 0x00, (uint8_t)screenID, (uint8_t)control, type, 0x00, 0x00 };
+  write(0xB0, command, sizeof(command));
+
+  flushTx();
+  delay(50);
+}
+
+uint8_t DGUSDisplay::getBrightness() {
+  return brightness;
+}
+
+uint8_t DGUSDisplay::getVolume() {
+  return map_precise(volume, 0, 255, 0, 100);
+}
+
+void DGUSDisplay::setBrightness(uint8_t new_brightness) {
+  brightness = constrain(new_brightness, 0, 100);
+  new_brightness = map_precise(brightness, 0, 100, 5, 100);
+  const uint8_t command[] = { new_brightness, new_brightness };
+  write(0x82, command, sizeof(command));
+}
+
+void DGUSDisplay::setVolume(uint8_t new_volume) {
+  volume = map_precise(constrain(new_volume, 0, 100), 0, 100, 0, 255);
+  const uint8_t command[] = { volume, 0x00 };
+  write(0xA1, command, sizeof(command));
+}
+
+void DGUSDisplay::processRx() {
+>>>>>>> origin/release-2.1.3-beta2
 
   #if ENABLED(LCD_SERIAL_STATS_RX_BUFFER_OVERRUNS)
     if (!LCD_SERIAL.available() && LCD_SERIAL.buffer_overruns()) {
       // Overrun, but reset the flag only when the buffer is empty
       // We want to extract as many as valid datagrams possible...
+<<<<<<< HEAD
       DEBUG_ECHOPGM("OVFL");
+=======
+>>>>>>> origin/release-2.1.3-beta2
       rx_datagram_state = DGUS_IDLE;
       //LCD_SERIAL.reset_rx_overun();
       LCD_SERIAL.flush();
@@ -239,20 +349,29 @@ void DGUSDisplay::ProcessRx() {
 
       case DGUS_IDLE: // Waiting for the first header byte
         receivedbyte = LCD_SERIAL.read();
+<<<<<<< HEAD
         DEBUG_ECHOPGM("< ", receivedbyte);
+=======
+>>>>>>> origin/release-2.1.3-beta2
         if (DGUS_HEADER1 == receivedbyte) rx_datagram_state = DGUS_HEADER1_SEEN;
         break;
 
       case DGUS_HEADER1_SEEN: // Waiting for the second header byte
         receivedbyte = LCD_SERIAL.read();
+<<<<<<< HEAD
         DEBUG_ECHOPGM(" ", receivedbyte);
+=======
+>>>>>>> origin/release-2.1.3-beta2
         rx_datagram_state = (DGUS_HEADER2 == receivedbyte) ? DGUS_HEADER2_SEEN : DGUS_IDLE;
         break;
 
       case DGUS_HEADER2_SEEN: // Waiting for the length byte
         rx_datagram_len = LCD_SERIAL.read();
+<<<<<<< HEAD
         DEBUG_ECHOPGM(" (", rx_datagram_len, ") ");
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
         // Telegram min len is 3 (command and one word of payload)
         rx_datagram_state = WITHIN(rx_datagram_len, 3, DGUS_RX_BUFFER_SIZE) ? DGUS_WAIT_TELEGRAM : DGUS_IDLE;
         break;
@@ -262,15 +381,19 @@ void DGUSDisplay::ProcessRx() {
 
         initialized = true; // We've talked to it, so we defined it as initialized.
         uint8_t command = LCD_SERIAL.read();
+<<<<<<< HEAD
 
         DEBUG_ECHOPGM("# ", command);
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
         uint8_t readlen = rx_datagram_len - 1;  // command is part of len.
         unsigned char tmp[rx_datagram_len - 1];
         unsigned char *ptmp = tmp;
 
         while (readlen--) {
           receivedbyte = LCD_SERIAL.read();
+<<<<<<< HEAD
           DEBUG_ECHOPGM(" ", receivedbyte);
           *ptmp++ = receivedbyte;
         }
@@ -278,6 +401,12 @@ void DGUSDisplay::ProcessRx() {
         // mostly we'll get this: 5A A5 03 82 4F 4B -- ACK on 0x82, so discard it.
         if (command == DGUS_WRITEVAR && 'O' == tmp[0] && 'K' == tmp[1]) {
           DEBUG_ECHOLNPGM(">");
+=======
+          *ptmp++ = receivedbyte;
+        }
+        // mostly we'll get this: 5A A5 03 82 4F 4B -- ACK on 0x82, so discard it.
+        if (command == DGUS_WRITEVAR && 'O' == tmp[0] && 'K' == tmp[1]) {
+>>>>>>> origin/release-2.1.3-beta2
           rx_datagram_state = DGUS_IDLE;
           break;
         }
@@ -292,10 +421,14 @@ void DGUSDisplay::ProcessRx() {
         if (command == DGUS_READVAR) {
           const uint16_t addr = tmp[0] << 8 | tmp[1];
           const uint8_t dlen = tmp[2] << 1;  // Convert to Bytes. (Display works with words)
+<<<<<<< HEAD
           DEBUG_ECHOPGM("addr=", addr, " dlen=", dlen, "> ");
 
           if (addr == DGUS_VERSION && dlen == 2) {
             DEBUG_ECHOLNPGM("VERSIONS");
+=======
+          if (addr == DGUS_VERSION && dlen == 2) {
+>>>>>>> origin/release-2.1.3-beta2
             gui_version = tmp[3];
             os_version = tmp[4];
             rx_datagram_state = DGUS_IDLE;
@@ -303,14 +436,21 @@ void DGUSDisplay::ProcessRx() {
           }
 
           DGUS_VP vp;
+<<<<<<< HEAD
           if (!DGUS_PopulateVP((DGUS_Addr)addr, &vp)) {
             DEBUG_ECHOLNPGM("VP not found");
+=======
+          if (!populateVP((DGUS_Addr)addr, &vp)) {
+>>>>>>> origin/release-2.1.3-beta2
             rx_datagram_state = DGUS_IDLE;
             break;
           }
 
           if (!vp.rx_handler) {
+<<<<<<< HEAD
             DEBUG_ECHOLNPGM("VP found, no handler.");
+=======
+>>>>>>> origin/release-2.1.3-beta2
             rx_datagram_state = DGUS_IDLE;
             break;
           }
@@ -346,7 +486,10 @@ void DGUSDisplay::ProcessRx() {
           }
 
           if (dlen != vp.size) {
+<<<<<<< HEAD
             DEBUG_ECHOLNPGM("VP found, size mismatch.");
+=======
+>>>>>>> origin/release-2.1.3-beta2
             rx_datagram_state = DGUS_IDLE;
             break;
           }
@@ -358,13 +501,17 @@ void DGUSDisplay::ProcessRx() {
           break;
         }
 
+<<<<<<< HEAD
         DEBUG_ECHOLNPGM(">");
+=======
+>>>>>>> origin/release-2.1.3-beta2
         rx_datagram_state = DGUS_IDLE;
         break;
     }
   }
 }
 
+<<<<<<< HEAD
 size_t DGUSDisplay::GetFreeTxBuffer() {
   #ifdef LCD_SERIAL_GET_TX_BUFFER_FREE
     return LCD_SERIAL_GET_TX_BUFFER_FREE();
@@ -374,6 +521,19 @@ size_t DGUSDisplay::GetFreeTxBuffer() {
 }
 
 void DGUSDisplay::FlushTx() {
+=======
+size_t DGUSDisplay::getFreeTxBuffer() {
+  return (
+    #ifdef LCD_SERIAL_TX_BUFFER_FREE
+      LCD_SERIAL_TX_BUFFER_FREE()
+    #else
+      SIZE_MAX
+    #endif
+  );
+}
+
+void DGUSDisplay::flushTx() {
+>>>>>>> origin/release-2.1.3-beta2
   #ifdef ARDUINO_ARCH_STM32
     LCD_SERIAL.flush();
   #else
@@ -381,7 +541,11 @@ void DGUSDisplay::FlushTx() {
   #endif
 }
 
+<<<<<<< HEAD
 void DGUSDisplay::WriteHeader(uint16_t addr, uint8_t command, uint8_t len) {
+=======
+void DGUSDisplay::writeHeader(uint16_t addr, uint8_t command, uint8_t len) {
+>>>>>>> origin/release-2.1.3-beta2
   LCD_SERIAL.write(DGUS_HEADER1);
   LCD_SERIAL.write(DGUS_HEADER2);
   LCD_SERIAL.write(len + 3);
@@ -390,7 +554,11 @@ void DGUSDisplay::WriteHeader(uint16_t addr, uint8_t command, uint8_t len) {
   LCD_SERIAL.write(addr & 0xFF);
 }
 
+<<<<<<< HEAD
 bool DGUS_PopulateVP(const DGUS_Addr addr, DGUS_VP * const buffer) {
+=======
+bool populateVP(const DGUS_Addr addr, DGUS_VP * const buffer) {
+>>>>>>> origin/release-2.1.3-beta2
   const DGUS_VP *ret = vp_list;
 
   do {
@@ -402,7 +570,10 @@ bool DGUS_PopulateVP(const DGUS_Addr addr, DGUS_VP * const buffer) {
       return true;
     }
   } while (++ret);
+<<<<<<< HEAD
   DEBUG_ECHOLNPGM("VP not found: ", (uint16_t)addr);
+=======
+>>>>>>> origin/release-2.1.3-beta2
   return false;
 }
 

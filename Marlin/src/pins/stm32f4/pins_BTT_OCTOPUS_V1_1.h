@@ -32,4 +32,9 @@
   #define TEMP_0_PIN                        PF4   // TH0
 #endif
 
+<<<<<<< HEAD
+=======
+#define EXP2_10_PIN                         PC5
+
+>>>>>>> origin/release-2.1.3-beta2
 #include "pins_BTT_OCTOPUS_V1_common.h"

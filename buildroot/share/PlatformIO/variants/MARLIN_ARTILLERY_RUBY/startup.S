@@ -16,7 +16,11 @@
   ******************************************************************************
   * @attention
   *
+<<<<<<< HEAD
   * <h2><center>&copy; COPYRIGHT 2015 STMicroelectronics</center></h2>
+=======
+  * Copyright (c) 2015 STMicroelectronics
+>>>>>>> origin/release-2.1.3-beta2
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:

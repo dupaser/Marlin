@@ -53,14 +53,21 @@
 #define BUTTON_Y_HI (TFT_HEIGHT) - BUTTON_SPACING
 #define BUTTON_Y_LO BUTTON_Y_HI - BUTTON_HEIGHT
 
+<<<<<<< HEAD
 #define TSLP_PREINIT  0
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #define TSLP_SLEEPING 1
 
 class TouchButtons {
 public:
   static void init();
   static uint8_t read_buttons();
+<<<<<<< HEAD
   #if HAS_TOUCH_SLEEP
+=======
+  #if HAS_DISPLAY_SLEEP
+>>>>>>> origin/release-2.1.3-beta2
     static millis_t next_sleep_ms;
     static bool isSleeping() { return next_sleep_ms == TSLP_SLEEPING; }
     static void sleepTimeout();

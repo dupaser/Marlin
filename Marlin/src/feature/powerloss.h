@@ -30,20 +30,32 @@
 
 #include "../inc/MarlinConfig.h"
 
+#if ENABLED(CANCEL_OBJECTS)
+  #include "cancel_object.h"
+#endif
+
 #if ENABLED(GCODE_REPEAT_MARKERS)
-  #include "../feature/repeat.h"
+  #include "repeat.h"
 #endif
 
 #if ENABLED(MIXING_EXTRUDER)
-  #include "../feature/mixing.h"
+  #include "mixing.h"
 #endif
 
 #if !defined(POWER_LOSS_STATE) && PIN_EXISTS(POWER_LOSS)
   #define POWER_LOSS_STATE HIGH
 #endif
 
+<<<<<<< HEAD
 #ifndef POWER_LOSS_ZRAISE
   #define POWER_LOSS_ZRAISE 2
+=======
+#if DISABLED(BACKUP_POWER_SUPPLY)
+  #undef POWER_LOSS_ZRAISE    // No Z raise at outage without backup power
+#endif
+#ifndef POWER_LOSS_ZRAISE
+  #define POWER_LOSS_ZRAISE 2 // Default Z-raise on outage or resume
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 //#define DEBUG_POWER_LOSS_RECOVERY
@@ -56,8 +68,18 @@ typedef struct {
   // Machine state
   xyze_pos_t current_position;
   uint16_t feedrate;
+<<<<<<< HEAD
+=======
+  int16_t feedrate_percentage;
+  uint16_t flow_percentage[EXTRUDERS];
+>>>>>>> origin/release-2.1.3-beta2
 
   float zraise;
+
+  // Canceled objects
+  #if ENABLED(CANCEL_OBJECTS)
+    cancel_state_t cancel_state;
+  #endif
 
   // Repeat information
   #if ENABLED(GCODE_REPEAT_MARKERS)
@@ -67,8 +89,13 @@ typedef struct {
   #if HAS_HOME_OFFSET
     xyz_pos_t home_offset;
   #endif
+<<<<<<< HEAD
   #if HAS_POSITION_SHIFT
     xyz_pos_t position_shift;
+=======
+  #if HAS_WORKSPACE_OFFSET
+    xyz_pos_t workspace_offset;
+>>>>>>> origin/release-2.1.3-beta2
   #endif
   #if HAS_MULTI_EXTRUDER
     uint8_t active_extruder;
@@ -84,6 +111,12 @@ typedef struct {
   #if HAS_HEATED_BED
     celsius_t target_temperature_bed;
   #endif
+<<<<<<< HEAD
+=======
+  #if HAS_HEATED_CHAMBER
+    celsius_t target_temperature_chamber;
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
   #if HAS_FAN
     uint8_t fan_speed[FAN_COUNT];
   #endif
@@ -113,7 +146,7 @@ typedef struct {
   millis_t print_job_elapsed;
 
   // Relative axis modes
-  uint8_t axis_relative;
+  relative_t axis_relative;
 
   // Misc. Marlin flags
   struct {
@@ -138,21 +171,32 @@ class PrintJobRecovery {
   public:
     static const char filename[5];
 
-    static SdFile file;
+    static MediaFile file;
     static job_recovery_info_t info;
 
     static uint8_t queue_index_r;     //!< Queue index of the active command
     static uint32_t cmd_sdpos,        //!< SD position of the next command
                     sdpos[BUFSIZE];   //!< SD positions of queued commands
 
+<<<<<<< HEAD
     #if HAS_DWIN_E3V2_BASIC
       static bool dwin_flag;
+=======
+    #if HAS_PLR_UI_FLAG
+      static bool ui_flag_resume;     //!< Flag the UI to show a dialog to Resume (M1000) or Cancel (M1000C)
+>>>>>>> origin/release-2.1.3-beta2
     #endif
 
     static void init();
     static void prepare();
 
     static void setup() {
+<<<<<<< HEAD
+=======
+      #if PIN_EXISTS(OUTAGECON)
+        OUT_WRITE(OUTAGECON_PIN, HIGH);
+      #endif
+>>>>>>> origin/release-2.1.3-beta2
       #if PIN_EXISTS(POWER_LOSS)
         #if ENABLED(POWER_LOSS_PULLUP)
           SET_INPUT_PULLUP(POWER_LOSS_PIN);
@@ -172,10 +216,21 @@ class PrintJobRecovery {
     static void enable(const bool onoff);
     static void changed();
 
+<<<<<<< HEAD
     static bool exists() { return card.jobRecoverFileExists(); }
     static void open(const bool read) { card.openJobRecoveryFile(read); }
     static void close() { file.close(); }
 
+=======
+    #if HAS_PLR_BED_THRESHOLD
+      static celsius_t bed_temp_threshold;
+    #endif
+
+    static bool exists() { return card.jobRecoverFileExists(); }
+    static void open(const bool read) { card.openJobRecoveryFile(read); }
+    static void close() { file.close(); }
+
+>>>>>>> origin/release-2.1.3-beta2
     static bool check();
     static void resume();
     static void purge();

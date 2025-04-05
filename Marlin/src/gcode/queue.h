@@ -35,7 +35,7 @@ public:
    */
   struct SerialState {
     /**
-     * GCode line number handling. Hosts may include line numbers when sending
+     * G-Code line number handling. Hosts may include line numbers when sending
      * commands to Marlin, and lines will be checked for sequentiality.
      * M110 N<int> sets the current line number.
      */
@@ -48,7 +48,7 @@ public:
   static SerialState serial_state[NUM_SERIAL]; //!< Serial states for each serial port
 
   /**
-   * GCode Command Queue
+   * G-Code Command Queue
    * A simple (circular) ring buffer of BUFSIZE command strings.
    *
    * Commands are copied into this buffer by the command injectors
@@ -85,13 +85,24 @@ public:
       length = index_r = index_w = 0; }
 
     void advance_pos(uint8_t &p, const int inc) { if (++p >= BUFSIZE) p = 0; length += inc; }
+    inline void advance_w() { advance_pos(index_w, 1); }
+    inline void advance_r() { if (length) advance_pos(index_r, -1); }
 
+<<<<<<< HEAD
     void commit_command(bool skip_ok
       OPTARG(HAS_MULTI_SERIAL, serial_index_t serial_ind = serial_index_t())
     );
 
     bool enqueue(const char *cmd, bool skip_ok = true
       OPTARG(HAS_MULTI_SERIAL, serial_index_t serial_ind = serial_index_t())
+=======
+    void commit_command(const bool skip_ok
+      OPTARG(HAS_MULTI_SERIAL, serial_index_t serial_ind=serial_index_t())
+    );
+
+    bool enqueue(const char *cmd, const bool skip_ok=true
+      OPTARG(HAS_MULTI_SERIAL, serial_index_t serial_ind=serial_index_t())
+>>>>>>> origin/release-2.1.3-beta2
     );
 
     void ok_to_send();
@@ -141,7 +152,11 @@ public:
    * Aborts the current SRAM queue so only use for one or two commands.
    */
   static void inject(const char * const gcode) {
+<<<<<<< HEAD
     strncpy(injected_commands, gcode, sizeof(injected_commands) - 1);
+=======
+    strlcpy(injected_commands, gcode, sizeof(injected_commands));
+>>>>>>> origin/release-2.1.3-beta2
   }
 
   /**
@@ -208,11 +223,25 @@ public:
    */
   static void flush_and_request_resend(const serial_index_t serial_ind);
 
+  #if (defined(ARDUINO_ARCH_STM32F4) || defined(ARDUINO_ARCH_STM32)) && defined(USBCON)
+    static void flush_rx();
+  #else
+    static void flush_rx() {}
+  #endif
+
   /**
    * (Re)Set the current line number for the last received command
    */
   static void set_current_line_number(long n) { serial_state[ring_buffer.command_port().index].last_N = n; }
 
+<<<<<<< HEAD
+=======
+  /**
+   * Get the current line number for the last received command
+   */
+  static long get_current_line_number() { return serial_state[ring_buffer.command_port().index].last_N; }
+
+>>>>>>> origin/release-2.1.3-beta2
   #if ENABLED(BUFFER_MONITORING)
 
     private:
@@ -257,7 +286,7 @@ private:
 
   static void get_serial_commands();
 
-  #if ENABLED(SDSUPPORT)
+  #if HAS_MEDIA
     static void get_sdcard_commands();
   #endif
 

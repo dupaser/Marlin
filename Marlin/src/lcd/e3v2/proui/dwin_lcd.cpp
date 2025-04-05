@@ -22,9 +22,16 @@
 
 /**
  * DWIN Enhanced implementation for PRO UI
+<<<<<<< HEAD
  * Author: Miguel A. Risco-Castillo (MRISCOC)
  * Version: 3.10.1
  * Date: 2022/03/06
+=======
+ * Based on the original work of: Miguel Risco-Castillo (MRISCOC)
+ * https://github.com/mriscoc/Ender3V2S1
+ * Version: 3.12.1
+ * Date: 2023/01/22
+>>>>>>> origin/release-2.1.3-beta2
  */
 
 #include "../../../inc/MarlinConfigPre.h"
@@ -42,6 +49,7 @@
 //  QR_Pixel: The pixel size occupied by each point of the QR code: 0x01-0x0F (1-16)
 //  (Nx, Ny): The coordinates of the upper left corner displayed by the QR code
 //  str: multi-bit data
+<<<<<<< HEAD
 void DWIN_Draw_QR(uint8_t QR_Pixel, uint16_t x, uint16_t y, char *string) {
   size_t i = 0;
   DWIN_Byte(i, 0x21);
@@ -58,12 +66,23 @@ void DWIN_Draw_QR(uint8_t QR_Pixel, uint16_t x, uint16_t y, char *string) {
 //  x/y: Upper-left point
 void DWIN_ICON_Show(uint8_t libID, uint8_t picID, uint16_t x, uint16_t y) {
   DWIN_ICON_Show(false, false, true, libID, picID, x, y);
+=======
+void dwinDrawQR(uint8_t QR_Pixel, uint16_t x, uint16_t y, char *string) {
+  size_t i = 0;
+  dwinByte(i, 0x21);
+  dwinWord(i, x);
+  dwinWord(i, y);
+  dwinByte(i, QR_Pixel);
+  dwinText(i, string);
+  dwinSend(i);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 // Copy area from current virtual display area to current screen
 //  xStart/yStart: Upper-left of virtual area
 //  xEnd/yEnd: Lower-right of virtual area
 //  x/y: Screen paste point
+<<<<<<< HEAD
 void DWIN_Frame_AreaCopy(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t x, uint16_t y) {
   size_t i = 0;
   DWIN_Byte(i, 0x26);
@@ -74,6 +93,18 @@ void DWIN_Frame_AreaCopy(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16
   DWIN_Word(i, x);
   DWIN_Word(i, y);
   DWIN_Send(i);
+=======
+void dwinFrameAreaCopy(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t x, uint16_t y) {
+  size_t i = 0;
+  dwinByte(i, 0x26);
+  dwinWord(i, xStart);
+  dwinWord(i, yStart);
+  dwinWord(i, xEnd);
+  dwinWord(i, yEnd);
+  dwinWord(i, x);
+  dwinWord(i, y);
+  dwinSend(i);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 // Copy area from virtual display area to current screen
@@ -84,6 +115,7 @@ void DWIN_Frame_AreaCopy(uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16
 //  xStart/yStart: Upper-left of virtual area
 //  xEnd/yEnd: Lower-right of virtual area
 //  x/y: Screen paste point
+<<<<<<< HEAD
 void DWIN_Frame_AreaCopy(bool IBD, bool BIR, bool BFI, uint8_t cacheID, uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t x, uint16_t y) {
   size_t i = 0;
   DWIN_Byte(i, 0x27);
@@ -95,6 +127,19 @@ void DWIN_Frame_AreaCopy(bool IBD, bool BIR, bool BFI, uint8_t cacheID, uint16_t
   DWIN_Word(i, x);
   DWIN_Word(i, y);
   DWIN_Send(i);
+=======
+void dwinFrameAreaCopy(bool IBD, bool BIR, bool BFI, uint8_t cacheID, uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t x, uint16_t y) {
+  size_t i = 0;
+  dwinByte(i, 0x27);
+  dwinByte(i, (IBD & 1) << 7 | (BIR & 1) << 6 | (BFI & 1) << 5 | cacheID);
+  dwinWord(i, xStart);
+  dwinWord(i, yStart);
+  dwinWord(i, xEnd);
+  dwinWord(i, yEnd);
+  dwinWord(i, x);
+  dwinWord(i, y);
+  dwinSend(i);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 // Copy area from virtual display area to current screen with transparent background
@@ -102,8 +147,13 @@ void DWIN_Frame_AreaCopy(bool IBD, bool BIR, bool BFI, uint8_t cacheID, uint16_t
 //  xStart/yStart: Upper-left of virtual area
 //  xEnd/yEnd: Lower-right of virtual area
 //  x/y: Screen paste point
+<<<<<<< HEAD
 void DWIN_Frame_AreaCopy(uint8_t cacheID, uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t x, uint16_t y) {
   DWIN_Frame_AreaCopy(false, false, true, cacheID, xStart, yStart, xEnd, yEnd, x, y);
+=======
+void dwinFrameAreaCopy(uint8_t cacheID, uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t x, uint16_t y) {
+  dwinFrameAreaCopy(false, false, true, cacheID, xStart, yStart, xEnd, yEnd, x, y);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 // Write buffer data to the SRAM or Flash
@@ -111,7 +161,11 @@ void DWIN_Frame_AreaCopy(uint8_t cacheID, uint16_t xStart, uint16_t yStart, uint
 //  addr: start address
 //  length: Bytes to write
 //  data: address of the buffer with data
+<<<<<<< HEAD
 void DWIN_WriteToMem(uint8_t mem, uint16_t addr, uint16_t length, uint8_t *data) {
+=======
+void dwinWriteToMem(uint8_t mem, uint16_t addr, uint16_t length, uint8_t *data) {
+>>>>>>> origin/release-2.1.3-beta2
   const uint8_t max_size = 128;
   uint16_t pending = length;
   uint16_t to_send;
@@ -122,6 +176,7 @@ void DWIN_WriteToMem(uint8_t mem, uint16_t addr, uint16_t length, uint8_t *data)
     indx = block * max_size;
     to_send = _MIN(pending, max_size);
     size_t i = 0;
+<<<<<<< HEAD
     DWIN_Byte(i, 0x31);
     DWIN_Byte(i, mem);
     DWIN_Word(i, addr + indx); // start address of the data block
@@ -129,11 +184,21 @@ void DWIN_WriteToMem(uint8_t mem, uint16_t addr, uint16_t length, uint8_t *data)
     LOOP_L_N(j, i) { LCD_SERIAL.write(DWIN_SendBuf[j]); delayMicroseconds(1); }  // Buf header
     for (uint16_t j = indx; j <= indx + to_send - 1; j++) LCD_SERIAL.write(*(data + j)); delayMicroseconds(1);  // write block of data
     LOOP_L_N(j, 4) { LCD_SERIAL.write(DWIN_BufTail[j]); delayMicroseconds(1); }
+=======
+    dwinByte(i, 0x31);
+    dwinByte(i, mem);
+    dwinWord(i, addr + indx); // start address of the data block
+    ++i;
+    for (uint8_t j = 0; j < i; ++j) { LCD_SERIAL.write(dwinSendBuf[j]); delayMicroseconds(1); }  // Buf header
+    for (uint16_t j = indx; j <= indx + to_send - 1; j++) { LCD_SERIAL.write(*(data + j)); delayMicroseconds(1); } // write block of data
+    for (uint8_t j = 0; j < 4; ++j) { LCD_SERIAL.write(dwinBufTail[j]); delayMicroseconds(1); }
+>>>>>>> origin/release-2.1.3-beta2
     block++;
     pending -= to_send;
   }
 }
 
+<<<<<<< HEAD
 // Write the contents of the 32KB SRAM data memory into the designated image memory space.
 //  picID: Picture memory space location, 0x00-0x0F, each space is 32Kbytes
 void DWIN_SRAMToPic(uint8_t picID) {
@@ -143,10 +208,46 @@ void DWIN_SRAMToPic(uint8_t picID) {
   DWIN_Byte(i, 0xA5);
   DWIN_Byte(i, picID);
   DWIN_Send(i);
+=======
+#if ENABLED(DACAI_DISPLAY)
+
+  // Draw an Icon from SRAM without background transparency for DACAI Screens support
+  void dacaiIconShow(uint16_t x, uint16_t y, uint16_t addr) {
+    NOMORE(x, DWIN_WIDTH - 1);
+    NOMORE(y, DWIN_HEIGHT - 1);
+    size_t i = 0;
+    dwinByte(i, 0x70);
+    dwinWord(i, x);
+    dwinWord(i, y);
+    dwinWord(i, addr);
+    dwinSend(i);
+  }
+
+#endif
+
+void dwinIconShow(uint16_t x, uint16_t y, uint16_t addr) {
+  #if ENABLED(DACAI_DISPLAY)
+    dacaiIconShow(x, y, addr);
+  #else
+    dwinIconShow(0, 0, 1, x, y, addr);
+  #endif
+}
+
+// Write the contents of the 32KB SRAM data memory into the designated image memory space.
+//  picID: Picture memory space location, 0x00-0x0F, each space is 32Kbytes
+void dwinSRAMToPic(uint8_t picID) {
+  size_t i = 0;
+  dwinByte(i, 0x33);
+  dwinByte(i, 0x5A);
+  dwinByte(i, 0xA5);
+  dwinByte(i, picID);
+  dwinSend(i);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 //--------------------------Test area -------------------------
 
+<<<<<<< HEAD
 //void DWIN_ReadSRAM(uint16_t addr, const uint8_t length, const char * const data) {
 //  size_t i = 0;
 //  DWIN_Byte(i, 0x32);
@@ -155,6 +256,16 @@ void DWIN_SRAMToPic(uint8_t picID) {
 //  const size_t len = _MIN(0xF0, length);
 //  DWIN_Byte(i, len);
 //  DWIN_Send(i);
+=======
+//void dwinReadSRAM(uint16_t addr, const uint8_t length, const char * const data) {
+//  size_t i = 0;
+//  dwinByte(i, 0x32);
+//  dwinByte(i, 0x5A);  // 0x5A Read from SRAM - 0xA5 Read from Flash
+//  dwinWord(i, addr);  // 0x0000 to 0x7FFF
+//  const size_t len = _MIN(0xF0, length);
+//  dwinByte(i, len);
+//  dwinSend(i);
+>>>>>>> origin/release-2.1.3-beta2
 //}
 
 #endif // DWIN_LCD_PROUI

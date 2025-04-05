@@ -27,7 +27,11 @@
  */
 //#define SHORT_BUILD_VERSION "1.0.0"
 #ifndef SHORT_BUILD_VERSION
+<<<<<<< HEAD
   #define SHORT_BUILD_VERSION "9.9.9"
+=======
+  #define SHORT_BUILD_VERSION "2.1.3-beta2"
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 /**
@@ -45,8 +49,13 @@
  * version was tagged.
  */
 #ifndef STRING_DISTRIBUTION_DATE
+<<<<<<< HEAD
   #define STRING_DISTRIBUTION_DATE "2024-11-11"
   #endif
+=======
+  #define STRING_DISTRIBUTION_DATE "2025-01-16"
+#endif
+>>>>>>> origin/release-2.1.3-beta2
 
 /**
  * Minimum Configuration.h and Configuration_adv.h file versions.
@@ -55,7 +64,11 @@
  * to alert users to major changes.
  */
 
+<<<<<<< HEAD
 #define MARLIN_HEX_VERSION 02000905
+=======
+#define MARLIN_HEX_VERSION 02010300
+>>>>>>> origin/release-2.1.3-beta2
 #ifndef REQUIRED_CONFIGURATION_H_VERSION
   #define REQUIRED_CONFIGURATION_H_VERSION MARLIN_HEX_VERSION
 #endif
@@ -104,8 +117,8 @@
 #endif
 
 /**
- * Set the vendor info the serial USB interface, if changable
- * Currently only supported by DUE platform
+ * Set the vendor info the serial USB interface, if changeable.
+ * Currently only supported by DUE platform.
  */
 #ifndef USB_DEVICE_VENDOR_ID
   #define USB_DEVICE_VENDOR_ID            0x03EB /* ATMEL VID */

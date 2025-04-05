@@ -58,7 +58,7 @@ void GcodeSuite::M0_M1() {
   #if HAS_MARLINUI_MENU
 
     if (parser.string_arg)
-      ui.set_status(parser.string_arg, true);
+      ui.set_status_no_expire(parser.string_arg);
     else {
       LCD_MESSAGE(MSG_USERWAIT);
       #if ENABLED(LCD_PROGRESS_BAR) && PROGRESS_MSG_EXPIRE > 0
@@ -66,8 +66,10 @@ void GcodeSuite::M0_M1() {
       #endif
     }
 
-  #elif ENABLED(EXTENSIBLE_UI)
+  #elif ENABLED(DWIN_LCD_PROUI) // ExtUI with icon, string, button title
+
     if (parser.string_arg)
+<<<<<<< HEAD
       ExtUI::onUserConfirmRequired(parser.string_arg); // String in an SRAM buffer
     else
       ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_USERWAIT));
@@ -76,6 +78,19 @@ void GcodeSuite::M0_M1() {
       DWIN_Popup_Confirm(ICON_BLTouch, parser.string_arg, GET_TEXT_F(MSG_USERWAIT));
     else
       DWIN_Popup_Confirm(ICON_BLTouch, GET_TEXT_F(MSG_STOPPED), GET_TEXT_F(MSG_USERWAIT));
+=======
+      ExtUI::onUserConfirmRequired(ICON_Continue_1, parser.string_arg, GET_TEXT_F(MSG_USERWAIT));
+    else
+      ExtUI::onUserConfirmRequired(ICON_Stop_1, GET_TEXT_F(MSG_STOPPED), GET_TEXT_F(MSG_USERWAIT));
+
+  #elif ENABLED(EXTENSIBLE_UI)
+
+    if (parser.string_arg)
+      ExtUI::onUserConfirmRequired(parser.string_arg); // String in an SRAM buffer
+    else
+      ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_USERWAIT));
+
+>>>>>>> origin/release-2.1.3-beta2
   #else
 
     if (parser.string_arg) {
@@ -85,7 +100,16 @@ void GcodeSuite::M0_M1() {
 
   #endif
 
+<<<<<<< HEAD
   TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_do(PROMPT_USER_CONTINUE, parser.codenum ? F("M1 Stop") : F("M0 Stop"), FPSTR(CONTINUE_STR)));
+=======
+  #if ENABLED(HOST_PROMPT_SUPPORT)
+    if (parser.string_arg)
+      hostui.continue_prompt(parser.string_arg);
+    else
+      hostui.continue_prompt(parser.codenum ? F("M1 Stop") : F("M0 Stop"));
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
 
   TERN_(HAS_RESUME_CONTINUE, wait_for_user_response(ms));
 

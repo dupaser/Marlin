@@ -109,6 +109,7 @@
   #if ENABLED(MARLIN_DEV_MODE)
     void dump_delay_accuracy_check() {
       auto report_call_time = [](FSTR_P const name, FSTR_P const unit, const uint32_t cycles, const uint32_t total, const bool do_flush=true) {
+<<<<<<< HEAD
         SERIAL_ECHOPGM("Calling ");
         SERIAL_ECHOF(name);
         SERIAL_ECHOLNPGM(" for ", cycles);
@@ -116,6 +117,9 @@
         SERIAL_ECHOLNPGM(" took: ", total);
         SERIAL_CHAR(' ');
         SERIAL_ECHOF(unit);
+=======
+        SERIAL_ECHOLN(F("Calling "), name, F(" for "), cycles, C(' '), unit, F(" took: "), total, C(' '), unit);
+>>>>>>> origin/release-2.1.3-beta2
         if (do_flush) SERIAL_FLUSHTX();
       };
 
@@ -166,7 +170,6 @@
       }
     }
   #endif // MARLIN_DEV_MODE
-
 
 #else
 

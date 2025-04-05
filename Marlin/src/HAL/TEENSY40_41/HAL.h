@@ -1,9 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- *
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
- * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
- * Copyright (c) 2015-2016 Nico Tonnhofer wurstnase.reprap@gmail.com
+ *
+ * Based on Sprinter and grbl.
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,11 @@
 #undef PSTR
 #define PSTR(str) ({static const char *data = (str); &data[0];})
 
+<<<<<<< HEAD
+=======
+#define HAL_CAN_SET_PWM_FREQ
+
+>>>>>>> origin/release-2.1.3-beta2
 // ------------------------
 // Serial ports
 // ------------------------
@@ -80,7 +85,7 @@ extern USBSerialType USBSerial;
 #define MSERIAL(X) _MSERIAL(X)
 
 #if SERIAL_PORT == -1
-  #define MYSERIAL1 SerialUSB
+  #define MYSERIAL1 USBSerial
 #elif WITHIN(SERIAL_PORT, 0, 8)
   DECLARE_SERIAL(SERIAL_PORT);
   #define MYSERIAL1 MSERIAL(SERIAL_PORT)
@@ -90,16 +95,31 @@ extern USBSerialType USBSerial;
 
 #ifdef SERIAL_PORT_2
   #if SERIAL_PORT_2 == -1
-    #define MYSERIAL2 usbSerial
+    #define MYSERIAL2 USBSerial
   #elif SERIAL_PORT_2 == -2
     #define MYSERIAL2 ethernet.telnetClient
   #elif WITHIN(SERIAL_PORT_2, 0, 8)
+    DECLARE_SERIAL(SERIAL_PORT_2);
     #define MYSERIAL2 MSERIAL(SERIAL_PORT_2)
   #else
     #error "SERIAL_PORT_2 must be from 0 to 8, or -1 for Native USB, or -2 for Ethernet."
   #endif
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef SERIAL_PORT_3
+  #if SERIAL_PORT_3 == -1
+    #define MYSERIAL3 USBSerial
+  #elif WITHIN(SERIAL_PORT_3, 0, 8)
+    DECLARE_SERIAL(SERIAL_PORT_3);
+    #define MYSERIAL3 MSERIAL(SERIAL_PORT_3)
+  #else
+    #error "SERIAL_PORT_3 must be from 0 to 8, or -1 for Native USB."
+  #endif
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 // ------------------------
 // Types
 // ------------------------
@@ -121,10 +141,14 @@ typedef int8_t pin_t;
 // ------------------------
 
 #ifndef analogInputToDigitalPin
-  #define analogInputToDigitalPin(p) ((p < 12U) ? (p) + 54U : -1)
+  #define analogInputToDigitalPin(p) pin_t((p < 12U) ? (p) + 54U : -1)
 #endif
 
+<<<<<<< HEAD
 #define HAL_ADC_VREF         3.3
+=======
+#define HAL_ADC_VREF_MV   3300
+>>>>>>> origin/release-2.1.3-beta2
 #define HAL_ADC_RESOLUTION  10
 #define HAL_ADC_FILTERED      // turn off ADC oversampling
 
@@ -209,6 +233,7 @@ public:
 
   /**
    * Set the PWM duty cycle for the pin to the given value.
+<<<<<<< HEAD
    * No option to invert the duty cycle [default = false]
    * No option to change the scale of the provided value to enable finer PWM duty control [default = 255]
    */
@@ -216,4 +241,17 @@ public:
     analogWrite(pin, v);
   }
 
+=======
+   * Optionally invert the duty cycle [default = false]
+   * Optionally change the scale of the provided value to enable finer PWM duty control [default = 255]
+   */
+  static void set_pwm_duty(const pin_t pin, const uint16_t v, const uint16_t v_size=255, const bool invert=false);
+
+  /**
+   * Set the PWM output frequency. This may affect multiple pins, though
+   * Teensy 4.x provides many timers affecting only a single pin.
+   * See: https://www.pjrc.com/teensy/td_pulse.html
+   */
+  static void set_pwm_frequency(const pin_t pin, const uint16_t f_desired);
+>>>>>>> origin/release-2.1.3-beta2
 };

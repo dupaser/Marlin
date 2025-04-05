@@ -41,6 +41,7 @@
 
 /*-------------------------------------- System variable function --------------------------------------*/
 
+<<<<<<< HEAD
 void DWIN_Startup() {
   DEBUG_ECHOPGM("\r\nDWIN handshake ");
   delay(750);   // Delay here or init later in the boot process
@@ -51,6 +52,18 @@ void DWIN_Startup() {
   #endif
   DWIN_JPG_ShowAndCache(3);
   DWIN_UpdateLCD();
+=======
+void dwinStartup() {
+  DEBUG_ECHOPGM("\r\nDWIN handshake ");
+  delay(750);   // Delay here or init later in the boot process
+  if (dwinHandshake()) DEBUG_ECHOLNPGM("ok."); else DEBUG_ECHOLNPGM("error.");
+  dwinFrameSetDir(1);
+  #if DISABLED(SHOW_BOOTSCREEN)
+    dwinFrameClear(COLOR_BG_BLACK); // MarlinUI handles the bootscreen so just clear here
+  #endif
+  dwinJPGShowAndCache(3);
+  dwinUpdateLCD();
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 /*---------------------------------------- Picture related functions ----------------------------------------*/
@@ -59,8 +72,13 @@ void DWIN_Startup() {
 //  libID: Icon library ID
 //  picID: Icon ID
 //  x/y: Upper-left point
+<<<<<<< HEAD
 void DWIN_ICON_Show(uint8_t libID, uint8_t picID, uint16_t x, uint16_t y) {
   DWIN_ICON_Show(true, false, false, libID, picID, x, y);
+=======
+void dwinIconShow(uint8_t libID, uint8_t picID, uint16_t x, uint16_t y) {
+  dwinIconShow(true, false, false, libID, picID, x, y);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 // Copy area from virtual display area to current screen
@@ -68,6 +86,7 @@ void DWIN_ICON_Show(uint8_t libID, uint8_t picID, uint16_t x, uint16_t y) {
 //  xStart/yStart: Upper-left of virtual area
 //  xEnd/yEnd: Lower-right of virtual area
 //  x/y: Screen paste point
+<<<<<<< HEAD
 void DWIN_Frame_AreaCopy(uint8_t cacheID, uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t x, uint16_t y) {
   size_t i = 0;
   DWIN_Byte(i, 0x27);
@@ -79,6 +98,19 @@ void DWIN_Frame_AreaCopy(uint8_t cacheID, uint16_t xStart, uint16_t yStart, uint
   DWIN_Word(i, x);
   DWIN_Word(i, y);
   DWIN_Send(i);
+=======
+void dwinFrameAreaCopy(uint8_t cacheID, uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd, uint16_t x, uint16_t y) {
+  size_t i = 0;
+  dwinByte(i, 0x27);
+  dwinByte(i, 0x80 | cacheID);
+  dwinWord(i, xStart);
+  dwinWord(i, yStart);
+  dwinWord(i, xEnd);
+  dwinWord(i, yEnd);
+  dwinWord(i, x);
+  dwinWord(i, y);
+  dwinSend(i);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 #endif // DWIN_CREALITY_LCD

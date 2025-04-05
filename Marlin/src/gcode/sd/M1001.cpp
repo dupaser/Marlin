@@ -22,7 +22,7 @@
 
 #include "../../inc/MarlinConfig.h"
 
-#if ENABLED(SDSUPPORT)
+#if HAS_MEDIA
 
 #include "../gcode.h"
 #include "../../module/planner.h"
@@ -34,7 +34,7 @@
   #include "../queue.h"
 #endif
 
-#if EITHER(LCD_SET_PROGRESS_MANUALLY, SD_REPRINT_LAST_SELECTED_FILE)
+#if ANY(SET_PROGRESS_MANUALLY, SD_REPRINT_LAST_SELECTED_FILE)
   #include "../../lcd/marlinui.h"
 #endif
 
@@ -64,6 +64,10 @@
  #include "../../lcd/extui/dgus/mks/DGUSScreenHandler.h"
 
 
+#if ENABLED(SOVOL_SV06_RTS)
+  #include "../../lcd/sovol_rts/sovol_rts.h"
+#endif
+
 /**
  * M1001: Execute actions for SD print completion
  */
@@ -87,7 +91,7 @@ void GcodeSuite::M1001() {
   process_subcommands_now(F("M77"));
 
   // Set the progress bar "done" state
-  TERN_(LCD_SET_PROGRESS_MANUALLY, ui.set_progress_done());
+  TERN_(SET_PROGRESS_PERCENT, ui.set_progress_done());
 
   // Announce SD file completion
   {
@@ -100,7 +104,11 @@ void GcodeSuite::M1001() {
     if (long_print) {
       printerEventLEDs.onPrintCompleted();
       TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_PRINT_DONE)));
+<<<<<<< HEAD
       TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_do(PROMPT_USER_CONTINUE, GET_TEXT_F(MSG_PRINT_DONE), FPSTR(CONTINUE_STR)));
+=======
+      TERN_(HOST_PROMPT_SUPPORT, hostui.continue_prompt(GET_TEXT_F(MSG_PRINT_DONE)));
+>>>>>>> origin/release-2.1.3-beta2
       TERN_(HAS_RESUME_CONTINUE, wait_for_user_response(SEC_TO_MS(TERN(HAS_MARLINUI_MENU, PE_LEDS_COMPLETED_TIME, 30))));
       printerEventLEDs.onResumeAfterWait();
     }
@@ -111,15 +119,27 @@ void GcodeSuite::M1001() {
     process_subcommands_now(F(SD_FINISHED_RELEASECOMMAND));
   #endif
 
+<<<<<<< HEAD
   DGUSScreenHandlerMKS::SDPrintingFinished(); //свое 
   
   TERN_(EXTENSIBLE_UI, ExtUI::onPrintDone());
   TERN_(DWIN_LCD_PROUI, DWIN_Print_Finished());
 
 
+=======
+  TERN_(EXTENSIBLE_UI, ExtUI::onPrintDone());
+>>>>>>> origin/release-2.1.3-beta2
 
   // Re-select the last printed file in the UI
   TERN_(SD_REPRINT_LAST_SELECTED_FILE, ui.reselect_last_file());
+
+  #if ENABLED(SOVOL_SV06_RTS)
+    rts.sendData(100, PRINT_PROCESS_VP); delay(1);
+    rts.sendData(100, PRINT_PROCESS_ICON_VP); delay(1);
+    rts.sendData(0, PRINT_SURPLUS_TIME_HOUR_VP); delay(1);
+    rts.sendData(0, PRINT_SURPLUS_TIME_MIN_VP); delay(1);
+    rts.gotoPage(ID_Finish_L, ID_Finish_D);
+  #endif
 }
 
-#endif // SDSUPPORT
+#endif // HAS_MEDIA

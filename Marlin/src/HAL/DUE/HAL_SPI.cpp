@@ -42,7 +42,7 @@
 // Public functions
 // ------------------------
 
-#if EITHER(DUE_SOFTWARE_SPI, FORCE_SOFT_SPI)
+#if ANY(SOFTWARE_SPI, FORCE_SOFT_SPI)
 
   // ------------------------
   // Software SPI
@@ -247,12 +247,20 @@
       b <<= 1; // little setup time
 
       WRITE(SD_SCK_PIN, HIGH);
+<<<<<<< HEAD
       DELAY_NS(spiDelayNS);
+=======
+      DELAY_NS_VAR(spiDelayNS);
+>>>>>>> origin/release-2.1.3-beta2
 
       b |= (READ(SD_MISO_PIN) != 0);
 
       WRITE(SD_SCK_PIN, LOW);
+<<<<<<< HEAD
       DELAY_NS(spiDelayNS);
+=======
+      DELAY_NS_VAR(spiDelayNS);
+>>>>>>> origin/release-2.1.3-beta2
     } while (--bits);
     return b;
   }

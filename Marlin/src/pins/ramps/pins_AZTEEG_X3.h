@@ -23,6 +23,8 @@
 
 /**
  * AZTEEG_X3 Arduino Mega with RAMPS v1.4 pin assignments
+ * Schematic: http://files.panucatt.com/datasheets/azteegx3_designfiles.zip
+ * ATmega2560
  */
 
 #define REQUIRE_MEGA2560

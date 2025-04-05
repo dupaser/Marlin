@@ -28,7 +28,11 @@
 /**
  * Marlin release version identifier
  */
+<<<<<<< HEAD
 //#define SHORT_BUILD_VERSION "2.0.9.5"
+=======
+//#define SHORT_BUILD_VERSION "2.1.3-beta2"
+>>>>>>> origin/release-2.1.3-beta2
 
 /**
  * Verbose version identifier which should contain a reference to the location
@@ -41,7 +45,18 @@
  * here we define this default string as the date where the latest release
  * version was tagged.
  */
+<<<<<<< HEAD
 //#define STRING_DISTRIBUTION_DATE "2022-07-29"
+=======
+//#define STRING_DISTRIBUTION_DATE "2025-01-16"
+
+/**
+ * The protocol for communication to the host. Protocol indicates communication
+ * standards such as the use of ASCII, "echo:" and "error:" line prefixes, etc.
+ * (Other behaviors are given by the firmware version and capabilities report.)
+ */
+//#define PROTOCOL_VERSION "1.0"
+>>>>>>> origin/release-2.1.3-beta2
 
 /**
  * Defines a generic printer name to be output to the LCD after booting Marlin.
@@ -68,8 +83,8 @@
 //#define WEBSITE_URL "marlinfw.org"
 
 /**
- * Set the vendor info the serial USB interface, if changable
- * Currently only supported by DUE platform
+ * Set the vendor info the serial USB interface, if changeable.
+ * Currently only supported by DUE platform.
  */
 //#define USB_DEVICE_VENDOR_ID           0x0000
 //#define USB_DEVICE_PRODUCT_ID          0x0000

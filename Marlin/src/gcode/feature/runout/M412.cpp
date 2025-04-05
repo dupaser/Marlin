@@ -56,7 +56,11 @@ void GcodeSuite::M412() {
     SERIAL_ECHOPGM("Filament runout ");
     serialprint_onoff(runout.enabled);
     #if HAS_FILAMENT_RUNOUT_DISTANCE
+<<<<<<< HEAD
       SERIAL_ECHOPGM(" ; Distance ", runout.runout_distance(), "mm"); 
+=======
+      SERIAL_ECHOPGM(" ; Distance ", runout.runout_distance(), "mm");
+>>>>>>> origin/release-2.1.3-beta2
     #endif
     #if ENABLED(HOST_ACTION_COMMANDS)
       SERIAL_ECHOPGM(" ; Host handling ");
@@ -67,6 +71,11 @@ void GcodeSuite::M412() {
 }
 
 void GcodeSuite::M412_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+>>>>>>> origin/release-2.1.3-beta2
   report_heading_etc(forReplay, F(STR_FILAMENT_RUNOUT_SENSOR));
   SERIAL_ECHOPGM(
     "  M412 S", runout.enabled

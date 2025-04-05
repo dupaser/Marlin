@@ -23,16 +23,24 @@
 
 #include "../DGUSScreenHandlerBase.h"
 
+<<<<<<< HEAD
 enum DGUSLCD_Screens : uint8_t;
+=======
+enum DGUS_ScreenID : uint8_t;
+>>>>>>> origin/release-2.1.3-beta2
 
 class DGUSScreenHandlerMKS : public DGUSScreenHandler {
 public:
   DGUSScreenHandlerMKS() = default;
+<<<<<<< HEAD
   static int c1;
+=======
+>>>>>>> origin/release-2.1.3-beta2
 
   #if 0
   static void sendinfoscreen_ch(const uint16_t *line1, const uint16_t *line2, const uint16_t *line3, const uint16_t *line4);
   static void sendinfoscreen_en(PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4);
+<<<<<<< HEAD
   static void sendinfoscreen(const void *line1, const void *line2, const void *line3, const void *line4, uint16_t language);
   #endif
 
@@ -123,6 +131,77 @@ public:
   //static void DGUSLCD_SendTMCStepValue(DGUS_VP_Variable &var);
 
   static void DGUSLCD_SetUint8(DGUS_VP_Variable &var, void *val_ptr);
+=======
+  static void sendInfoScreen(const void *line1, const void *line2, const void *line3, const void *line4, uint16_t language);
+  #endif
+
+  static void screenBackChange(DGUS_VP_Variable &var, void *val_ptr);
+
+  static void eepromControl(DGUS_VP_Variable &var, void *val_ptr);
+  static void languageChange(DGUS_VP_Variable &var, void *val_ptr);
+  static void getOffsetValue(DGUS_VP_Variable &var, void *val_ptr);
+  static void levelControl(DGUS_VP_Variable &var, void *val_ptr);
+  static void meshLevel(DGUS_VP_Variable &var, void *val_ptr);
+  static void meshLevelDistanceConfig(DGUS_VP_Variable &var, void *val_ptr);
+  static void manualAssistLeveling(DGUS_VP_Variable &var, void *val_ptr);
+  static void zOffsetConfirm(DGUS_VP_Variable &var, void *val_ptr);
+  static void zOffsetSelect(DGUS_VP_Variable &var, void *val_ptr);
+  static void getManualMovestep(DGUS_VP_Variable &var, void *val_ptr);
+  static void getZoffsetDistance(DGUS_VP_Variable &var, void *val_ptr);
+  static void getMinExtrudeTemp(DGUS_VP_Variable &var, void *val_ptr);
+  static void getParkPos(DGUS_VP_Variable &var, void *val_ptr);
+  #if ENABLED(PREVENT_COLD_EXTRUSION)
+    static void handleGetExMinTemp(DGUS_VP_Variable &var, void *val_ptr);
+  #endif
+  static void languageDisplay(uint8_t var);
+  static void tmcChangeConfig(DGUS_VP_Variable &var, void *val_ptr);
+  static void getTurnOffCtrl(DGUS_VP_Variable &var, void *val_ptr);
+  static void languagePInit();
+  static void runoutIdle();
+  static void runoutInit();
+  static void extrudeLoadInit();
+  static void lcdBLKAdjust(DGUS_VP_Variable &var, void *val_ptr);
+  static void sdFileBack(DGUS_VP_Variable &var, void *val_ptr);
+
+  #if ENABLED(EDITABLE_STEPS_PER_UNIT)
+    static void handleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr);
+    static void handleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr);
+  #endif
+
+  static void handleMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleExtruderMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleAccChange(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleMaxAccChange(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleExtruderAccChange(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleChangeLevelPoint(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleTravelAccChange(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleFeedRateMinChange(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleMin_T_F(DGUS_VP_Variable &var, void *val_ptr);
+
+  #if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
+    static void filamentLoadUnload(DGUS_VP_Variable &var, void *val_ptr, const int filamentDir);
+    static void filamentLoad(DGUS_VP_Variable &var, void *val_ptr);
+    static void filamentUnload(DGUS_VP_Variable &var, void *val_ptr);
+    static void getManualFilament(DGUS_VP_Variable &var, void *val_ptr);
+    static void getManualFilamentSpeed(DGUS_VP_Variable &var, void *val_ptr);
+  #endif
+
+  #if HAS_MEDIA
+    // Marlin informed us about SD print completion.
+    static void sdPrintingFinished();
+  #else
+    static void printReturn(DGUS_VP_Variable &var, void *val_ptr);
+  #endif
+
+  static void sendPrintTimeToDisplay(DGUS_VP_Variable &var);
+  static void sendBabyStepToDisplay(DGUS_VP_Variable &var);
+  static void sendFanToDisplay(DGUS_VP_Variable &var);
+  static void sendGbkToDisplay(DGUS_VP_Variable &var);
+  static void sendStringToDisplay_Language(DGUS_VP_Variable &var);
+  static void sendTMCStepValue(DGUS_VP_Variable &var);
+
+  static void setUint8(DGUS_VP_Variable &var, void *val_ptr);
+>>>>>>> origin/release-2.1.3-beta2
 
   static bool loop();
 };

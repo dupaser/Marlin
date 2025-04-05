@@ -19,10 +19,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+<<<<<<< HEAD
+
+#include "../../../inc/MarlinConfigPre.h"
+=======
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "../../../inc/MarlinConfigPre.h"
 
-#if BOTH(HAS_TFT_LVGL_UI, HAS_BED_PROBE)
+#if ALL(HAS_TFT_LVGL_UI, HAS_BED_PROBE)
 
 #include "draw_ui.h"
 #include <lv_conf.h>

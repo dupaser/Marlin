@@ -68,7 +68,11 @@
 // Heaters / Fans
 //
 #define HEATER_0_PIN                           2
+<<<<<<< HEAD
 #define FAN_PIN                               13
+=======
+#define FAN0_PIN                              13
+>>>>>>> origin/release-2.1.3-beta2
 #define HEATER_BED_PIN                         4
 
 //

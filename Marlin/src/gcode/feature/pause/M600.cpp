@@ -28,15 +28,30 @@
 #include "../../../feature/pause.h"
 #include "../../../module/motion.h"
 #include "../../../module/printcounter.h"
+
 #include "../../../lcd/marlinui.h"
+#if ENABLED(SOVOL_SV06_RTS)
+  #include "../../../lcd/sovol_rts/sovol_rts.h"
+#endif
 
 #if HAS_MULTI_EXTRUDER
   #include "../../../module/tool_change.h"
 #endif
 
+<<<<<<< HEAD
 #if HAS_PRUSA_MMU2
   #include "../../../feature/mmu/mmu2.h"
   #if ENABLED(MMU2_MENUS)
+=======
+#if HAS_PRUSA_MMU3
+  #include "../../../feature/mmu3/mmu3.h"
+  #if ENABLED(MMU_MENUS)
+    #include "../../../lcd/menu/menu_mmu2.h"
+  #endif
+#elif HAS_PRUSA_MMU2
+  #include "../../../feature/mmu/mmu2.h"
+  #if ENABLED(MMU_MENUS)
+>>>>>>> origin/release-2.1.3-beta2
     #include "../../../lcd/menu/menu_mmu2.h"
   #endif
 #endif
@@ -59,11 +74,20 @@
  *  I[position] - Move to this I position (instead of NOZZLE_PARK_POINT.i)
  *  J[position] - Move to this J position (instead of NOZZLE_PARK_POINT.j)
  *  K[position] - Move to this K position (instead of NOZZLE_PARK_POINT.k)
+<<<<<<< HEAD
+=======
+ *  C[position] - Move to this U position (instead of NOZZLE_PARK_POINT.u)
+ *  H[position] - Move to this V position (instead of NOZZLE_PARK_POINT.v)
+ *  O[position] - Move to this W position (instead of NOZZLE_PARK_POINT.w)
+>>>>>>> origin/release-2.1.3-beta2
  *  U[distance] - Retract distance for removal (manual reload)
  *  L[distance] - Extrude distance for insertion (manual reload)
  *  B[count]    - Number of times to beep, -1 for indefinite (if equipped with a buzzer)
  *  T[toolhead] - Select extruder for filament change
  *  R[temp]     - Resume temperature (in current units)
+ *
+ * With MMU_MENUS:
+ *  A           - Automatic
  *
  *  Default values are used for omitted arguments.
  */
@@ -98,12 +122,21 @@ void GcodeSuite::M600() {
     }
   #endif
 
+<<<<<<< HEAD
   const bool standardM600 = TERN1(MMU2_MENUS, !mmu2.enabled());
+=======
+  const bool standardM600 = TERN1(MMU_MENUS, TERN1(HAS_PRUSA_MMU2, !mmu2.enabled()) && TERN1(HAS_PRUSA_MMU3, !mmu3.mmu_hw_enabled));
+>>>>>>> origin/release-2.1.3-beta2
 
   // Show initial "wait for start" message
   if (standardM600)
     ui.pause_show_message(PAUSE_MESSAGE_CHANGING, PAUSE_MODE_PAUSE_PRINT, target_extruder);
 
+<<<<<<< HEAD
+=======
+  TERN_(SOVOL_SV06_RTS, rts.gotoPage(ID_ChangeWait_L, ID_ChangeWait_D)); //given the context it seems this likely should have been pages 6 & 61
+
+>>>>>>> origin/release-2.1.3-beta2
   // If needed, home before parking for filament change
   TERN_(HOME_BEFORE_FILAMENT_CHANGE, home_if_needed(true));
 
@@ -126,7 +159,14 @@ void GcodeSuite::M600() {
     if (parser.seenval('Z')) park_point.z = parser.linearval('Z'),    // Lift Z axis
     if (parser.seenval('I')) park_point.i = parser.linearval('I'),
     if (parser.seenval('J')) park_point.j = parser.linearval('J'),
+<<<<<<< HEAD
     if (parser.seenval('K')) park_point.k = parser.linearval('K')
+=======
+    if (parser.seenval('K')) park_point.k = parser.linearval('K'),
+    if (parser.seenval('C')) park_point.u = parser.linearval('C'),    // U axis
+    if (parser.seenval('H')) park_point.v = parser.linearval('H'),    // V axis
+    if (parser.seenval('O')) park_point.w = parser.linearval('O')     // W axis
+>>>>>>> origin/release-2.1.3-beta2
   );
 
   #if HAS_HOTEND_OFFSET && NONE(DUAL_X_CARRIAGE, DELTA)
@@ -151,14 +191,27 @@ void GcodeSuite::M600() {
         ABS(parser.axisunitsval('L', E_AXIS, fc_settings[active_extruder].load_length)),
         ADVANCED_PAUSE_PURGE_LENGTH,
         beep_count,
+<<<<<<< HEAD
         parser.celsiusval('R')
+=======
+        parser.celsiusval('R'),
+        true,
+        false
+>>>>>>> origin/release-2.1.3-beta2
         DXC_PASS
       );
     }
     else {
+<<<<<<< HEAD
       #if ENABLED(MMU2_MENUS)
         mmu2_M600();
         resume_print(0, 0, 0, beep_count, 0 DXC_PASS);
+=======
+      #if ENABLED(MMU_MENUS)
+        const bool automatic = parser.seen_test('A');
+        mmu2_M600(automatic);
+        resume_print(0, 0, 0, beep_count, 0, !automatic, false DXC_PASS);
+>>>>>>> origin/release-2.1.3-beta2
       #endif
     }
   }

@@ -99,7 +99,11 @@
 // Fans
 //
 #define CONTROLLER_FAN_PIN                  PD6   // BOARD FAN
+<<<<<<< HEAD
 #define FAN_PIN                             PG13  // FAN
+=======
+#define FAN0_PIN                            PG13  // FAN
+>>>>>>> origin/release-2.1.3-beta2
 #define FAN2_PIN                            PG14
 
 //
@@ -113,6 +117,7 @@
   #define FIL_RUNOUT_PIN                    PA15  // MT_DET
 #endif
 
+<<<<<<< HEAD
 // SPI Flash
 #define HAS_SPI_FLASH                          1
 #if HAS_SPI_FLASH
@@ -125,6 +130,20 @@
 #define SPI_FLASH_MISO_PIN                  PB14
 #define SPI_FLASH_SCK_PIN                   PB13
 
+=======
+//
+// SPI Flash (SPI 2)
+//
+#define SPI_FLASH
+#if ENABLED(SPI_FLASH)
+  #define SPI_FLASH_SIZE                0x200000  // 2MB
+  #define SPI_FLASH_CS_PIN                  PB12
+  #define SPI_FLASH_SCK_PIN                 PB13
+  #define SPI_FLASH_MISO_PIN                PB14
+  #define SPI_FLASH_MOSI_PIN                PB15
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 //
 // TFT with FSMC interface
 //
@@ -137,12 +156,18 @@
   #define TFT_RESET_PIN                     PF11
   #define TFT_BACKLIGHT_PIN                 PD13
 
+<<<<<<< HEAD
   #define LCD_USE_DMA_FSMC                        // Use DMA transfers to send data to the TFT
   #define FSMC_CS_PIN                       PD7
   #define FSMC_RS_PIN                       PD11
   #define FSMC_DMA_DEV                      DMA2
   #define FSMC_DMA_CHANNEL               DMA_CH5
 
+=======
+  #define LCD_USE_DMA_FSMC
+  #define FSMC_CS_PIN                       PD7
+  #define FSMC_RS_PIN                       PD11
+>>>>>>> origin/release-2.1.3-beta2
   #define TFT_CS_PIN                 FSMC_CS_PIN
   #define TFT_RS_PIN                 FSMC_RS_PIN
 #endif
@@ -157,12 +182,20 @@
   #define HAS_LOGO_IN_FLASH                    0
 #elif ENABLED(TFT_COLOR_UI)
   // Color UI
+<<<<<<< HEAD
   #define TFT_BUFFER_SIZE                  14400
+=======
+  #define TFT_BUFFER_WORDS                 14400
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 // SPI1(PA7)=LCD & SPI3(PB5)=STUFF, are not available
 // so SPI2 is required.
+<<<<<<< HEAD
 #define SPI_DEVICE                             2
+=======
+#define SPI_DEVICE                             2  // Maple
+>>>>>>> origin/release-2.1.3-beta2
 #define SD_SCK_PIN                          PB13
 #define SD_MISO_PIN                         PB14
 #define SD_MOSI_PIN                         PB15
@@ -171,7 +204,11 @@
 //
 // SD Card
 //
+<<<<<<< HEAD
 #define SDIO_SUPPORT
+=======
+#define ONBOARD_SDIO
+>>>>>>> origin/release-2.1.3-beta2
 #define SD_DETECT_PIN                       -1    // PF0, but it isn't connected
 #define SDIO_CLOCK                       4500000
 #define SDIO_READ_RETRIES                     16

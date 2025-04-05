@@ -30,9 +30,13 @@
 
 #include "env_validate.h"
 
+<<<<<<< HEAD
 #if EXTRUDERS > 1 || E_STEPPERS > 1
   #error "FYSETC E4 only supports 1 E stepper."
 #elif HAS_MULTI_HOTEND
+=======
+#if HAS_MULTI_HOTEND || E_STEPPERS > 1
+>>>>>>> origin/release-2.1.3-beta2
   #error "FYSETC E4 only supports 1 hotend / E stepper."
 #endif
 
@@ -42,18 +46,15 @@
 
 #if HAS_TMC_UART
   //
-  // TMC2209 stepper drivers
-  //
-
-  //
-  // Hardware serial 1
+  // TMC2208/TMC2209 stepper drivers
   //
   #define X_HARDWARE_SERIAL              Serial1
   #define Y_HARDWARE_SERIAL              Serial1
   #define Z_HARDWARE_SERIAL              Serial1
   #define E0_HARDWARE_SERIAL             Serial1
-
-  #define TMC_BAUD_RATE 115200
+  #ifndef TMC_BAUD_RATE
+    #define TMC_BAUD_RATE                 115200
+  #endif
 #endif
 
 /**

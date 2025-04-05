@@ -24,7 +24,11 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if ENABLED(DGUS_LCD_UI_FYSETC)
+=======
+#if DGUS_LCD_UI_FYSETC
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "DGUSDisplayDef.h"
 #include "../DGUSDisplay.h"
@@ -63,7 +67,11 @@ const uint16_t VPList_Main[] PROGMEM = {
   VP_XPos, VP_YPos, VP_ZPos,
   VP_Fan0_Percentage,
   VP_Feedrate_Percentage,
+<<<<<<< HEAD
   #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
+=======
+  #if ENABLED(SET_PROGRESS_PERCENT)
+>>>>>>> origin/release-2.1.3-beta2
     VP_PrintProgress_Percentage,
   #endif
   0x0000
@@ -289,6 +297,7 @@ const uint16_t VPList_Z_Offset[] PROGMEM = {
 };
 
 const struct VPMapping VPMap[] PROGMEM = {
+<<<<<<< HEAD
   { DGUSLCD_SCREEN_BOOT,                VPList_Boot                 },
   { DGUSLCD_SCREEN_MAIN,                VPList_Main                 },
   { DGUSLCD_SCREEN_TEMPERATURE,         VPList_Temp                 },
@@ -311,6 +320,30 @@ const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_PID_E,               VPList_PIDE0                },
   { DGUSLCD_SCREEN_PID_BED,             VPList_PIDBED               },
   { DGUSLCD_SCREEN_INFOS,               VPList_Infos                },
+=======
+  { DGUS_SCREEN_BOOT,                VPList_Boot                 },
+  { DGUS_SCREEN_MAIN,                VPList_Main                 },
+  { DGUS_SCREEN_TEMPERATURE,         VPList_Temp                 },
+  { DGUS_SCREEN_STATUS,              VPList_Status               },
+  { DGUS_SCREEN_STATUS2,             VPList_Status2              },
+  { DGUS_SCREEN_PREHEAT,             VPList_Preheat              },
+  { DGUS_SCREEN_MANUALMOVE,          VPList_ManualMove           },
+  { DGUS_SCREEN_MANUALEXTRUDE,       VPList_ManualExtrude        },
+  { DGUS_SCREEN_FILAMENT_HEATING,    VPList_Filament_heating     },
+  { DGUS_SCREEN_FILAMENT_LOADING,    VPList_Filament_load_unload },
+  { DGUS_SCREEN_FILAMENT_UNLOADING,  VPList_Filament_load_unload },
+  { DGUS_SCREEN_SDPRINTMANIPULATION, VPList_SD_PrintManipulation },
+  { DGUS_SCREEN_SDFILELIST,          VPList_SDFileList           },
+  { DGUS_SCREEN_SDPRINTTUNE,         VPList_SDPrintTune          },
+  { DGUS_SCREEN_WAITING,             VPList_PIDTuningWaiting     },
+  { DGUS_SCREEN_FLC_PREHEAT,         VPList_FLCPreheat           },
+  { DGUS_SCREEN_FLC_PRINTING,        VPList_FLCPrinting          },
+  { DGUS_SCREEN_Z_OFFSET,            VPList_Z_Offset             },
+  { DGUS_SCREEN_STEPPERMM,           VPList_StepPerMM            },
+  { DGUS_SCREEN_PID_E,               VPList_PIDE0                },
+  { DGUS_SCREEN_PID_BED,             VPList_PIDBED               },
+  { DGUS_SCREEN_INFOS,               VPList_Infos                },
+>>>>>>> origin/release-2.1.3-beta2
   { 0 , nullptr } // List is terminated with an nullptr as table entry.
 };
 
@@ -318,6 +351,7 @@ const char MarlinVersion[] PROGMEM = SHORT_BUILD_VERSION;
 
 const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   // Helper to detect touch events
+<<<<<<< HEAD
   VPHELPER(VP_SCREENCHANGE, nullptr, ScreenHandler.ScreenChangeHook, nullptr),
   VPHELPER(VP_SCREENCHANGE_ASK, nullptr, ScreenHandler.ScreenChangeHookIfIdle, nullptr),
   #if ENABLED(SDSUPPORT)
@@ -401,11 +435,97 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
       VPHELPER(VP_BED_PID_I, &thermalManager.temp_bed.pid.Ki, ScreenHandler.HandleTemperaturePIDChanged, ScreenHandler.DGUSLCD_SendTemperaturePID),
       VPHELPER(VP_BED_PID_D, &thermalManager.temp_bed.pid.Kd, ScreenHandler.HandleTemperaturePIDChanged, ScreenHandler.DGUSLCD_SendTemperaturePID),
       VPHELPER(VP_PID_AUTOTUNE_BED, nullptr, ScreenHandler.HandlePIDAutotune, nullptr),
+=======
+  VPHELPER(VP_SCREENCHANGE, nullptr, screen.screenChangeHook, nullptr),
+  VPHELPER(VP_SCREENCHANGE_ASK, nullptr, screen.screenChangeHookIfIdle, nullptr),
+  #if HAS_MEDIA
+    VPHELPER(VP_SCREENCHANGE_WHENSD, nullptr, screen.screenChangeHookIfSD, nullptr),
+  #endif
+  VPHELPER(VP_CONFIRMED, nullptr, screen.screenConfirmedOK, nullptr),
+
+  VPHELPER(VP_TEMP_ALL_OFF, nullptr, screen.handleAllHeatersOff, nullptr),
+  #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
+    VPHELPER(VP_MOVE_OPTION, &distanceToMove, screen.handleManualMoveOption, nullptr),
+  #endif
+  #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
+    VPHELPER(VP_MOVE_X, &distanceToMove, screen.handleManualMove, nullptr),
+    VPHELPER(VP_MOVE_Y, &distanceToMove, screen.handleManualMove, nullptr),
+    VPHELPER(VP_MOVE_Z, &distanceToMove, screen.handleManualMove, nullptr),
+    VPHELPER(VP_HOME_ALL, &distanceToMove, screen.handleManualMove, nullptr),
+  #else
+    VPHELPER(VP_MOVE_X, nullptr, screen.handleManualMove, nullptr),
+    VPHELPER(VP_MOVE_Y, nullptr, screen.handleManualMove, nullptr),
+    VPHELPER(VP_MOVE_Z, nullptr, screen.handleManualMove, nullptr),
+    VPHELPER(VP_HOME_ALL, nullptr, screen.handleManualMove, nullptr),
+  #endif
+  VPHELPER(VP_MOTOR_LOCK_UNLOK, nullptr, screen.handleMotorLockUnlock, nullptr),
+  #if ENABLED(POWER_LOSS_RECOVERY)
+    VPHELPER(VP_POWER_LOSS_RECOVERY, nullptr, screen.handlePowerLossRecovery, nullptr),
+  #endif
+  VPHELPER(VP_SETTINGS, nullptr, screen.handleSettings, nullptr),
+  #if ENABLED(SINGLE_Z_CALIBRATION)
+    VPHELPER(VP_Z_CALIBRATE, nullptr, screen.handleZCalibration, nullptr),
+  #endif
+
+  #if ENABLED(FIRST_LAYER_CAL)
+    VPHELPER(VP_Z_FIRST_LAYER_CAL, nullptr, screen.handleFirstLayerCal, nullptr),
+  #endif
+
+  { .VP = VP_MARLIN_VERSION, .memadr = (void*)MarlinVersion, .size = VP_MARLIN_VERSION_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = screen.sendStringToDisplayPGM },
+  // M117 LCD String (We don't need the string in memory but "just" push it to the display on demand, hence the nullptr
+  { .VP = VP_M117, .memadr = nullptr, .size = VP_M117_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = screen.sendStringToDisplay },
+
+  // Temperature Data
+  #if HAS_HOTEND
+    VPHELPER(VP_T_E0_Is, &thermalManager.temp_hotend[0].celsius, nullptr, screen.sendFloatAsLongValueToDisplay<0>),
+    VPHELPER(VP_T_E0_Set, &thermalManager.temp_hotend[0].target, screen.handleTemperatureChanged, screen.sendWordValueToDisplay),
+    VPHELPER(VP_Flowrate_E0, &planner.flow_percentage[ExtUI::extruder_t::E0], screen.handleFlowRateChanged, screen.sendWordValueToDisplay),
+    VPHELPER(VP_EPos, &destination.e, nullptr, screen.sendFloatAsLongValueToDisplay<2>),
+    VPHELPER(VP_MOVE_E0, nullptr, screen.handleManualExtrude, nullptr),
+    VPHELPER(VP_E0_CONTROL, &thermalManager.temp_hotend[0].target, screen.handleHeaterControl, nullptr),
+    VPHELPER(VP_E0_STATUS, &thermalManager.temp_hotend[0].target, nullptr, screen.sendHeaterStatusToDisplay),
+    #if ENABLED(DGUS_PREHEAT_UI)
+      VPHELPER(VP_E0_BED_PREHEAT, nullptr, screen.handlePreheat, nullptr),
+    #endif
+    #if ENABLED(PIDTEMP)
+      VPHELPER(VP_E0_PID_P, &thermalManager.temp_hotend[0].pid.Kp, screen.handleTemperaturePIDChanged, screen.sendTemperaturePID),
+      VPHELPER(VP_E0_PID_I, &thermalManager.temp_hotend[0].pid.Ki, screen.handleTemperaturePIDChanged, screen.sendTemperaturePID),
+      VPHELPER(VP_E0_PID_D, &thermalManager.temp_hotend[0].pid.Kd, screen.handleTemperaturePIDChanged, screen.sendTemperaturePID),
+      VPHELPER(VP_PID_AUTOTUNE_E0, nullptr, screen.handlePIDAutotune, nullptr),
+    #endif
+    #if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
+      VPHELPER(VP_E0_FILAMENT_LOAD_UNLOAD, nullptr, screen.handleFilamentOption, screen.handleFilamentLoadUnload),
+    #endif
+  #endif
+  #if HAS_MULTI_HOTEND
+    VPHELPER(VP_T_E1_Is, &thermalManager.temp_hotend[1].celsius, nullptr, screen.sendFloatAsLongValueToDisplay<0>),
+    VPHELPER(VP_T_E1_Set, &thermalManager.temp_hotend[1].target, screen.handleTemperatureChanged, screen.sendWordValueToDisplay),
+    VPHELPER(VP_Flowrate_E1, &planner.flow_percentage[ExtUI::extruder_t::E1], screen.handleFlowRateChanged, screen.sendWordValueToDisplay),  // ERROR: Flow is per-extruder, not per-hotend
+    VPHELPER(VP_MOVE_E1, nullptr, screen.handleManualExtrude, nullptr),
+    VPHELPER(VP_E1_CONTROL, &thermalManager.temp_hotend[1].target, screen.handleHeaterControl, nullptr),
+    VPHELPER(VP_E1_STATUS, &thermalManager.temp_hotend[1].target, nullptr, screen.sendHeaterStatusToDisplay),
+    #if ENABLED(PIDTEMP)
+      VPHELPER(VP_PID_AUTOTUNE_E1, nullptr, screen.handlePIDAutotune, nullptr),
+    #endif
+    VPHELPER(VP_E1_FILAMENT_LOAD_UNLOAD, nullptr, screen.handleFilamentOption, screen.handleFilamentLoadUnload),
+  #endif
+  #if HAS_HEATED_BED
+    VPHELPER(VP_T_Bed_Is, &thermalManager.temp_bed.celsius, nullptr, screen.sendWordValueToDisplay),
+    VPHELPER(VP_T_Bed_Set, &thermalManager.temp_bed.target, screen.handleTemperatureChanged, screen.sendWordValueToDisplay),
+    VPHELPER(VP_BED_CONTROL, &thermalManager.temp_bed.target, screen.handleHeaterControl, nullptr),
+    VPHELPER(VP_BED_STATUS, &thermalManager.temp_bed.target, nullptr, screen.sendHeaterStatusToDisplay),
+    #if ENABLED(PIDTEMPBED)
+      VPHELPER(VP_BED_PID_P, &thermalManager.temp_bed.pid.Kp, screen.handleTemperaturePIDChanged, screen.sendTemperaturePID),
+      VPHELPER(VP_BED_PID_I, &thermalManager.temp_bed.pid.Ki, screen.handleTemperaturePIDChanged, screen.sendTemperaturePID),
+      VPHELPER(VP_BED_PID_D, &thermalManager.temp_bed.pid.Kd, screen.handleTemperaturePIDChanged, screen.sendTemperaturePID),
+      VPHELPER(VP_PID_AUTOTUNE_BED, nullptr, screen.handlePIDAutotune, nullptr),
+>>>>>>> origin/release-2.1.3-beta2
     #endif
   #endif
 
   // Fan Data
   #if HAS_FAN
+<<<<<<< HEAD
     #define FAN_VPHELPER(N) \
       VPHELPER(VP_Fan##N##_Percentage, &thermalManager.fan_speed[N], ScreenHandler.DGUSLCD_PercentageToUint8, ScreenHandler.DGUSLCD_SendPercentageToDisplay), \
       VPHELPER(VP_FAN##N##_CONTROL, &thermalManager.fan_speed[N], ScreenHandler.HandleFanControl, nullptr), \
@@ -438,10 +558,54 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER(VP_E0_STEP_PER_MM, &planner.settings.axis_steps_per_mm[E_AXIS_N(0)], ScreenHandler.HandleStepPerMMExtruderChanged, ScreenHandler.DGUSLCD_SendFloatAsIntValueToDisplay<1>),
     #if HAS_MULTI_EXTRUDER
       VPHELPER(VP_E1_STEP_PER_MM, &planner.settings.axis_steps_per_mm[E_AXIS_N(1)], ScreenHandler.HandleStepPerMMExtruderChanged, ScreenHandler.DGUSLCD_SendFloatAsIntValueToDisplay<1>),
+=======
+    #if HOTENDS <= 4
+      #define FAN_CONTROL HOTENDS
+    #elif FAN_COUNT <= 4
+      #define FAN_CONTROL FAN_COUNT
+    #else
+      #define FAN_CONTROL 4
+    #endif
+    #define FAN_VPHELPER(N) \
+      VPHELPER(VP_Fan##N##_Percentage, &thermalManager.fan_speed[N], screen.percentageToUint8, screen.sendPercentageToDisplay), \
+      VPHELPER(VP_FAN##N##_CONTROL, &thermalManager.fan_speed[N], screen.handleFanControl, nullptr), \
+      VPHELPER(VP_FAN##N##_STATUS, &thermalManager.fan_speed[N], nullptr, screen.sendFanStatusToDisplay),
+    REPEAT(FAN_CONTROL, FAN_VPHELPER)
+  #endif
+
+  // Feedrate
+  VPHELPER(VP_Feedrate_Percentage, &feedrate_percentage, screen.setValueDirectly<int16_t>, screen.sendWordValueToDisplay),
+
+  // Position Data
+  VPHELPER(VP_XPos, &current_position.x, nullptr, screen.sendFloatAsLongValueToDisplay<2>),
+  VPHELPER(VP_YPos, &current_position.y, nullptr, screen.sendFloatAsLongValueToDisplay<2>),
+  VPHELPER(VP_ZPos, &current_position.z, nullptr, screen.sendFloatAsLongValueToDisplay<2>),
+
+  // Print Progress
+  VPHELPER(VP_PrintProgress_Percentage, nullptr, nullptr, screen.sendPrintProgressToDisplay),
+
+  // Print Time
+  VPHELPER_STR(VP_PrintTime, nullptr, VP_PrintTime_LEN, nullptr, screen.sendPrintTimeToDisplay),
+  #if ENABLED(PRINTCOUNTER)
+    VPHELPER_STR(VP_PrintAccTime, nullptr, VP_PrintAccTime_LEN, nullptr, screen.sendPrintAccTimeToDisplay),
+    VPHELPER_STR(VP_PrintsTotal, nullptr, VP_PrintsTotal_LEN, nullptr, screen.sendPrintsTotalToDisplay),
+  #endif
+
+  #if ENABLED(EDITABLE_STEPS_PER_UNIT)
+    VPHELPER(VP_X_STEP_PER_MM, &planner.settings.axis_steps_per_mm[X_AXIS], screen.handleStepPerMMChanged, screen.sendFloatAsIntValueToDisplay<1>),
+    VPHELPER(VP_Y_STEP_PER_MM, &planner.settings.axis_steps_per_mm[Y_AXIS], screen.handleStepPerMMChanged, screen.sendFloatAsIntValueToDisplay<1>),
+    VPHELPER(VP_Z_STEP_PER_MM, &planner.settings.axis_steps_per_mm[Z_AXIS], screen.handleStepPerMMChanged, screen.sendFloatAsIntValueToDisplay<1>),
+    #if HAS_EXTRUDERS
+      VPHELPER(VP_E0_STEP_PER_MM, &planner.settings.axis_steps_per_mm[E_AXIS_N(0)], screen.handleStepPerMMExtruderChanged, screen.sendFloatAsIntValueToDisplay<1>),
+      #if HAS_MULTI_EXTRUDER
+        VPHELPER(VP_E1_STEP_PER_MM, &planner.settings.axis_steps_per_mm[E_AXIS_N(1)], screen.handleStepPerMMExtruderChanged, screen.sendFloatAsIntValueToDisplay<1>),
+      #endif
+>>>>>>> origin/release-2.1.3-beta2
     #endif
   #endif
 
   // SDCard File listing.
+<<<<<<< HEAD
   #if ENABLED(SDSUPPORT)
     VPHELPER(VP_SD_ScrollEvent, nullptr, ScreenHandler.DGUSLCD_SD_ScrollFilelist, nullptr),
     VPHELPER(VP_SD_FileSelected, nullptr, ScreenHandler.DGUSLCD_SD_FileSelected, nullptr),
@@ -458,11 +622,30 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
       VPHELPER(VP_SD_Print_ProbeOffsetZ, &probe.offset.z, ScreenHandler.HandleProbeOffsetZChanged, ScreenHandler.DGUSLCD_SendFloatAsIntValueToDisplay<2>),
       #if ENABLED(BABYSTEPPING)
         VPHELPER(VP_SD_Print_BabyStep_Set, nullptr, ScreenHandler.HandleLiveAdjustZ, nullptr),
+=======
+  #if HAS_MEDIA
+    VPHELPER(VP_SD_ScrollEvent, nullptr, screen.sdScrollFilelist, nullptr),
+    VPHELPER(VP_SD_FileSelected, nullptr, screen.sdFileSelected, nullptr),
+    VPHELPER(VP_SD_FileSelectConfirm, nullptr, screen.sdStartPrint, nullptr),
+    VPHELPER_STR(VP_SD_FileName0, nullptr, VP_SD_FileName_LEN, nullptr, screen.sdSendFilename),
+    VPHELPER_STR(VP_SD_FileName1, nullptr, VP_SD_FileName_LEN, nullptr, screen.sdSendFilename),
+    VPHELPER_STR(VP_SD_FileName2, nullptr, VP_SD_FileName_LEN, nullptr, screen.sdSendFilename),
+    VPHELPER_STR(VP_SD_FileName3, nullptr, VP_SD_FileName_LEN, nullptr, screen.sdSendFilename),
+    VPHELPER_STR(VP_SD_FileName4, nullptr, VP_SD_FileName_LEN, nullptr, screen.sdSendFilename),
+    VPHELPER(VP_SD_ResumePauseAbort, nullptr, screen.sdResumePauseAbort, nullptr),
+    VPHELPER(VP_SD_AbortPrintConfirmed, nullptr, screen.sdReallyAbort, nullptr),
+    VPHELPER(VP_SD_Print_Setting, nullptr, screen.sdPrintTune, nullptr),
+    #if HAS_BED_PROBE
+      VPHELPER(VP_SD_Print_ProbeOffsetZ, &probe.offset.z, screen.handleProbeOffsetZChanged, screen.sendFloatAsIntValueToDisplay<2>),
+      #if ENABLED(BABYSTEPPING)
+        VPHELPER(VP_SD_Print_LiveAdjustZ, nullptr, screen.handleLiveAdjustZ, nullptr),
+>>>>>>> origin/release-2.1.3-beta2
       #endif
     #endif
   #endif
 
   #if ENABLED(DGUS_UI_WAITING)
+<<<<<<< HEAD
     VPHELPER(VP_WAITING_STATUS, nullptr, nullptr, ScreenHandler.DGUSLCD_SendWaitingStatusToDisplay),
   #endif
 
@@ -471,6 +654,16 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   { .VP = VP_MSGSTR2, .memadr = nullptr, .size = VP_MSGSTR2_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = ScreenHandler.DGUSLCD_SendStringToDisplayPGM },
   { .VP = VP_MSGSTR3, .memadr = nullptr, .size = VP_MSGSTR3_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = ScreenHandler.DGUSLCD_SendStringToDisplayPGM },
   { .VP = VP_MSGSTR4, .memadr = nullptr, .size = VP_MSGSTR4_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = ScreenHandler.DGUSLCD_SendStringToDisplayPGM },
+=======
+    VPHELPER(VP_WAITING_STATUS, nullptr, nullptr, screen.sendWaitingStatusToDisplay),
+  #endif
+
+  // Messages for the User, shared by the popup and the kill screen. They can't be autouploaded as we do not buffer content.
+  { .VP = VP_MSGSTR1, .memadr = nullptr, .size = VP_MSGSTR1_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = screen.sendStringToDisplayPGM },
+  { .VP = VP_MSGSTR2, .memadr = nullptr, .size = VP_MSGSTR2_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = screen.sendStringToDisplayPGM },
+  { .VP = VP_MSGSTR3, .memadr = nullptr, .size = VP_MSGSTR3_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = screen.sendStringToDisplayPGM },
+  { .VP = VP_MSGSTR4, .memadr = nullptr, .size = VP_MSGSTR4_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = screen.sendStringToDisplayPGM },
+>>>>>>> origin/release-2.1.3-beta2
 
   VPHELPER(0, 0, 0, 0)  // must be last entry.
 };

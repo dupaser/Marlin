@@ -49,7 +49,11 @@
 // Enable EEPROM Emulation for this board, so that we don't overwrite factory data
 #if NO_EEPROM_SELECTED
   //#define I2C_EEPROM                            // AT24C64
+<<<<<<< HEAD
   //#define FLASH_EEPROM_EMULATION
+=======
+  #define FLASH_EEPROM_EMULATION
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 #if ENABLED(I2C_EEPROM)
@@ -104,7 +108,7 @@
 #define HEATER_0_PIN                        PA2
 #define HEATER_BED_PIN                      PA3
 
-#define FAN_PIN                             PA1
+#define FAN0_PIN                            PA1
 
 #define FIL_RUNOUT_PIN                      PC7
 
@@ -112,6 +116,7 @@
 // TFT with FSMC interface
 //
 #if HAS_FSMC_TFT
+<<<<<<< HEAD
   #define LCD_BACKLIGHT_PIN                 PF11
   #define FSMC_CS_PIN                       PD7
   #define FSMC_RS_PIN                       PG0
@@ -122,6 +127,15 @@
 
   #define TFT_CS_PIN                 FSMC_CS_PIN
   #define TFT_RS_PIN                 FSMC_RS_PIN
+=======
+  #define LCD_USE_DMA_FSMC
+  #define FSMC_CS_PIN                       PD7
+  #define FSMC_RS_PIN                       PG0
+  #define TFT_CS_PIN                 FSMC_CS_PIN
+  #define TFT_RS_PIN                 FSMC_RS_PIN
+
+  #define LCD_BACKLIGHT_PIN                 PF11
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 //

@@ -38,7 +38,14 @@ void GcodeSuite::G4() {
     SERIAL_ECHOLNPGM(STR_Z_MOVE_COMP);
   #endif
 
+<<<<<<< HEAD
   if (!ui.has_status()) LCD_MESSAGE(MSG_DWELL);
 
   dwell(dwell_ms);
+=======
+  if (dwell_ms) {
+    if (!ui.has_status()) LCD_MESSAGE(MSG_DWELL);
+    dwell(dwell_ms);
+  }
+>>>>>>> origin/release-2.1.3-beta2
 }

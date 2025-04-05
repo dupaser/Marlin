@@ -55,6 +55,7 @@
 // eu         Basque-Euskera
 // fi         Finnish
 // fr         French
+// fr_na      French without accents (DWIN T5UID1 touchscreen)
 // gl         Galician
 // hr         Croatian
 // hu         Hungarian
@@ -88,11 +89,15 @@
   #define MACHINE_NAME DEFAULT_MACHINE_NAME
 #endif
 
+<<<<<<< HEAD
 #ifndef MACHINE_UUID
   #define MACHINE_UUID DEFAULT_MACHINE_UUID
 #endif
 
 #define MARLIN_WEBSITE_URL "froza3d.ru"
+=======
+#define MARLIN_WEBSITE_URL "marlinfw.org"
+>>>>>>> origin/release-2.1.3-beta2
 
 //#if !defined(STRING_SPLASH_LINE3) && defined(WEBSITE_URL)
 //  #define STRING_SPLASH_LINE3 WEBSITE_URL
@@ -138,6 +143,7 @@
 #define STR_BUSY_PAUSED_FOR_USER            "busy: paused for user"
 #define STR_BUSY_PAUSED_FOR_INPUT           "busy: paused for input"
 #define STR_Z_MOVE_COMP                     "Z_move_comp"
+#define STR_LINE_NO                         "Line: "
 #define STR_RESEND                          "Resend: "
 #define STR_UNKNOWN_COMMAND                 "Unknown command: \""
 #define STR_ACTIVE_EXTRUDER                 "Active Extruder: "
@@ -153,7 +159,7 @@
 #define STR_ERR_ARC_ARGS                    "G2/G3 bad parameters"
 #define STR_ERR_PROTECTED_PIN               "Protected Pin"
 #define STR_ERR_M420_FAILED                 "Failed to enable Bed Leveling"
-#define STR_ERR_M428_TOO_FAR                "Too far from reference point"
+#define STR_ERR_M428_TOO_FAR                "Too far from MIN/MAX"
 #define STR_ERR_M303_DISABLED               "PIDTEMP disabled"
 #define STR_M119_REPORT                     "Reporting endstop status"
 #define STR_ON                              "ON"
@@ -164,8 +170,8 @@
 #define STR_SOFT_MIN                        "  Min: "
 #define STR_SOFT_MAX                        "  Max: "
 
-#define STR_SAVED_POS                       "Position saved"
-#define STR_RESTORING_POS                   "Restoring position"
+#define STR_SAVED_POSITION                  "Saved position #"
+#define STR_RESTORING_POSITION              "Restoring position #"
 #define STR_INVALID_POS_SLOT                "Invalid slot. Total: "
 #define STR_DONE                            "Done."
 
@@ -174,6 +180,7 @@
 #define STR_SD_VOL_INIT_FAIL                "volume.init failed"
 #define STR_SD_OPENROOT_FAIL                "openRoot failed"
 #define STR_SD_CARD_OK                      "SD card ok"
+#define STR_SD_CARD_RELEASED                "SD card released"
 #define STR_SD_WORKDIR_FAIL                 "workDir open failed"
 #define STR_SD_OPEN_FILE_FAIL               "open failed, File: "
 #define STR_SD_FILE_OPENED                  "File opened: "
@@ -191,6 +198,8 @@
 #define STR_ERR_LONG_EXTRUDE_STOP           " too long extrusion prevented"
 #define STR_ERR_HOTEND_TOO_COLD             "Hotend too cold"
 #define STR_ERR_EEPROM_WRITE                "Error writing to EEPROM!"
+#define STR_ERR_EEPROM_CORRUPT              "EEPROM Corrupt"
+#define STR_EEPROM_INITIALIZED              "EEPROM Initialized"
 
 #define STR_FILAMENT_CHANGE_HEAT_LCD        "Press button to heat nozzle"
 #define STR_FILAMENT_CHANGE_INSERT_LCD      "Insert filament and press button"
@@ -228,10 +237,16 @@
 #define STR_PID_DEBUG_INPUT                 ": Input "
 #define STR_PID_DEBUG_OUTPUT                " Output "
 #define STR_INVALID_EXTRUDER_NUM            " - Invalid extruder number !"
+<<<<<<< HEAD
 #define STR_MPC_AUTOTUNE                    "MPC Autotune"
 #define STR_MPC_AUTOTUNE_START              " start for " STR_E
 #define STR_MPC_AUTOTUNE_INTERRUPTED        " interrupted!"
 #define STR_MPC_AUTOTUNE_FINISHED           " finished! Put the constants below into Configuration.h"
+=======
+#define STR_MPC_AUTOTUNE_START              "MPC Autotune start for " STR_E
+#define STR_MPC_AUTOTUNE_INTERRUPTED        "MPC Autotune interrupted!"
+#define STR_MPC_AUTOTUNE_FINISHED           "MPC Autotune finished! Put the constants below into Configuration.h"
+>>>>>>> origin/release-2.1.3-beta2
 #define STR_MPC_COOLING_TO_AMBIENT          "Cooling to ambient"
 #define STR_MPC_HEATING_PAST_200            "Heating to over 200C"
 #define STR_MPC_MEASURING_AMBIENT           "Measuring ambient heatloss at "
@@ -241,15 +256,25 @@
 #define STR_HEATER_CHAMBER                  "chamber"
 #define STR_COOLER                          "cooler"
 #define STR_MOTHERBOARD                     "motherboard"
+<<<<<<< HEAD
+=======
+#define STR_SOC                             "soc"
+>>>>>>> origin/release-2.1.3-beta2
 #define STR_PROBE                           "probe"
 #define STR_REDUNDANT                       "redundant "
 #define STR_LASER_TEMP                      "laser temperature"
 
 #define STR_STOPPED_HEATER                  ", system stopped! Heater_ID: "
+#define STR_DETECTED_TEMP_B                 " (temp: "
+#define STR_DETECTED_TEMP_E                 ")"
 #define STR_REDUNDANCY                      "Heater switched off. Temperature difference between temp sensors is too high !"
 #define STR_T_HEATING_FAILED                "Heating failed"
 #define STR_T_THERMAL_RUNAWAY               "Thermal Runaway"
+<<<<<<< HEAD
 #define STR_T_MALFUNCTION                   "Thermal Malfunction"
+=======
+#define STR_T_THERMAL_MALFUNCTION           "Thermal Malfunction"
+>>>>>>> origin/release-2.1.3-beta2
 #define STR_T_MAXTEMP                       "MAXTEMP triggered"
 #define STR_T_MINTEMP                       "MINTEMP triggered"
 #define STR_ERR_PROBING_FAILED              "Probing Failed"
@@ -275,9 +300,17 @@
 // Settings Report Strings
 #define STR_Z_AUTO_ALIGN                    "Z Auto-Align"
 #define STR_BACKLASH_COMPENSATION           "Backlash compensation"
+<<<<<<< HEAD
 #define STR_S_SEG_PER_SEC                   "S<seg-per-sec>"
 #define STR_DELTA_SETTINGS                  "Delta (L<diagonal-rod> R<radius> H<height> S<seg-per-sec> XYZ<tower-angle-trim> ABC<rod-trim>)"
 #define STR_SCARA_SETTINGS                  "SCARA"
+=======
+#define STR_FT_MOTION                       "Fixed-Time Motion"
+#define STR_S_SEG_PER_SEC                   "S<seg-per-sec>"
+#define STR_DELTA_SETTINGS                  "Delta (L<diagonal-rod> R<radius> H<height> S<seg-per-sec> XYZ<tower-angle-trim> ABC<rod-trim>)"
+#define STR_SCARA_SETTINGS                  "SCARA"
+#define STR_POLAR_SETTINGS                  "Polar"
+>>>>>>> origin/release-2.1.3-beta2
 #define STR_POLARGRAPH_SETTINGS             "Polargraph"
 #define STR_SCARA_P_T_Z                     "P<theta-psi-offset> T<theta-offset> Z<home-offset>"
 #define STR_ENDSTOP_ADJUSTMENT              "Endstop adjustment"
@@ -286,6 +319,10 @@
 #define STR_MAX_ACCELERATION                "Max Acceleration (units/s2)"
 #define STR_MAX_FEEDRATES                   "Max feedrates (units/s)"
 #define STR_ACCELERATION_P_R_T              "Acceleration (units/s2) (P<print-accel> R<retract-accel> T<travel-accel>)"
+<<<<<<< HEAD
+=======
+#define STR_HOMING_FEEDRATE                 "Homing Feedrate"
+>>>>>>> origin/release-2.1.3-beta2
 #define STR_TOOL_CHANGING                   "Tool-changing"
 #define STR_HOTEND_OFFSETS                  "Hotend offsets"
 #define STR_SERVO_ANGLES                    "Servo Angles"
@@ -294,6 +331,10 @@
 #define STR_CHAMBER_PID                     "Chamber PID"
 #define STR_STEPS_PER_UNIT                  "Steps per unit"
 #define STR_LINEAR_ADVANCE                  "Linear Advance"
+<<<<<<< HEAD
+=======
+#define STR_NONLINEAR_EXTRUSION             "Nonlinear Extrusion"
+>>>>>>> origin/release-2.1.3-beta2
 #define STR_CONTROLLER_FAN                  "Controller Fan"
 #define STR_STEPPER_MOTOR_CURRENTS          "Stepper motor currents"
 #define STR_RETRACT_S_F_Z                   "Retract (S<length> F<feedrate> Z<lift>)"
@@ -317,6 +358,7 @@
 #define STR_TEMPERATURE_UNITS               "Temperature Units"
 #define STR_USER_THERMISTORS                "User thermistors"
 #define STR_DELAYED_POWEROFF                "Delayed poweroff"
+<<<<<<< HEAD
 
 //
 // Endstop Names used by Endstops::report_states
@@ -349,6 +391,22 @@
 #define STR_FILAMENT                        "filament"
 
 // General axis names
+=======
+#define STR_STORED_MACROS                   "Stored macros"
+
+//
+// General axis names
+//
+#if HAS_X_AXIS
+  #define AXIS1_NAME 'X'
+#endif
+#if HAS_Y_AXIS
+  #define AXIS2_NAME 'Y'
+#endif
+#if HAS_Z_AXIS
+  #define AXIS3_NAME 'Z'
+#endif
+>>>>>>> origin/release-2.1.3-beta2
 #define STR_X "X"
 #define STR_Y "Y"
 #define STR_Z "Z"
@@ -358,15 +416,134 @@
   #define STR_B "B"
   #define STR_C "C"
 #else
-  #define STR_A "X"
-  #define STR_B "Y"
-  #define STR_C "Z"
+  #define STR_A STR_X
+  #define STR_B STR_Y
+  #define STR_C STR_Z
 #endif
-#define STR_X2 "X2"
-#define STR_Y2 "Y2"
-#define STR_Z2 "Z2"
-#define STR_Z3 "Z3"
-#define STR_Z4 "Z4"
+#define STR_X2 STR_A "2"
+#define STR_Y2 STR_B "2"
+#define STR_Z2 STR_C "2"
+#define STR_Z3 STR_C "3"
+#define STR_Z4 STR_C "4"
+
+<<<<<<< HEAD
+// Extra Axis and Endstop Names
+#if HAS_I_AXIS
+  #if AXIS4_NAME == 'A'
+    #define STR_I "A"
+    #define STR_I_MIN "a_min"
+    #define STR_I_MAX "a_max"
+  #elif AXIS4_NAME == 'B'
+    #define STR_I "B"
+    #define STR_I_MIN "b_min"
+    #define STR_I_MAX "b_max"
+  #elif AXIS4_NAME == 'C'
+    #define STR_I "C"
+    #define STR_I_MIN "c_min"
+    #define STR_I_MAX "c_max"
+  #elif AXIS4_NAME == 'U'
+    #define STR_I "U"
+    #define STR_I_MIN "u_min"
+    #define STR_I_MAX "u_max"
+  #elif AXIS4_NAME == 'V'
+    #define STR_I "V"
+    #define STR_I_MIN "v_min"
+    #define STR_I_MAX "v_max"
+  #elif AXIS4_NAME == 'W'
+    #define STR_I "W"
+    #define STR_I_MIN "w_min"
+    #define STR_I_MAX "w_max"
+  #else
+    #error "AXIS4_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
+  #endif
+#else
+  #define STR_I   ""
+#endif
+
+#if HAS_J_AXIS
+  #if AXIS5_NAME == 'B'
+    #define STR_J "B"
+    #define STR_J_MIN "b_min"
+    #define STR_J_MAX "b_max"
+  #elif AXIS5_NAME == 'C'
+    #define STR_J "C"
+    #define STR_J_MIN "c_min"
+    #define STR_J_MAX "c_max"
+  #elif AXIS5_NAME == 'U'
+    #define STR_J "U"
+    #define STR_J_MIN "u_min"
+    #define STR_J_MAX "u_max"
+  #elif AXIS5_NAME == 'V'
+    #define STR_J "V"
+    #define STR_J_MIN "v_min"
+    #define STR_J_MAX "v_max"
+  #elif AXIS5_NAME == 'W'
+    #define STR_J "W"
+    #define STR_J_MIN "w_min"
+    #define STR_J_MAX "w_max"
+  #else
+    #error "AXIS5_NAME can only be one of 'B', 'C', 'U', 'V', or 'W'."
+  #endif
+#else
+  #define STR_J   ""
+#endif
+
+#if HAS_K_AXIS
+  #if AXIS6_NAME == 'C'
+    #define STR_K "C"
+    #define STR_K_MIN "c_min"
+    #define STR_K_MAX "c_max"
+  #elif AXIS6_NAME == 'U'
+    #define STR_K "U"
+    #define STR_K_MIN "u_min"
+    #define STR_K_MAX "u_max"
+  #elif AXIS6_NAME == 'V'
+    #define STR_K "V"
+    #define STR_K_MIN "v_min"
+    #define STR_K_MAX "v_max"
+  #elif AXIS6_NAME == 'W'
+    #define STR_K "W"
+    #define STR_K_MIN "w_min"
+    #define STR_K_MAX "w_max"
+  #else
+    #error "AXIS6_NAME can only be one of 'C', 'U', 'V', or 'W'."
+  #endif
+#else
+  #define STR_K   ""
+=======
+//
+// Endstop Names used by Endstops::report_states
+//
+#if HAS_X_AXIS
+  #define STR_X_MIN                         "x_min"
+  #define STR_X_MAX                         "x_max"
+  #define STR_X2_MIN                        "x2_min"
+  #define STR_X2_MAX                        "x2_max"
+>>>>>>> origin/release-2.1.3-beta2
+#endif
+
+#if HAS_Y_AXIS
+  #define STR_Y_MIN                         "y_min"
+  #define STR_Y_MAX                         "y_max"
+  #define STR_Y2_MIN                        "y2_min"
+  #define STR_Y2_MAX                        "y2_max"
+#endif
+
+#if HAS_Z_AXIS
+  #define STR_Z_MIN                         "z_min"
+  #define STR_Z_MAX                         "z_max"
+  #define STR_Z2_MIN                        "z2_min"
+  #define STR_Z2_MAX                        "z2_max"
+  #define STR_Z3_MIN                        "z3_min"
+  #define STR_Z3_MAX                        "z3_max"
+  #define STR_Z4_MIN                        "z4_min"
+  #define STR_Z4_MAX                        "z4_max"
+#endif
+
+#define STR_Z_PROBE                         "z_probe"
+#define STR_PROBE_EN                        "probe_en"
+#define STR_FILAMENT                        "filament"
+#define STR_CALIBRATION                     "calibration"
 
 // Extra Axis and Endstop Names
 #if HAS_I_AXIS
@@ -453,7 +630,55 @@
   #define STR_K   ""
 #endif
 
-#if EITHER(HAS_MARLINUI_HD44780, IS_TFTGLCD_PANEL)
+#if HAS_U_AXIS
+  #if AXIS7_NAME == 'U'
+    #define STR_U "U"
+    #define STR_U_MIN "u_min"
+    #define STR_U_MAX "u_max"
+  #elif AXIS7_NAME == 'V'
+    #define STR_U "V"
+    #define STR_U_MIN "v_min"
+    #define STR_U_MAX "v_max"
+  #elif AXIS7_NAME == 'W'
+    #define STR_U "W"
+    #define STR_U_MIN "w_min"
+    #define STR_U_MAX "w_max"
+  #else
+    #error "AXIS7_NAME can only be one of 'U', 'V', or 'W'."
+  #endif
+#else
+  #define STR_U   ""
+#endif
+
+#if HAS_V_AXIS
+  #if AXIS8_NAME == 'V'
+    #define STR_V "V"
+    #define STR_V_MIN "v_min"
+    #define STR_V_MAX "v_max"
+  #elif AXIS8_NAME == 'W'
+    #define STR_V "W"
+    #define STR_V_MIN "w_min"
+    #define STR_V_MAX "w_max"
+  #else
+    #error "AXIS8_NAME can only be one of 'V', or 'W'."
+  #endif
+#else
+  #define STR_V   ""
+#endif
+
+#if HAS_W_AXIS
+  #if AXIS9_NAME == 'W'
+    #define STR_W "W"
+    #define STR_W_MIN "w_min"
+    #define STR_W_MAX "w_max"
+  #else
+    #error "AXIS9_NAME can only be 'W'."
+  #endif
+#else
+  #define STR_W   ""
+#endif
+
+#if ANY(HAS_MARLINUI_HD44780, IS_TFTGLCD_PANEL)
 
   // Custom characters defined in the first 8 characters of the LCD
   #define LCD_STR_BEDTEMP     "\x00" // Print only as a char. This will have 'unexpected' results when used in a string!

@@ -22,7 +22,9 @@
 #pragma once
 
 /**
- * ZRIB V5.2 Based on MKS BASE v1.4 with A4982 stepper drivers and digital micro-stepping
+ * ZONESTAR ZRIB V5.2 Based on MKS BASE v1.4 with A4982 stepper drivers and digital micro-stepping
+ * Schematic: https://github.com/ZONESTAR3D/Control-Board/blob/main/8bit/ZRIB/ZRIB_V5/ZRIB_V52_Schematic.pdf
+ * ATmega2560, ATmega1280
  */
 
 #if HOTENDS > 2 || E_STEPPERS > 2
@@ -36,8 +38,11 @@
 //
 // Heaters / Fans
 //
+<<<<<<< HEAD
 #define HEATER_1_PIN                           7
 #define FAN_PIN                                9  // PH6 ** Pin18 ** PWM9
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #define FAN1_PIN                               6
 
 //
@@ -47,8 +52,23 @@
 #define E2_DIR_PIN                             5
 #define E2_ENABLE_PIN                         22
 
+<<<<<<< HEAD
 #include "pins_MKS_BASE_common.h" // ... RAMPS
 
+=======
+//
+// Servos / XS3 Connector
+//
+#ifndef SERVO0_PIN
+  #define SERVO0_PIN                          65  // PWM
+#endif
+#ifndef SERVO1_PIN
+  #define SERVO1_PIN                          66  // PWM
+#endif
+
+#include "pins_MKS_BASE_common.h" // ... RAMPS
+
+>>>>>>> origin/release-2.1.3-beta2
 /**
  * Available connectors on MKS BASE v1.4 (Basically same as ZRIB V5.2)
  *
@@ -78,13 +98,18 @@
  *  |  GND   |
  *  ==========
  *
+<<<<<<< HEAD
  * XS3 Connector
+=======
+ * Servos / XS3 Connector
+>>>>>>> origin/release-2.1.3-beta2
  *  =================
  *  | 65 | GND | 5V |      (65)  PK3 ** Pin86 ** A11
  *  |----|-----|----|
  *  | 66 | GND | 5V |      (66)  PK4 ** Pin85 ** A12
  *  =================
  *
+<<<<<<< HEAD
  * Servos Connector
  *  =================
  *  | 11 | GND | 5V |      (11)  PB5 ** Pin24 ** PWM11
@@ -92,6 +117,8 @@
  *  | 12 | GND | 5V |      (12)  PB6 ** Pin25 ** PWM12
  *  =================
  *
+=======
+>>>>>>> origin/release-2.1.3-beta2
  * ICSP
  *  =================
  *  | 5V | 51 | GND |      (51)  PB2 ** Pin21 ** SPI_MOSI

@@ -28,13 +28,23 @@
 #include "../../../feature/powerloss.h"
 #include "../../../module/motion.h"
 
+<<<<<<< HEAD
+=======
+#if HAS_PLR_BED_THRESHOLD
+  #include "../../../module/temperature.h"  // for degBed
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 #include "../../../lcd/marlinui.h"
 #if ENABLED(EXTENSIBLE_UI)
   #include "../../../lcd/extui/ui_api.h"
 #elif ENABLED(DWIN_CREALITY_LCD)
   #include "../../../lcd/e3v2/creality/dwin.h"
+<<<<<<< HEAD
 #elif ENABLED(DWIN_LCD_PROUI)
   #include "../../../lcd/e3v2/proui/dwin.h"
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #elif ENABLED(DWIN_CREALITY_LCD_JYERSUI)
   #include "../../../lcd/e3v2/jyersui/dwin.h" // Temporary fix until it can be better implemented
 #endif
@@ -47,8 +57,12 @@ void menu_job_recovery();
 inline void plr_error(FSTR_P const prefix) {
   #if ENABLED(DEBUG_POWER_LOSS_RECOVERY)
     DEBUG_ECHO_START();
+<<<<<<< HEAD
     DEBUG_ECHOF(prefix);
     DEBUG_ECHOLNPGM(" Job Recovery Data");
+=======
+    DEBUG_ECHOLN(prefix, F(" Job Recovery Data"));
+>>>>>>> origin/release-2.1.3-beta2
   #else
     UNUSED(prefix);
   #endif
@@ -61,11 +75,14 @@ inline void plr_error(FSTR_P const prefix) {
 /**
  * M1000: Resume from power-loss (undocumented)
  *   - With 'S' go to the Resume/Cancel menu
+ *     ...unless the bed temperature is already above a configured minimum temperature.
+ *   - With 'C' execute a cancel selection
  *   - With no parameters, run recovery commands
  */
 void GcodeSuite::M1000() {
 
   if (recovery.valid()) {
+<<<<<<< HEAD
     if (parser.seen_test('S')) {
       #if HAS_MARLINUI_MENU
         ui.goto_screen(menu_job_recovery);
@@ -73,8 +90,19 @@ void GcodeSuite::M1000() {
         recovery.dwin_flag = true;
       #elif ENABLED(DWIN_CREALITY_LCD_JYERSUI) // Temporary fix until it can be better implemented
         CrealityDWIN.Popup_Handler(Resume);
+=======
+    const bool force_resume = TERN0(HAS_PLR_BED_THRESHOLD, recovery.bed_temp_threshold && (thermalManager.degBed() >= recovery.bed_temp_threshold));
+
+    if (!force_resume && parser.seen_test('S')) {
+      #if HAS_MARLINUI_MENU
+        ui.goto_screen(menu_job_recovery);
+>>>>>>> origin/release-2.1.3-beta2
       #elif ENABLED(EXTENSIBLE_UI)
         ExtUI::onPowerLossResume();
+      #elif HAS_PLR_UI_FLAG
+        recovery.ui_flag_resume = true;
+      #elif ENABLED(DWIN_CREALITY_LCD_JYERSUI) // Temporary fix until it can be better implemented
+        jyersDWIN.popupHandler(Popup_Resume);
       #else
         SERIAL_ECHO_MSG("Resume requires LCD.");
       #endif

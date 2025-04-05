@@ -21,11 +21,16 @@
  */
 #pragma once
 
+<<<<<<< HEAD
 #include "../../core/macros.h"
 #include "../../inc/MarlinConfigPre.h"
 
 #if BOTH(HAS_MARLINUI_U8GLIB, SDSUPPORT) && (LCD_PINS_D4 == SD_SCK_PIN || LCD_PINS_ENABLE == SD_MOSI_PIN || DOGLCD_SCK == SD_SCK_PIN || DOGLCD_MOSI == SD_MOSI_PIN)
   #define LPC_SOFTWARE_SPI  // If the SD card and LCD adapter share the same SPI pins, then software SPI is currently
+=======
+#if ALL(HAS_MARLINUI_U8GLIB, HAS_MEDIA) && (LCD_PINS_D4 == SD_SCK_PIN || LCD_PINS_EN == SD_MOSI_PIN || DOGLCD_SCK == SD_SCK_PIN || DOGLCD_MOSI == SD_MOSI_PIN)
+  #define SOFTWARE_SPI      // If the SD card and LCD adapter share the same SPI pins, then software SPI is currently
+>>>>>>> origin/release-2.1.3-beta2
                             // needed due to the speed and mode required for communicating with each device being different.
                             // This requirement can be removed if the SPI access to these devices is updated to use
                             // spiBeginTransaction.

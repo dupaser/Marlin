@@ -1,9 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- *
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
- * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
- * Copyright (c) 2015-2016 Nico Tonnhofer wurstnase.reprap@gmail.com
+ *
+ * Based on Sprinter and grbl.
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,14 @@
 #include <iostream>
 #include <stdint.h>
 #include <stdarg.h>
+<<<<<<< HEAD
+=======
+
+#ifdef HAS_LIBBSD
+  #include <bsd/string.h>
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 #undef min
 #undef max
 #include <algorithm>
@@ -80,8 +88,13 @@ extern MSerialT usb_serial;
 #define CRITICAL_SECTION_END()
 
 // ADC
+<<<<<<< HEAD
 #define HAL_ADC_VREF           5.0
 #define HAL_ADC_RESOLUTION    10
+=======
+#define HAL_ADC_VREF_MV   5000
+#define HAL_ADC_RESOLUTION  10
+>>>>>>> origin/release-2.1.3-beta2
 
 // ------------------------
 // Class Utilities
@@ -162,4 +175,16 @@ public:
   }
 
   static void set_pwm_frequency(const pin_t, int) {}
+<<<<<<< HEAD
+=======
+
+  #ifndef HAS_LIBBSD
+    /**
+     * Redirect missing strlcpy here
+     */
+    static size_t _strlcpy(char *dst, const char *src, size_t dsize);
+    #define strlcpy hal._strlcpy
+  #endif
+
+>>>>>>> origin/release-2.1.3-beta2
 };

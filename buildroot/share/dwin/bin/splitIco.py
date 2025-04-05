@@ -18,10 +18,14 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #----------------------------------------------------------------
 
+<<<<<<< HEAD
 import os
 import os.path
 import argparse
 import DWIN_ICO
+=======
+import os.path, argparse, DWIN_ICO
+>>>>>>> origin/release-2.1.3-beta2
 
 version = '2.0.7'
 

@@ -22,11 +22,14 @@
 
 #include "../gcode.h"
 #include "../../module/settings.h"
-#include "../../core/serial.h"
 #include "../../inc/MarlinConfig.h"
 
 #if ENABLED(CONFIGURATION_EMBEDDING)
+<<<<<<< HEAD
   #include "../../sd/SdBaseFile.h"
+=======
+  #include "../../sd/cardreader.h"
+>>>>>>> origin/release-2.1.3-beta2
   #include "../../mczip.h"
 #endif
 
@@ -66,11 +69,27 @@ void GcodeSuite::M502() {
 
     #if ENABLED(CONFIGURATION_EMBEDDING)
       if (parser.seen_test('C')) {
+<<<<<<< HEAD
         SdBaseFile file;
         const uint16_t size = sizeof(mc_zip);
         // Need to create the config size on the SD card
         if (file.open("mc.zip", O_WRITE|O_CREAT) && file.write(pgm_read_ptr(mc_zip), size) != -1 && file.close())
           SERIAL_ECHO_MSG("Configuration saved as 'mc.zip'");
+=======
+        MediaFile file;
+        // Need to create the config size on the SD card
+        MediaFile root = card.getroot();
+        if (file.open(&root, "mc.zip", O_WRITE|O_CREAT)) {
+          bool success = true;
+          for (uint16_t i = 0; success && i < sizeof(mc_zip); ++i) {
+            const uint8_t c = pgm_read_byte(&mc_zip[i]);
+            success = (file.write(c) == 1);
+          }
+          success = file.close() && success;
+
+          if (success) SERIAL_ECHO_MSG("Configuration saved as 'mc.zip'");
+        }
+>>>>>>> origin/release-2.1.3-beta2
       }
     #endif
   }

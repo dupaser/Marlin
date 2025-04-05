@@ -22,7 +22,7 @@
 
 #include "../../inc/MarlinConfig.h"
 
-#if ENABLED(SDSUPPORT)
+#if HAS_MEDIA
 
 #include "../gcode.h"
 #include "../../sd/cardreader.h"
@@ -41,7 +41,11 @@
   #include "../../feature/powerloss.h"
 #endif
 
+<<<<<<< HEAD
 #if ENABLED(DGUS_LCD_UI_MKS)
+=======
+#if DGUS_LCD_UI_MKS
+>>>>>>> origin/release-2.1.3-beta2
   #include "../../lcd/extui/dgus/DGUSDisplayDef.h"
 #endif
 
@@ -58,7 +62,7 @@
  */
 void GcodeSuite::M24() {
 
-  #if ENABLED(DGUS_LCD_UI_MKS)
+  #if DGUS_LCD_UI_MKS
     if ((print_job_timer.isPaused() || print_job_timer.isRunning()) && !parser.seen("ST"))
       MKS_resume_print_move();
   #endif
@@ -78,7 +82,11 @@ void GcodeSuite::M24() {
   #endif
 
   if (card.isFileOpen()) {
+<<<<<<< HEAD
     card.startOrResumeFilePrinting();            // SD card will now be read for commands
+=======
+    card.startOrResumeFilePrinting(); // SD card will now be read for commands
+>>>>>>> origin/release-2.1.3-beta2
     startOrResumeJob();               // Start (or resume) the print job timer
     TERN_(POWER_LOSS_RECOVERY, recovery.prepare());
   }
@@ -109,9 +117,7 @@ void GcodeSuite::M25() {
   #else
 
     // Set initial pause flag to prevent more commands from landing in the queue while we try to pause
-    #if ENABLED(SDSUPPORT)
-      if (IS_SD_PRINTING()) card.pauseSDPrint();
-    #endif
+    if (IS_SD_PRINTING()) card.pauseSDPrint();
 
     #if ENABLED(POWER_LOSS_RECOVERY) && DISABLED(DGUS_LCD_UI_MKS)
       if (recovery.enabled) recovery.save(true);
@@ -138,4 +144,8 @@ void GcodeSuite::M25() {
   #endif
 }
 
+<<<<<<< HEAD
 #endif // SDSUPPORT
+=======
+#endif // HAS_MEDIA
+>>>>>>> origin/release-2.1.3-beta2

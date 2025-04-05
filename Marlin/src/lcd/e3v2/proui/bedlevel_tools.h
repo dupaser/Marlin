@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> origin/release-2.1.3-beta2
  * Marlin 3D Printer Firmware
  * Copyright (c) 2022 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
@@ -22,6 +26,7 @@
 
 /**
  * Bed Level Tools for Pro UI
+<<<<<<< HEAD
  * Extended by: Miguel A. Risco-Castillo (MRISCOC)
  * Version: 2.0.0
  * Date: 2022/05/23
@@ -30,10 +35,31 @@
  * https://github.com/Jyers/Marlin/pull/126
  */
 
+=======
+ *
+ * Based on the original work of: Henri-J-Norden
+ * https://github.com/Jyers/Marlin/pull/126
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+>>>>>>> origin/release-2.1.3-beta2
 #pragma once
 
 #include "../../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if ENABLED(AUTO_BED_LEVELING_UBL)
   //#define USE_UBL_VIEWER 1
 #endif
@@ -44,10 +70,16 @@
 class BedLevelToolsClass {
 public:
   #if USE_UBL_VIEWER
+=======
+class BedLevelTools {
+public:
+  #if ENABLED(USE_GRID_MESHVIEWER)
+>>>>>>> origin/release-2.1.3-beta2
     static bool viewer_asymmetric_range;
     static bool viewer_print_value;
   #endif
   static bool goto_mesh_value;
+<<<<<<< HEAD
   static uint8_t mesh_x;
   static uint8_t mesh_y;
   static uint8_t tilt_grid;
@@ -75,3 +107,30 @@ public:
 extern BedLevelToolsClass BedLevelTools;
 
 void Goto_MeshViewer();
+=======
+  static uint8_t mesh_x, mesh_y;
+  static uint8_t tilt_grid;
+
+  #if ENABLED(AUTO_BED_LEVELING_UBL)
+    static void manualValueUpdate(const uint8_t mesh_x, const uint8_t mesh_y, bool undefined=false);
+    static bool createPlaneFromMesh();
+  #else
+    static void manualValueUpdate(const uint8_t mesh_x, const uint8_t mesh_y);
+  #endif
+  static void manualMove(const uint8_t mesh_x, const uint8_t mesh_y, bool zmove=false);
+  static void moveToXYZ();
+  static void moveToXY();
+  static void moveToZ();
+  static void probeXY();
+  static void meshReset();
+  static float getMaxValue();
+  static float getMinValue();
+  static bool meshValidate();
+  #if ENABLED(USE_GRID_MESHVIEWER)
+    static void drawBedMesh(int16_t selected=-1, uint8_t gridline_width=1, uint16_t padding_x=8, uint16_t padding_y_top=(40 + 53 - 7));
+    static void setMeshViewerStatus();
+  #endif
+};
+
+extern BedLevelTools bedLevelTools;
+>>>>>>> origin/release-2.1.3-beta2

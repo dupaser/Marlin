@@ -51,15 +51,19 @@ void unified_bed_leveling::report_current_mesh() {
   GRID_LOOP(x, y)
     if (!isnan(z_values[x][y])) {
       SERIAL_ECHO_START();
+<<<<<<< HEAD
       SERIAL_ECHOPGM("  M421 I", x, " J", y);
       SERIAL_ECHOLNPAIR_F_P(SP_Z_STR, z_values[x][y], 4);
+=======
+      SERIAL_ECHOLN(F("  M421 I"), x, F(" J"), y, FPSTR(SP_Z_STR), p_float_t(z_values[x][y], 4));
+>>>>>>> origin/release-2.1.3-beta2
       serial_delay(75); // Prevent Printrun from exploding
     }
 }
 
 void unified_bed_leveling::report_state() {
   echo_name();
-  SERIAL_ECHO_TERNARY(planner.leveling_active, " System v" UBL_VERSION " ", "", "in", "active\n");
+  serial_ternary(F(" System v" UBL_VERSION " "), planner.leveling_active, nullptr, F("in"), F("active\n"));
   serial_delay(50);
 }
 
@@ -149,7 +153,7 @@ static void serial_echo_xy(const uint8_t sp, const int16_t x, const int16_t y) {
 
 static void serial_echo_column_labels(const uint8_t sp) {
   SERIAL_ECHO_SP(7);
-  LOOP_L_N(i, GRID_MAX_POINTS_X) {
+  for (uint8_t i = 0; i < GRID_MAX_POINTS_X; ++i) {
     if (i < 10) SERIAL_CHAR(' ');
     SERIAL_ECHO(i);
     SERIAL_ECHO_SP(sp);
@@ -199,7 +203,7 @@ void unified_bed_leveling::display_map(const uint8_t map_type) {
     }
 
     // Row Values (I indexes)
-    LOOP_L_N(i, GRID_MAX_POINTS_X) {
+    for (uint8_t i = 0; i < GRID_MAX_POINTS_X; ++i) {
 
       // Opening Brace or Space
       const bool is_current = i == curr.x && j == curr.y;
@@ -211,10 +215,17 @@ void unified_bed_leveling::display_map(const uint8_t map_type) {
         // TODO: Display on Graphical LCD
       }
       else if (isnan(f))
+<<<<<<< HEAD
         SERIAL_ECHOF(human ? F("  .   ") : F("NAN"));
       else if (human || csv) {
         if (human && f >= 0) SERIAL_CHAR(f > 0 ? '+' : ' ');  // Display sign also for positive numbers (' ' for 0)
         SERIAL_DECIMAL(f);                                    // Positive: 5 digits, Negative: 6 digits
+=======
+        SERIAL_ECHO(human ? F("  .   ") : F("NAN"));
+      else if (human || csv) {
+        if (human && f >= 0) SERIAL_CHAR(f > 0 ? '+' : ' ');  // Display sign also for positive numbers (' ' for 0)
+        SERIAL_ECHO(p_float_t(f, 3));                         // Positive: 5 digits, Negative: 6 digits
+>>>>>>> origin/release-2.1.3-beta2
       }
       if (csv && i < (GRID_MAX_POINTS_X) - 1) SERIAL_CHAR('\t');
 
@@ -260,7 +271,11 @@ bool unified_bed_leveling::sanity_check() {
    */
   void GcodeSuite::M1004() {
 
+<<<<<<< HEAD
     #define ALIGN_GCODE TERN(Z_STEPPER_AUTO_ALIGN, "G34", "")
+=======
+    #define ALIGN_GCODE TERN(Z_STEPPER_AUTO_ALIGN, "G34\n", "")
+>>>>>>> origin/release-2.1.3-beta2
     #define PROBE_GCODE TERN(HAS_BED_PROBE, "G29P1\nG29P3", "G29P4R")
 
     #if HAS_HOTEND
@@ -280,7 +295,11 @@ bool unified_bed_leveling::sanity_check() {
     #endif
 
     process_subcommands_now(FPSTR(G28_STR));      // Home
+<<<<<<< HEAD
     process_subcommands_now(F(ALIGN_GCODE "\n"    // Align multi z axis if available
+=======
+    process_subcommands_now(F(ALIGN_GCODE         // Align multi z axis if available
+>>>>>>> origin/release-2.1.3-beta2
                               PROBE_GCODE "\n"    // Build mesh with available hardware
                               "G29P3\nG29P3"));   // Ensure mesh is complete by running smart fill twice
 

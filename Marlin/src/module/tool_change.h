@@ -33,14 +33,24 @@
       float extra_prime;            // M217 E
       float extra_resume;           // M217 B
       int16_t prime_speed;          // M217 P
+<<<<<<< HEAD
       int16_t retract_speed;        // M217 R
       int16_t unretract_speed;      // M217 U
+=======
+      int16_t wipe_retract;         // M217 G
+      int16_t retract_speed;        // M217 R (mm/min)
+      int16_t unretract_speed;      // M217 U (mm/min)
+>>>>>>> origin/release-2.1.3-beta2
       uint8_t fan_speed;            // M217 F
       uint8_t fan_time;             // M217 D
     #endif
     #if ENABLED(TOOLCHANGE_PARK)
       bool enable_park;             // M217 W
+<<<<<<< HEAD
       xyz_pos_t change_point;       // M217 X Y I J K
+=======
+      xyz_pos_t change_point;       // M217 X Y I J K C H O
+>>>>>>> origin/release-2.1.3-beta2
     #endif
     float z_raise;                  // M217 Z
   } toolchange_settings_t;

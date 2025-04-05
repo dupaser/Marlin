@@ -1,9 +1,16 @@
 /**
  * Marlin 3D Printer Firmware
+<<<<<<< HEAD
  *
  * Copyright (c) 2021 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
  * Copyright (c) 2015-2016 Nico Tonnhofer wurstnase.reprap@gmail.com
+=======
+ * Copyright (c) 2021 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ *
+ * Based on Sprinter and grbl.
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
+>>>>>>> origin/release-2.1.3-beta2
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,11 +94,19 @@ extern MSerialT serial_stream_3;
   #endif
 #endif
 
+<<<<<<< HEAD
 #ifdef MMU2_SERIAL_PORT
   #if WITHIN(MMU2_SERIAL_PORT, 0, 3)
     #define MMU2_SERIAL MSERIAL(MMU2_SERIAL_PORT)
   #else
     #error "MMU2_SERIAL_PORT must be from 0 to 3. Please update your configuration."
+=======
+#ifdef MMU_SERIAL_PORT
+  #if WITHIN(MMU_SERIAL_PORT, 0, 3)
+    #define MMU_SERIAL MSERIAL(MMU_SERIAL_PORT)
+  #else
+    #error "MMU_SERIAL_PORT must be from 0 to 3. Please update your configuration."
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 #endif
 
@@ -114,8 +129,13 @@ extern MSerialT serial_stream_3;
 // ADC
 // ------------------------
 
+<<<<<<< HEAD
 #define HAL_ADC_VREF           5.0
 #define HAL_ADC_RESOLUTION    10
+=======
+#define HAL_ADC_VREF_MV   5000
+#define HAL_ADC_RESOLUTION  10
+>>>>>>> origin/release-2.1.3-beta2
 
 /* ---------------- Delay in cycles */
 
@@ -208,8 +228,13 @@ public:
   MarlinHAL() {}
 
   // Watchdog
+<<<<<<< HEAD
   static void watchdog_init()    IF_DISABLED(USE_WATCHDOG, {});
   static void watchdog_refresh() IF_DISABLED(USE_WATCHDOG, {});
+=======
+  static void watchdog_init();
+  static void watchdog_refresh();
+>>>>>>> origin/release-2.1.3-beta2
 
   static void init() {}        // Called early in setup()
   static void init_board() {}  // Called less early in setup()
@@ -263,4 +288,17 @@ public:
     analogWrite(pin, v);
   }
 
+<<<<<<< HEAD
+=======
+  static void set_pwm_frequency(const pin_t, int) {}
+
+  #ifndef HAS_LIBBSD
+    /**
+     * Redirect missing strlcpy here
+     */
+    static size_t _strlcpy(char *dst, const char *src, size_t dsize);
+    #define strlcpy hal._strlcpy
+  #endif
+
+>>>>>>> origin/release-2.1.3-beta2
 };

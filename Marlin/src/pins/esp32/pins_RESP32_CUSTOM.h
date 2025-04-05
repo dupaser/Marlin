@@ -34,4 +34,10 @@
 //
 // I2S (steppers & other output-only pins)
 //
+<<<<<<< HEAD
 #define I2S_STEPPER_STREAM
+=======
+#ifndef I2S_STEPPER_STREAM
+  #define I2S_STEPPER_STREAM
+#endif
+>>>>>>> origin/release-2.1.3-beta2

@@ -23,6 +23,7 @@
 
 /**
  * Melzi pin assignments
+ * Schematic: https://github.com/mosfet/melzi/blob/master/melzi.sch
  */
 
 #ifndef BOARD_INFO_NAME
@@ -31,6 +32,13 @@
 
 #define IS_MELZI 1
 
+<<<<<<< HEAD
+=======
+#ifndef FAN0_PIN
+  #define FAN0_PIN                             4
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 // Alter timing for graphical display
 #if IS_U8GLIB_ST7920
   #ifndef BOARD_ST7920_DELAY_1

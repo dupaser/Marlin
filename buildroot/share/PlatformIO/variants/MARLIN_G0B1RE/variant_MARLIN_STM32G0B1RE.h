@@ -124,6 +124,10 @@
 #define NUM_DIGITAL_PINS        62
 #define NUM_REMAP_PINS          2
 #define NUM_ANALOG_INPUTS       16
+<<<<<<< HEAD
+=======
+#define NUM_ANALOG_FIRST        PA0
+>>>>>>> origin/release-2.1.3-beta2
 
 // SPI definitions
 #ifndef PIN_SPI_SS

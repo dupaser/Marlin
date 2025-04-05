@@ -29,7 +29,13 @@
   #error "MKS Robin nano boards support up to 2 hotends / E steppers."
 #endif
 
+<<<<<<< HEAD
 #define BOARD_NO_NATIVE_USB
+=======
+#ifndef USB_MOD
+  #define BOARD_NO_NATIVE_USB
+#endif
+>>>>>>> origin/release-2.1.3-beta2
 
 // Avoid conflict with TIMER_SERVO when using the STM32 HAL
 #define TEMP_TIMER  5
@@ -40,14 +46,22 @@
 #if ENABLED(SRAM_EEPROM_EMULATION)
   #undef NO_EEPROM_SELECTED
 #endif
+<<<<<<< HEAD
 #if EITHER(NO_EEPROM_SELECTED, FLASH_EEPROM_EMULATION)
+=======
+#if ANY(NO_EEPROM_SELECTED, FLASH_EEPROM_EMULATION)
+>>>>>>> origin/release-2.1.3-beta2
   #define FLASH_EEPROM_EMULATION
   #define EEPROM_PAGE_SIZE     (0x800U) // 2K
   #define EEPROM_START_ADDRESS (0x8000000UL + (STM32_FLASH_SIZE) * 1024UL - (EEPROM_PAGE_SIZE) * 2UL)
   #define MARLIN_EEPROM_SIZE    EEPROM_PAGE_SIZE  // 2K
 #endif
 
+<<<<<<< HEAD
 #define SPI_DEVICE                             2
+=======
+#define SPI_DEVICE                             2  // Maple
+>>>>>>> origin/release-2.1.3-beta2
 
 //
 // Servos
@@ -58,9 +72,27 @@
 // Limit Switches
 //
 #define X_STOP_PIN                          PA15
+<<<<<<< HEAD
 #define Y_STOP_PIN                          PA12
 #define Z_MIN_PIN                           PA11
 #define Z_MAX_PIN                           PC4
+=======
+#define Z_MAX_PIN                           PC4
+#ifndef USB_MOD
+  #define Y_STOP_PIN                        PA12
+  #define Z_MIN_PIN                         PA11
+#else
+  #define Y_STOP_PIN                        PB10
+  #define Z_MIN_PIN                         PB11
+#endif
+
+//
+// Probe enable
+//
+#if ENABLED(PROBE_ENABLE_DISABLE) && !defined(PROBE_ENABLE_PIN)
+  #define PROBE_ENABLE_PIN            SERVO0_PIN
+#endif
+>>>>>>> origin/release-2.1.3-beta2
 
 //
 // Steppers
@@ -98,8 +130,13 @@
 #ifndef HEATER_0_PIN
   #define HEATER_0_PIN                      PC3
 #endif
+<<<<<<< HEAD
 #ifndef FAN_PIN
   #define FAN_PIN                           PB1   // FAN
+=======
+#ifndef FAN0_PIN
+  #define FAN0_PIN                          PB1   // FAN
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 #ifndef HEATER_BED_PIN
   #define HEATER_BED_PIN                    PA0
@@ -135,9 +172,21 @@
 // Misc. Functions
 //
 #if HAS_TFT_LVGL_UI
+<<<<<<< HEAD
   #define MT_DET_1_PIN                      PA4
   #define MT_DET_2_PIN                      PE6
   #define MT_DET_PIN_STATE                  LOW
+=======
+  #ifndef FIL_RUNOUT_PIN
+    #define FIL_RUNOUT_PIN                  PA4   // MT_DET_1
+  #endif
+  #ifndef FIL_RUNOUT2_PIN
+    #define FIL_RUNOUT2_PIN                 PE6   // MT_DET_2
+  #endif
+  #ifndef FIL_RUNOUT_STATE
+    #define FIL_RUNOUT_STATE                LOW
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
 
   #define WIFI_IO0_PIN                      PC13
   #define WIFI_IO1_PIN                      PC7
@@ -156,7 +205,11 @@
   #define SDCARD_CONNECTION              ONBOARD
 #endif
 
+<<<<<<< HEAD
 #define SDIO_SUPPORT
+=======
+#define ONBOARD_SDIO
+>>>>>>> origin/release-2.1.3-beta2
 #define SDIO_CLOCK                       4500000  // 4.5 MHz
 #define SD_DETECT_PIN                       PD12
 #define ONBOARD_SD_CS_PIN                   PC11
@@ -172,6 +225,7 @@
 #if HAS_FSMC_TFT
   /**
    * Note: MKS Robin TFT screens use various TFT controllers.
+<<<<<<< HEAD
    * If the screen stays white, disable 'TFT_RESET_PIN'
    * to let the bootloader init the screen.
    */
@@ -181,11 +235,25 @@
   #define DOGLCD_MOSI                       -1    // Prevent auto-define by Conditionals_post.h
   #define DOGLCD_SCK                        -1
 
+=======
+   * If the screen stays white, disable 'TFT_RESET_PIN' to let the bootloader init the screen.
+   */
+  #define LCD_USE_DMA_FSMC
+  #define FSMC_CS_PIN                       PD7
+  #define FSMC_RS_PIN                       PD11
+  #define TFT_CS_PIN                 FSMC_CS_PIN
+  #define TFT_RS_PIN                 FSMC_RS_PIN
+
+  #define TFT_RESET_PIN                     PC6   // FSMC_RST
+  #define TFT_BACKLIGHT_PIN                 PD13
+
+>>>>>>> origin/release-2.1.3-beta2
   #define TOUCH_CS_PIN                      PA7   // SPI2_NSS
   #define TOUCH_SCK_PIN                     PB13  // SPI2_SCK
   #define TOUCH_MISO_PIN                    PB14  // SPI2_MISO
   #define TOUCH_MOSI_PIN                    PB15  // SPI2_MOSI
 
+<<<<<<< HEAD
   #define LCD_USE_DMA_FSMC                        // Use DMA transfers to send data to the TFT
   #define FSMC_CS_PIN                       PD7
   #define FSMC_RS_PIN                       PD11
@@ -208,4 +276,19 @@
   #define SPI_FLASH_MOSI_PIN                PB15
   #define SPI_FLASH_MISO_PIN                PB14
   #define SPI_FLASH_SCK_PIN                 PB13
+=======
+  #define TOUCH_BUTTONS_HW_SPI
+  #define TOUCH_BUTTONS_HW_SPI_DEVICE          2
+
+  #define TFT_BUFFER_WORDS                 14400
+#endif
+
+#define SPI_FLASH
+#if ENABLED(SPI_FLASH)
+  #define SPI_FLASH_SIZE               0x1000000  // 16MB
+  #define SPI_FLASH_CS_PIN                  PB12
+  #define SPI_FLASH_SCK_PIN                 PB13
+  #define SPI_FLASH_MISO_PIN                PB14
+  #define SPI_FLASH_MOSI_PIN                PB15
+>>>>>>> origin/release-2.1.3-beta2
 #endif

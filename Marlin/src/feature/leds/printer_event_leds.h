@@ -56,10 +56,14 @@ public:
 
   #if HAS_TEMP_HOTEND || HAS_HEATED_BED || HAS_HEATED_CHAMBER
     static void onHeatingDone()             { leds.set_white(); }
+<<<<<<< HEAD
     static void onPidTuningDone(LEDColor c) { leds.set_color(c); }
+=======
+    static void onPIDTuningDone(LEDColor c) { leds.set_color(c); }
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 
-  #if ENABLED(SDSUPPORT)
+  #if HAS_MEDIA
 
     static void onPrintCompleted() {
       leds.set_green();
@@ -80,7 +84,7 @@ public:
       #endif
     }
 
-  #endif // SDSUPPORT
+  #endif // HAS_MEDIA
 };
 
 extern PrinterEventLEDs printerEventLEDs;

@@ -38,6 +38,7 @@ private:
   bool debug;
 
   void echo_msg(FSTR_P const fpre) {
+<<<<<<< HEAD
     SERIAL_ECHOF(fpre);
     if (the_msg) {
       SERIAL_CHAR(' ');
@@ -45,5 +46,11 @@ private:
     }
     SERIAL_CHAR(' ');
     print_pos(current_position);
+=======
+    SERIAL_ECHO(fpre);
+    if (the_msg) SERIAL_ECHO(C(' '), the_msg);
+    SERIAL_CHAR(' ');
+    print_xyz(xyz_pos_t(current_position));
+>>>>>>> origin/release-2.1.3-beta2
   }
 };

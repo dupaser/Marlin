@@ -22,6 +22,7 @@
 
 #include "../../inc/MarlinConfig.h"
 
+<<<<<<<< HEAD:Marlin/src/gcode/temp/M123.cpp
 #if HAS_FANCHECK
 
 #include "../gcode.h"
@@ -46,3 +47,26 @@ void GcodeSuite::M123() {
 }
 
 #endif // HAS_FANCHECK
+========
+#if ENABLED(SERVO_DETACH_GCODE)
+
+#include "../gcode.h"
+#include "../../module/servo.h"
+
+/**
+ * M282: Detach Servo. P<index>
+ */
+void GcodeSuite::M282() {
+
+  if (!parser.seenval('P')) return;
+
+  const int servo_index = parser.value_int();
+  if (WITHIN(servo_index, 0, NUM_SERVOS - 1))
+    servo[servo_index].detach();
+  else
+    SERIAL_ECHO_MSG("Servo ", servo_index, " out of range");
+
+}
+
+#endif // SERVO_DETACH_GCODE
+>>>>>>>> origin/release-2.1.3-beta2:Marlin/src/gcode/control/M282.cpp

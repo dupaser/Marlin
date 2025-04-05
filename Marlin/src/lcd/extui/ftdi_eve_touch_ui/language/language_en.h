@@ -39,6 +39,10 @@ namespace Language_en {
   LSTR MSG_BUTTON_OKAY              = u8"Okay";
   LSTR MSG_BUTTON_MENU              = u8"Menu";
   LSTR MSG_BUTTON_MEDIA             = u8"Media";
+<<<<<<< HEAD
+=======
+  LSTR MSG_BUTTON_USB               = u8"USB";
+>>>>>>> origin/release-2.1.3-beta2
   LSTR MSG_BUTTON_OPEN              = u8"Open";
   LSTR MSG_CLEAN_NOZZLE             = u8"Clean Nozzle";
   LSTR MSG_VMAX_X                   = u8"Max X Speed";
@@ -65,7 +69,13 @@ namespace Language_en {
   LSTR MSG_HOME                     = u8"Home";
   LSTR MSG_PRINT_STARTING           = u8"Print starting";
   LSTR MSG_PRINT_FINISHED           = u8"Print finished";
+<<<<<<< HEAD
   LSTR MSG_PRINT_ERROR              = u8"Print error";
+=======
+  LSTR MSG_PRINT_COMPLETE           = u8"Print Complete!";
+  LSTR MSG_PRINT_ERROR              = u8"Print error";
+  LSTR MSG_PRINT_AREA_CLEAR         = u8"Please ensure print area is\nclear and ready to print.";
+>>>>>>> origin/release-2.1.3-beta2
   LSTR MSG_ABOUT_TOUCH_PANEL_1      = u8"Color Touch Panel";
   LSTR MSG_ABOUT_TOUCH_PANEL_2      = WEBSITE_URL;
   LSTR MSG_LICENSE                  = u8"This program is free software: you can redistribute it and/or modify it under the terms of "
@@ -91,7 +101,11 @@ namespace Language_en {
   LSTR MSG_IDLE                     = u8"idle";
   LSTR MSG_SET_MAXIMUM              = u8"Set Maximum";
   LSTR MSG_PRINT_SPEED              = u8"Print Speed";
+<<<<<<< HEAD
   LSTR MSG_LINEAR_ADVANCE           = u8"Linear Advance";
+=======
+  LSTR MSG_SPEED                    = u8"Speed";
+>>>>>>> origin/release-2.1.3-beta2
   LSTR MSG_LINEAR_ADVANCE_K         = u8"K";
   LSTR MSG_LINEAR_ADVANCE_K1        = u8"K E1";
   LSTR MSG_LINEAR_ADVANCE_K2        = u8"K E2";
@@ -107,6 +121,10 @@ namespace Language_en {
   LSTR MSG_CALIBRATION_WARNING      = u8"For best results, unload the filament and clean the hotend prior to starting calibration. Continue?";
   LSTR MSG_START_PRINT_CONFIRMATION = u8"Start printing %s?";
   LSTR MSG_ABORT_WARNING            = u8"Are you sure you want to cancel the print?";
+<<<<<<< HEAD
+=======
+  LSTR MSG_START_NEXT_PRINT         = u8"Start Next Print";
+>>>>>>> origin/release-2.1.3-beta2
   LSTR MSG_EXTRUDER_SELECTION       = u8"Extruder Selection";
   LSTR MSG_CURRENT_TEMPERATURE      = u8"Current Temp";
   LSTR MSG_REMOVAL_TEMPERATURE      = u8"Removal Temp";
@@ -114,6 +132,11 @@ namespace Language_en {
   LSTR MSG_HOT                      = u8"Hot!";
   LSTR MSG_UNLOAD_FILAMENT          = u8"Unload/Retract";
   LSTR MSG_LOAD_FILAMENT            = u8"Load/Extrude";
+<<<<<<< HEAD
+=======
+  LSTR MSG_LOAD                     = u8"Load";
+  LSTR MSG_UNLOAD                   = u8"Unload";
+>>>>>>> origin/release-2.1.3-beta2
   LSTR MSG_MOMENTARY                = u8"Momentary";
   LSTR MSG_CONTINUOUS               = u8"Continuous";
   LSTR MSG_PRINT_MENU               = u8"Print Menu";
@@ -146,6 +169,12 @@ namespace Language_en {
   LSTR MSG_PROBE_BED                = u8"Probe Mesh";
   LSTR MSG_PRINT_TEST               = u8"Print Test (PLA)";
   LSTR MSG_MOVE_Z_TO_TOP            = u8"Raise Z to Top";
+<<<<<<< HEAD
+=======
+  LSTR MSG_MAX_SPEED_NO_UNITS       = u8"Max Speed";
+
+  //LSTR MSG_FTDI_HEATER_TIMEOUT    = u8"Idle timeout, temperature decreased. Press Okay to reheat and again to resume.";
+>>>>>>> origin/release-2.1.3-beta2
 
   #if ENABLED(TOUCH_UI_LULZBOT_BIO)
     LSTR MSG_MOVE_TO_HOME           = u8"Move to Home";
@@ -163,6 +192,7 @@ namespace Language_en {
     LSTR MSG_CHOCOLATE              = u8"Chocolate";
     LSTR MSG_UNLOAD_CARTRIDGE       = u8"Unload Cartridge";
     LSTR MSG_LOAD_UNLOAD            = u8"Load/Unload";
+<<<<<<< HEAD
     LSTR MSG_FULL_LOAD              = u8"Full Load";
     LSTR MSG_FULL_UNLOAD            = u8"Full Unload";
     LSTR MSG_PREHEAT_CHOCOLATE      = u8"Preheat Chocolate";
@@ -170,6 +200,14 @@ namespace Language_en {
     LSTR MSG_PREHEAT                = u8"Preheat";
     LSTR MSG_BUTTON_PAUSE           = u8"Pause";
     LSTR MSG_BUTTON_RESUME          = u8"Resume";
+=======
+    LSTR MSG_START_STOP             = u8"Start/Stop";
+    LSTR MSG_LOAD                   = u8"Load";
+    LSTR MSG_UNLOAD                 = u8"Unload";
+    LSTR MSG_PREHEAT_CHOCOLATE      = u8"Preheat Chocolate";
+    LSTR MSG_PREHEAT_FINISHED       = u8"Preheat finished";
+    LSTR MSG_PREHEAT                = u8"Preheat";
+>>>>>>> origin/release-2.1.3-beta2
     LSTR MSG_ELAPSED_PRINT          = u8"Elapsed Print";
     LSTR MSG_XYZ_MOVE               = u8"XYZ Move";
     LSTR MSG_E_MOVE                 = u8"Extrusion Move";

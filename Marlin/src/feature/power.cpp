@@ -26,7 +26,11 @@
 
 #include "../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if EITHER(PSU_CONTROL, AUTO_POWER_CONTROL)
+=======
+#if ANY(PSU_CONTROL, AUTO_POWER_CONTROL)
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "power.h"
 #include "../module/planner.h"
@@ -34,6 +38,13 @@
 #include "../module/temperature.h"
 #include "../MarlinCore.h"
 
+<<<<<<< HEAD
+=======
+#if ENABLED(MAX7219_REINIT_ON_POWERUP)
+  #include "max7219.h"
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 #if ENABLED(PS_OFF_SOUND)
   #include "../libs/buzzer.h"
 #endif
@@ -44,6 +55,7 @@
 
 Power powerManager;
 bool Power::psu_on;
+<<<<<<< HEAD
 
 #if ENABLED(AUTO_POWER_CONTROL)
   #include "../module/stepper.h"
@@ -56,6 +68,28 @@ bool Power::psu_on;
   millis_t Power::lastPowerOn;
 #endif
 
+=======
+
+#if ENABLED(AUTO_POWER_CONTROL)
+  #include "../module/stepper.h"
+  #include "../module/temperature.h"
+
+  #if ALL(USE_CONTROLLER_FAN, AUTO_POWER_CONTROLLERFAN)
+    #include "controllerfan.h"
+  #endif
+
+  #if ANY(LASER_FEATURE, SPINDLE_FEATURE)
+    #include "spindle_laser.h"
+  #endif
+
+  millis_t Power::lastPowerOn;
+#endif
+
+#if PSU_TRACK_STATE_MS
+  millis_t Power::last_state_change_ms = 0;
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 /**
  * Initialize pins & state for the power manager.
  *
@@ -78,14 +112,33 @@ void Power::power_on() {
 
   if (psu_on) return;
 
+<<<<<<< HEAD
   #if EITHER(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+=======
+  #if ANY(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+>>>>>>> origin/release-2.1.3-beta2
     cancelAutoPowerOff();
   #endif
 
   OUT_WRITE(PS_ON_PIN, PSU_ACTIVE_STATE);
+<<<<<<< HEAD
   psu_on = true;
   safe_delay(PSU_POWERUP_DELAY);
   restore_stepper_drivers();
+=======
+  #if ENABLED(PSU_OFF_REDUNDANT)
+    OUT_WRITE(PS_ON1_PIN, TERN_(PSU_OFF_REDUNDANT_INVERTED, !)PSU_ACTIVE_STATE);
+  #endif
+  TERN_(PSU_TRACK_STATE_MS, last_state_change_ms = millis());
+
+  psu_on = true;
+  safe_delay(PSU_POWERUP_DELAY);
+
+  restore_stepper_drivers();
+
+  TERN_(MAX7219_REINIT_ON_POWERUP, max7219.init());
+
+>>>>>>> origin/release-2.1.3-beta2
   TERN_(HAS_TRINAMIC_CONFIG, safe_delay(PSU_POWERUP_DELAY));
 
   #ifdef PSU_POWERUP_GCODE
@@ -98,12 +151,20 @@ void Power::power_on() {
  * Processes any PSU_POWEROFF_GCODE and makes a PS_OFF_SOUND if enabled.
  */
 void Power::power_off() {
+<<<<<<< HEAD
   SERIAL_ECHOLNPGM(STR_POWEROFF);
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
   TERN_(HAS_SUICIDE, suicide());
 
   if (!psu_on) return;
 
+<<<<<<< HEAD
+=======
+  SERIAL_ECHOLNPGM(STR_POWEROFF);
+
+>>>>>>> origin/release-2.1.3-beta2
   #ifdef PSU_POWEROFF_GCODE
     gcode.process_subcommands_now(F(PSU_POWEROFF_GCODE));
   #endif
@@ -113,14 +174,29 @@ void Power::power_off() {
   #endif
 
   OUT_WRITE(PS_ON_PIN, !PSU_ACTIVE_STATE);
+<<<<<<< HEAD
   psu_on = false;
 
   #if EITHER(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+=======
+  #if ENABLED(PSU_OFF_REDUNDANT)
+    OUT_WRITE(PS_ON1_PIN, IF_DISABLED(PSU_OFF_REDUNDANT_INVERTED, !)PSU_ACTIVE_STATE);
+  #endif
+  TERN_(PSU_TRACK_STATE_MS, last_state_change_ms = millis());
+
+  psu_on = false;
+
+  #if ANY(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+>>>>>>> origin/release-2.1.3-beta2
     cancelAutoPowerOff();
   #endif
 }
 
+<<<<<<< HEAD
 #if EITHER(AUTO_POWER_CONTROL, POWER_OFF_WAIT_FOR_COOLDOWN)
+=======
+#if ANY(AUTO_POWER_CONTROL, POWER_OFF_WAIT_FOR_COOLDOWN)
+>>>>>>> origin/release-2.1.3-beta2
 
   bool Power::is_cooling_needed() {
     #if HAS_HOTEND && AUTO_POWER_E_TEMP
@@ -140,7 +216,11 @@ void Power::power_off() {
 
 #endif
 
+<<<<<<< HEAD
 #if EITHER(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+=======
+#if ANY(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
+>>>>>>> origin/release-2.1.3-beta2
 
   #if ENABLED(POWER_OFF_TIMER)
     millis_t Power::power_off_time = 0;
@@ -175,7 +255,11 @@ void Power::power_off() {
   /**
    * Check all conditions that would signal power needing to be on.
    *
+<<<<<<< HEAD
    * @returns bool  if power is needed
+=======
+   * @return bool  if power is needed
+>>>>>>> origin/release-2.1.3-beta2
    */
   bool Power::is_power_needed() {
 
@@ -192,10 +276,21 @@ void Power::power_off() {
       HOTEND_LOOP() if (thermalManager.autofan_speed[e]) return true;
     #endif
 
+<<<<<<< HEAD
     #if BOTH(USE_CONTROLLER_FAN, AUTO_POWER_CONTROLLERFAN)
       if (controllerFan.state()) return true;
     #endif
 
+=======
+    #if ALL(USE_CONTROLLER_FAN, AUTO_POWER_CONTROLLERFAN)
+      if (controllerFan.state()) return true;
+    #endif
+
+    #if ANY(LASER_FEATURE, SPINDLE_FEATURE)
+      if (TERN0(AUTO_POWER_SPINDLE_LASER, cutter.enabled())) return true;
+    #endif
+
+>>>>>>> origin/release-2.1.3-beta2
     if (TERN0(AUTO_POWER_CHAMBER_FAN, thermalManager.chamberfan_speed))
       return true;
 

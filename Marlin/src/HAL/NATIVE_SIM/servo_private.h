@@ -61,7 +61,10 @@
 
 #define INVALID_SERVO         255     // flag indicating an invalid servo index
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
 // Types
 
 typedef struct {

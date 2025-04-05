@@ -23,15 +23,26 @@
 
 /**
  * Lock screen implementation for PRO UI
+<<<<<<< HEAD
  * Author: Miguel A. Risco-Castillo (MRISCOC)
  * Version: 2.2.0
  * Date: 2022/04/11
+=======
+ * Based on the original work of: Miguel Risco-Castillo (MRISCOC)
+ * https://github.com/mriscoc/Ender3V2S1
+ * Version: 2.3.2
+ * Date: 2022/11/20
+>>>>>>> origin/release-2.1.3-beta2
  */
 
 #include "../common/encoder.h"
 #include <stdint.h>
 
+<<<<<<< HEAD
 class LockScreenClass {
+=======
+class LockScreen {
+>>>>>>> origin/release-2.1.3-beta2
 private:
   static bool unlocked;
   static uint8_t lock_pos;
@@ -43,4 +54,8 @@ public:
   static bool isUnlocked() { return unlocked; }
 };
 
+<<<<<<< HEAD
 extern LockScreenClass lockScreen;
+=======
+extern LockScreen lockScreen;
+>>>>>>> origin/release-2.1.3-beta2

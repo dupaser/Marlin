@@ -28,17 +28,24 @@
 #include "../scaled_tft.h"
 
 #if ENABLED(TFT_TOUCH_DEVICE_GT911)
+<<<<<<< HEAD
   #include HAL_PATH(../../HAL, tft/gt911.h)
   GT911 touchIO;
 #elif ENABLED(TFT_TOUCH_DEVICE_XPT2046)
   #include HAL_PATH(../../HAL, tft/xpt2046.h)
+=======
+  #include HAL_PATH(../.., tft/gt911.h)
+  GT911 touchIO;
+#elif ENABLED(TFT_TOUCH_DEVICE_XPT2046)
+  #include HAL_PATH(../.., tft/xpt2046.h)
+>>>>>>> origin/release-2.1.3-beta2
   XPT2046 touchIO;
 #else
   #error "Unknown Touch Screen Type."
 #endif
 
-#if ENABLED(TOUCH_SCREEN_CALIBRATION)
-  #include "../tft_io/touch_calibration.h"
+#if HAS_DISPLAY_SLEEP
+  millis_t TouchButtons::next_sleep_ms;
 #endif
 
 #if HAS_TOUCH_SLEEP
@@ -48,6 +55,7 @@
 #include "../buttons.h" // For EN_C bit mask
 #include "../marlinui.h" // For ui.refresh
 #include "../tft_io/tft_io.h"
+#include "../tft_io/touch_calibration.h"
 
 #define DOGM_AREA_LEFT   TFT_PIXEL_OFFSET_X
 #define DOGM_AREA_TOP    TFT_PIXEL_OFFSET_Y
@@ -60,15 +68,23 @@
 TouchButtons touchBt;
 
 void TouchButtons::init() {
+<<<<<<< HEAD
   touchIO.Init();
   TERN_(HAS_TOUCH_SLEEP, next_sleep_ms = millis() + SEC_TO_MS(TOUCH_IDLE_SLEEP));
+=======
+  touchIO.init();
+  #if HAS_DISPLAY_SLEEP
+    next_sleep_ms = ui.sleep_timeout_minutes ? millis() + MIN_TO_MS(ui.sleep_timeout_minutes) : 0;
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 uint8_t TouchButtons::read_buttons() {
-  #ifdef HAS_WIRED_LCD
+  #if HAS_WIRED_LCD
     int16_t x, y;
 
     #if ENABLED(TFT_TOUCH_DEVICE_XPT2046)
+<<<<<<< HEAD
       const bool is_touched = (TERN(TOUCH_SCREEN_CALIBRATION, touch_calibration.calibration.orientation, TOUCH_ORIENTATION) == TOUCH_PORTRAIT ? touchIO.getRawPoint(&y, &x) : touchIO.getRawPoint(&x, &y));
       #if HAS_TOUCH_SLEEP
         if (is_touched)
@@ -93,6 +109,47 @@ uint8_t TouchButtons::read_buttons() {
     #elif ENABLED(TFT_TOUCH_DEVICE_GT911)
       bool is_touched = (TOUCH_ORIENTATION == TOUCH_PORTRAIT ? touchIO.getPoint(&y, &x) : touchIO.getPoint(&x, &y));
       if (!is_touched) return 0;
+=======
+
+      const bool is_touched = TOUCH_PORTRAIT == _TOUCH_ORIENTATION
+                                ? touchIO.getRawPoint(&y, &x)
+                                : touchIO.getRawPoint(&x, &y);
+      #if HAS_DISPLAY_SLEEP
+        if (is_touched)
+          wakeUp();
+        else if (next_sleep_ms && !isSleeping() && ELAPSED(millis(), next_sleep_ms) && ui.on_status_screen())
+          sleepTimeout();
+      #endif
+
+      #if ENABLED(TOUCH_SCREEN_CALIBRATION)
+        static bool no_touch = false;
+      #endif
+
+      if (!is_touched) {
+        TERN_(TOUCH_SCREEN_CALIBRATION, no_touch = false);
+        return 0;
+      }
+
+      #if ENABLED(TOUCH_SCREEN_CALIBRATION)
+        const calibrationState state = touch_calibration.get_calibration_state();
+        if (WITHIN(state, CALIBRATION_TOP_LEFT, CALIBRATION_BOTTOM_LEFT)) {
+          if (!no_touch && touch_calibration.handleTouch(x, y)) ui.refresh();
+          no_touch = true;
+          return 0;
+        }
+        x = int16_t((int32_t(x) * _TOUCH_CALIBRATION_X) >> 16) + _TOUCH_OFFSET_X;
+        y = int16_t((int32_t(y) * _TOUCH_CALIBRATION_Y) >> 16) + _TOUCH_OFFSET_Y;
+      #else
+        x = uint16_t((uint32_t(x) * _TOUCH_CALIBRATION_X) >> 16) + _TOUCH_OFFSET_X;
+        y = uint16_t((uint32_t(y) * _TOUCH_CALIBRATION_Y) >> 16) + _TOUCH_OFFSET_Y;
+      #endif
+
+    #elif ENABLED(TFT_TOUCH_DEVICE_GT911)
+
+      const bool is_touched = TOUCH_PORTRAIT == _TOUCH_ORIENTATION ? touchIO.getRawPoint(&y, &x) : touchIO.getRawPoint(&x, &y);
+      if (!is_touched) return 0;
+
+>>>>>>> origin/release-2.1.3-beta2
     #endif
 
     // Touch within the button area simulates an encoder button
@@ -117,7 +174,11 @@ uint8_t TouchButtons::read_buttons() {
   return 0;
 }
 
+<<<<<<< HEAD
 #if HAS_TOUCH_SLEEP
+=======
+#if HAS_DISPLAY_SLEEP
+>>>>>>> origin/release-2.1.3-beta2
 
   void TouchButtons::sleepTimeout() {
     #if HAS_LCD_BRIGHTNESS
@@ -127,6 +188,10 @@ uint8_t TouchButtons::read_buttons() {
     #endif
     next_sleep_ms = TSLP_SLEEPING;
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/release-2.1.3-beta2
   void TouchButtons::wakeUp() {
     if (isSleeping()) {
       #if HAS_LCD_BRIGHTNESS
@@ -135,9 +200,23 @@ uint8_t TouchButtons::read_buttons() {
         WRITE(TFT_BACKLIGHT_PIN, HIGH);
       #endif
     }
+<<<<<<< HEAD
     next_sleep_ms = millis() + SEC_TO_MS(TOUCH_IDLE_SLEEP);
   }
 
 #endif // HAS_TOUCH_SLEEP
+=======
+    next_sleep_ms = ui.sleep_timeout_minutes ? millis() + MIN_TO_MS(ui.sleep_timeout_minutes) : 0;
+  }
+
+  bool MarlinUI::display_is_asleep() {
+    return touchBt.isSleeping();
+  }
+  void MarlinUI::sleep_display(const bool sleep/*=true*/) {
+    if (!sleep) touchBt.wakeUp();
+  }
+
+#endif // HAS_DISPLAY_SLEEP
+>>>>>>> origin/release-2.1.3-beta2
 
 #endif // HAS_TOUCH_BUTTONS

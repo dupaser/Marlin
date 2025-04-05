@@ -55,8 +55,15 @@ void GcodeSuite::M281() {
 }
 
 void GcodeSuite::M281_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
   report_heading_etc(forReplay, F(STR_SERVO_ANGLES));
   LOOP_L_N(i, NUM_SERVOS) {
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+  report_heading_etc(forReplay, F(STR_SERVO_ANGLES));
+  for (uint8_t i = 0; i < NUM_SERVOS; ++i) {
+>>>>>>> origin/release-2.1.3-beta2
     switch (i) {
       default: break;
       #if ENABLED(SWITCHING_EXTRUDER)
@@ -66,6 +73,12 @@ void GcodeSuite::M281_report(const bool forReplay/*=true*/) {
         #endif
       #elif ENABLED(SWITCHING_NOZZLE)
         case SWITCHING_NOZZLE_SERVO_NR:
+<<<<<<< HEAD
+=======
+        #if ENABLED(SWITCHING_NOZZLE_TWO_SERVOS)
+          case SWITCHING_NOZZLE_E1_SERVO_NR:
+        #endif
+>>>>>>> origin/release-2.1.3-beta2
       #elif ENABLED(BLTOUCH) || (HAS_Z_SERVO_PROBE && defined(Z_SERVO_ANGLES))
         case Z_PROBE_SERVO_NR:
       #endif

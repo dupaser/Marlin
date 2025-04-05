@@ -22,6 +22,10 @@
 
 /**
  * Pxmalion Core i3 - https://github.com/Pxmalion
+<<<<<<< HEAD
+=======
+ * ATmega2560
+>>>>>>> origin/release-2.1.3-beta2
  */
 
 #include "env_validate.h"

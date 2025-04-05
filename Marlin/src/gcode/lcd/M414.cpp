@@ -44,6 +44,10 @@ void GcodeSuite::M414() {
 }
 
 void GcodeSuite::M414_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+>>>>>>> origin/release-2.1.3-beta2
   report_heading_etc(forReplay, F(STR_UI_LANGUAGE));
   SERIAL_ECHOLNPGM("  M414 S", ui.language);
 }

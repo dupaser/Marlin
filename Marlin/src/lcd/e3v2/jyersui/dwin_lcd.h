@@ -29,6 +29,12 @@
 #include "../common/dwin_api.h"
 
 // Draw the degree (°) symbol
+<<<<<<< HEAD
 // Color: color
 //  x/y: Upper-left coordinate of the first pixel
 void DWIN_Draw_DegreeSymbol(uint16_t Color, uint16_t x, uint16_t y);
+=======
+// color: color
+//  x/y: Upper-left coordinate of the first pixel
+void dwinDrawDegreeSymbol(uint16_t color, uint16_t x, uint16_t y);
+>>>>>>> origin/release-2.1.3-beta2

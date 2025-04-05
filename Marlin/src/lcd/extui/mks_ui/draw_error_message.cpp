@@ -34,8 +34,13 @@
 static lv_obj_t *scr;
 
 void lv_draw_error_message(FSTR_P const fmsg) {
+<<<<<<< HEAD
   FSTR_P fhalted = F("PRINTER HALTED"), fplease = F("Please Reset");
   SPI_TFT.LCD_clear(0x0000);
+=======
+  FSTR_P const fhalted = F("PRINTER HALTED"), fplease = F("Please Reset");
+  SPI_TFT.lcdClear(0x0000);
+>>>>>>> origin/release-2.1.3-beta2
   if (fmsg) disp_string((TFT_WIDTH - strlen_P(FTOP(fmsg)) * 16) / 2, 100, fmsg, 0xFFFF, 0x0000);
   disp_string((TFT_WIDTH - strlen_P(FTOP(fhalted)) * 16) / 2, 140, fhalted, 0xFFFF, 0x0000);
   disp_string((TFT_WIDTH - strlen_P(FTOP(fplease)) * 16) / 2, 180, fplease, 0xFFFF, 0x0000);

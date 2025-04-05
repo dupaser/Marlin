@@ -60,22 +60,21 @@ using namespace ExtUI;
 namespace Anycubic {
 
 FileNavigator filenavigator;
-FileList  FileNavigator::filelist;                          // Instance of the Marlin file API
+FileList  FileNavigator::filelist;                          // ExtUI file API
 uint16_t  FileNavigator::lastpanelindex;
 uint16_t  FileNavigator::currentindex;                      // override the panel request
-uint8_t   FileNavigator::currentfolderdepth;
-uint16_t  FileNavigator::currentfolderindex[MAX_FOLDER_DEPTH];   // track folder pos for iteration
-char      FileNavigator::currentfoldername[MAX_PATH_LEN + 1];   // Current folder path
+uint8_t   FileNavigator::folderdepth;
+uint16_t  FileNavigator::currentDirIndex[MAX_FOLDER_DEPTH]; // track folder pos for iteration
+char      FileNavigator::currentDirPath[MAX_PATH_LEN + 1];  // Current folder path
 
 FileNavigator::FileNavigator() { reset(); }
 
 void FileNavigator::reset() {
-  DEBUG_ECHOLNPGM("reset()");
-  currentfoldername[0] = '\0';
-  currentfolderdepth = 0;
+  currentDirPath[0] = '\0';
+  folderdepth = 0;
   currentindex = 0;
   lastpanelindex = 0;
-  ZERO(currentfolderindex);
+  ZERO(currentDirIndex);
 
   // Start at root folder
   while (!filelist.isAtRootDir()) filelist.upDir();
@@ -85,30 +84,40 @@ void FileNavigator::reset() {
 void FileNavigator::refresh() { filelist.refresh(); }
 
 void FileNavigator::changeDIR(const char *folder) {
+<<<<<<< HEAD
   if (currentfolderdepth >= MAX_FOLDER_DEPTH) return; // limit the folder depth
   DEBUG_ECHOLNPGM("FD:" , folderdepth, " FP:",currentindex, " currentfolder:", currentfoldername, " enter:", folder);
   currentfolderindex[currentfolderdepth] = currentindex;
   strcat(currentfoldername, folder);
   strcat(currentfoldername, "/");
+=======
+  if (folderdepth >= MAX_FOLDER_DEPTH) return; // limit the folder depth
+  currentDirIndex[folderdepth] = currentindex;
+  strcat(currentDirPath, folder);
+  strcat(currentDirPath, "/");
+>>>>>>> origin/release-2.1.3-beta2
   filelist.changeDir(folder);
-  currentfolderdepth++;
+  folderdepth++;
   currentindex = 0;
 }
 
 void FileNavigator::upDIR() {
+<<<<<<< HEAD
   DEBUG_ECHOLNPGM("upDIR() from D:", currentfolderdepth, " N:", currentfoldername);
+=======
+>>>>>>> origin/release-2.1.3-beta2
   if (!filelist.isAtRootDir()) {
     filelist.upDir();
-    currentfolderdepth--;
-    currentindex = currentfolderindex[currentfolderdepth]; // restore last position in the folder
+    folderdepth--;
+    currentindex = currentDirIndex[folderdepth]; // restore last position in the folder
     filelist.seek(currentindex); // restore file information
   }
 
   // Remove the child folder from the stored path
-  if (currentfolderdepth == 0)
-    currentfoldername[0] = '\0';
+  if (folderdepth == 0)
+    currentDirPath[0] = '\0';
   else {
-    char * const pos = strchr(currentfoldername, '/');
+    char * const pos = strchr(currentDirPath, '/');
     *(pos + 1) = '\0';
   }
 }
@@ -117,7 +126,10 @@ void FileNavigator::skiptofileindex(uint16_t skip) {
   if (skip == 0) return;
   while (skip > 0) {
     if (filelist.seek(currentindex)) {
+<<<<<<< HEAD
       DEBUG_ECHOLNPGM("CI:", currentindex, " FD:", currentfolderdepth, " N:", skip, " ", filelist.longFilename());
+=======
+>>>>>>> origin/release-2.1.3-beta2
       if (!filelist.isDir()) {
         skip--;
         currentindex++;
@@ -126,7 +138,7 @@ void FileNavigator::skiptofileindex(uint16_t skip) {
         changeDIR(filelist.shortFilename());
     } // valid file
     if (currentindex == filelist.count()) {
-      if (currentfolderdepth > 0) {
+      if (folderdepth > 0) {
         upDIR();
         currentindex++;
       }
@@ -151,6 +163,7 @@ void FileNavigator::skiptofileindex(uint16_t skip) {
     }
     lastpanelindex = index;
 
+<<<<<<< HEAD
     DEBUG_ECHOLNPGM("index=", index, " currentindex=", currentindex);
 
     if (currentindex == 0 && currentfolderdepth > 0) { // Add a link to go up a folder
@@ -158,6 +171,13 @@ void FileNavigator::skiptofileindex(uint16_t skip) {
       if (paneltype <= AC_panel_new) {
         TFTSer.println("<<.GCO");
         Chiron.SendtoTFTLN(F("..                  .gcode"));
+=======
+    if (currentindex == 0 && folderdepth > 0) { // Add a link to go up a folder
+      // The new panel ignores entries that don't end in .GCO or .gcode so add and pad them.
+      if (paneltype <= AC_panel_new) {
+        TFTSer.println("<<.GCO");
+        chiron.tftSendLn(F("..                  .gcode"));
+>>>>>>> origin/release-2.1.3-beta2
       }
       else {
         TFTSer.println("<<");
@@ -166,12 +186,17 @@ void FileNavigator::skiptofileindex(uint16_t skip) {
       filesneeded--;
     }
 
+<<<<<<< HEAD
     for (uint16_t seek = currentindex; seek < currentindex + filesneeded; seek++) {
       if (filelist.seek(seek)) {
         sendFile(paneltype);
         DEBUG_ECHOLNPGM("-", seek, " '", filelist.longFilename(), "' '", currentfoldername, "", filelist.shortFilename(), "'");
       }
     }
+=======
+    for (uint16_t seek = currentindex; seek < currentindex + filesneeded; seek++)
+      if (filelist.seek(seek)) sendFile(paneltype);
+>>>>>>> origin/release-2.1.3-beta2
   }
 
   void FileNavigator::sendFile(panel_type_t paneltype) {
@@ -196,7 +221,7 @@ void FileNavigator::skiptofileindex(uint16_t skip) {
     }
     else { // Not DIR
       TFTSer.write('/');
-      if (currentfolderdepth > 0) TFTSer.print(currentfoldername);
+      if (folderdepth > 0) TFTSer.print(currentDirPath);
       TFTSer.println(filelist.shortFilename());
       TFTSer.print(filelist.longFilename());
 
@@ -212,7 +237,10 @@ void FileNavigator::skiptofileindex(uint16_t skip) {
 #else // Flat file list
 
   void FileNavigator::getFiles(uint16_t index, panel_type_t paneltype, uint8_t filesneeded) {
+<<<<<<< HEAD
     DEBUG_ECHOLNPGM("getFiles() I:", index," L:", lastpanelindex);
+=======
+>>>>>>> origin/release-2.1.3-beta2
     // if we're searching backwards, jump back to start and search forward
     if (index < lastpanelindex) {
       reset();
@@ -232,7 +260,7 @@ void FileNavigator::skiptofileindex(uint16_t skip) {
       } // valid file
 
       if (currentindex == filelist.count()) {
-        if (currentfolderdepth > 0) {
+        if (folderdepth > 0) {
           upDIR();
           currentindex++;
         }
@@ -244,11 +272,14 @@ void FileNavigator::skiptofileindex(uint16_t skip) {
 
   void FileNavigator::sendFile(panel_type_t paneltype) {
     TFTSer.write('/');
-    if (currentfolderdepth > 0) TFTSer.print(currentfoldername);
+    if (folderdepth > 0) TFTSer.print(currentDirPath);
     TFTSer.println(filelist.shortFilename());
-    if (currentfolderdepth > 0) TFTSer.print(currentfoldername);
+    if (folderdepth > 0) TFTSer.print(currentDirPath);
     TFTSer.println(filelist.longFilename());
+<<<<<<< HEAD
     DEBUG_ECHOLNPGM("/", currentfoldername, "", filelist.shortFilename(), " ", filelist.longFilename());
+=======
+>>>>>>> origin/release-2.1.3-beta2
   }
 
 #endif // Flat file list

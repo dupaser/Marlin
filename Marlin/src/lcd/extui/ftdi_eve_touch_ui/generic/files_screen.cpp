@@ -112,6 +112,7 @@ void FilesScreen::drawFileButton(int x, int y, int w, int h, const char *filenam
   cmd.font(font_medium).rectangle(bx, by, bw, bh);
   cmd.cmd(COLOR_RGB(is_highlighted ? normal_btn.rgb : bg_text_enabled));
   if (TERN0(SCROLL_LONG_FILENAMES, is_highlighted)) {
+<<<<<<< HEAD
     #if ENABLED(SCROLL_LONG_FILENAMES)
       cmd.cmd(SAVE_CONTEXT());
       cmd.cmd(SCISSOR_XY(x,y));
@@ -126,6 +127,18 @@ void FilesScreen::drawFileButton(int x, int y, int w, int h, const char *filenam
   #if ENABLED(SCROLL_LONG_FILENAMES)
     if (is_highlighted) cmd.cmd(RESTORE_CONTEXT());
   #endif
+=======
+    cmd.cmd(SAVE_CONTEXT());
+    cmd.cmd(SCISSOR_XY(x,y));
+    cmd.cmd(SCISSOR_SIZE(w,h));
+    cmd.cmd(MACRO(0));
+    cmd.text(bx, by, bw, bh, filename, OPT_CENTERY | OPT_NOFIT);
+  }
+  else
+    draw_text_with_ellipsis(cmd, bx, by, bw - (is_dir ? 20 : 0), bh, filename, OPT_CENTERY, font_medium);
+  if (is_dir && !is_highlighted) cmd.text(bx, by, bw, bh, F("> "),  OPT_CENTERY | OPT_RIGHTX);
+  if (TERN0(SCROLL_LONG_FILENAMES, is_highlighted)) cmd.cmd(RESTORE_CONTEXT());
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 void FilesScreen::drawFileList() {
@@ -174,7 +187,11 @@ void FilesScreen::drawFooter() {
   if (mydata.flags.is_root)
     cmd.tag(240).button(BTN2_POS, GET_TEXT_F(MSG_BUTTON_DONE));
   else
+<<<<<<< HEAD
     cmd.tag(245).button(BTN2_POS, F("Up Dir"));
+=======
+    cmd.tag(245).button(BTN2_POS, F("Back"));
+>>>>>>> origin/release-2.1.3-beta2
 
   cmd.enabled(has_selection)
      .colors(has_selection ? action_btn : normal_btn);
@@ -220,7 +237,12 @@ bool FilesScreen::onTouchEnd(uint8_t tag) {
       GOTO_PREVIOUS();
       return true;
     case 241: // Print highlighted file
+<<<<<<< HEAD
       ConfirmStartPrintDialogBox::show(getSelectedFileIndex());
+=======
+      printFile(getSelectedShortFilename());
+      GOTO_SCREEN(StatusScreen);
+>>>>>>> origin/release-2.1.3-beta2
       return true;
     case 242: // Previous page
       if (mydata.cur_page > 0) {

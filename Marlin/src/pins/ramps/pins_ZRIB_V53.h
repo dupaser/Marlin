@@ -22,7 +22,12 @@
 #pragma once
 
 /**
+<<<<<<< HEAD
  * ZRIB V5.3 Based on MKS BASE v1.4 with A4982 stepper drivers and digital micro-stepping
+=======
+ * ZONESTAR ZRIB V5.3 Based on MKS BASE v1.4 with A4982 stepper drivers and digital micro-stepping
+ * ATmega2560, ATmega1280
+>>>>>>> origin/release-2.1.3-beta2
  */
 
 #include "env_validate.h"
@@ -62,10 +67,17 @@
 // Servos / XS3 Connector
 //
 #ifndef SERVO0_PIN
+<<<<<<< HEAD
   #define SERVO0_PIN                          11  // Analog Output
 #endif
 #ifndef SERVO1_PIN
   #define SERVO1_PIN                          12  // Analog Output
+=======
+  #define SERVO0_PIN                          65  // PWM
+#endif
+#ifndef SERVO1_PIN
+  #define SERVO1_PIN                          66  // PWM
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 //
@@ -163,7 +175,11 @@
 
 #define HEATER_0_PIN                          10
 #define HEATER_1_PIN                           7
+<<<<<<< HEAD
 #define FAN_PIN                                9
+=======
+#define FAN0_PIN                               9
+>>>>>>> origin/release-2.1.3-beta2
 #define HEATER_BED_PIN                         8
 #define FAN1_PIN                               6
 
@@ -186,7 +202,11 @@
 
 #if HAS_TMC_UART
   /**
+<<<<<<< HEAD
    * TMC2209 stepper drivers
+=======
+   * TMC2208/TMC2209 stepper drivers
+>>>>>>> origin/release-2.1.3-beta2
    *
    * Hardware serial communication ports.
    * If undefined software serial is used according to the pins below
@@ -328,16 +348,28 @@
   #define EXP2_08_PIN                         41
 #endif
 
+<<<<<<< HEAD
 //////////////////////////
 // LCDs and Controllers //
 //////////////////////////
+=======
+//
+// LCD / Controller
+//
+>>>>>>> origin/release-2.1.3-beta2
 
 #if ENABLED(ZONESTAR_12864LCD)
   #define LCDSCREEN_NAME "ZONESTAR LCD12864"
   #define LCD_SDSS                            16
+<<<<<<< HEAD
   #define LCD_PINS_RS                         16  // ST7920_CS_PIN  LCD_PIN_RS     (PIN4 of LCD module)
   #define LCD_PINS_ENABLE                     23  // ST7920_DAT_PIN LCD_PIN_R/W    (PIN5 of LCD module)
   #define LCD_PINS_D4                         17  // ST7920_CLK_PIN LCD_PIN_ENABLE (PIN6 of LCD module)
+=======
+  #define LCD_PINS_RS                         16  // ST7920 CS          (LCD-4)
+  #define LCD_PINS_EN                         23  // ST7920 DAT LCD-R/W (LCD-5)
+  #define LCD_PINS_D4                         17  // ST7920 CLK LCD-ENA (LCD-6)
+>>>>>>> origin/release-2.1.3-beta2
   #define BTN_EN2                             25
   #define BTN_EN1                             27
   #define BTN_ENC                             29
@@ -346,9 +378,15 @@
 #elif ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
   #define LCDSCREEN_NAME "Reprap LCD12864"
   // Use EXP1 & EXP2 connector
+<<<<<<< HEAD
   #define LCD_PINS_RS                         16  // ST7920_CS_PIN  LCD_PIN_RS
   #define LCD_PINS_ENABLE                     17  // ST7920_DAT_PIN LCD_PIN_ENABLE
   #define LCD_PINS_D4                         23  // ST7920_CLK_PIN LCD_PIN_R/W
+=======
+  #define LCD_PINS_RS                         16  // ST7920 CS
+  #define LCD_PINS_EN                         17  // ST7920 DAT
+  #define LCD_PINS_D4                         23  // ST7920 CLK LCD-R/W
+>>>>>>> origin/release-2.1.3-beta2
   #define BTN_EN1                             31
   #define BTN_EN2                             33
   #define BTN_ENC                             35
@@ -360,7 +398,11 @@
 // OLED 128x64
 //================================================================================
 
+<<<<<<< HEAD
 #if EITHER(ZONESTAR_12864OLED, ZONESTAR_12864OLED_SSD1306)
+=======
+#if ANY(ZONESTAR_12864OLED, ZONESTAR_12864OLED_SSD1306)
+>>>>>>> origin/release-2.1.3-beta2
   #define LCDSCREEN_NAME "ZONESTAR 12864OLED"
   #define LCD_SDSS                            16
   #define LCD_PINS_RS                         23  // RESET Pull low for 1s to init
@@ -371,9 +413,15 @@
   #define BTN_ENC                             29
   #define BEEPER_PIN                          -1
   #define KILL_PIN                            -1
+<<<<<<< HEAD
   #if EITHER(OLED_HW_IIC, OLED_HW_SPI)
     #error "Oops! You must choose SW SPI for ZRIB V53 board and connect the OLED screen to EXP1 connector."
   #else                                           // SW_SPI
+=======
+  #if ANY(OLED_HW_IIC, OLED_HW_SPI)
+    #error "Oops! You must choose SW SPI for ZRIB V53 board and connect the OLED screen to EXP1 connector."
+  #else // SW_SPI
+>>>>>>> origin/release-2.1.3-beta2
     #define DOGLCD_A0                LCD_PINS_DC
     #define DOGLCD_MOSI                       35  // SDA
     #define DOGLCD_SCK                        37  // SCK
@@ -387,7 +435,11 @@
 #if ENABLED(ZONESTAR_LCD)
   #define LCDSCREEN_NAME "LCD2004 ADCKEY"
   #define LCD_PINS_RS                EXP1_04_PIN
+<<<<<<< HEAD
   #define LCD_PINS_ENABLE            EXP1_03_PIN
+=======
+  #define LCD_PINS_EN                EXP1_03_PIN
+>>>>>>> origin/release-2.1.3-beta2
   #define LCD_PINS_D4                EXP1_05_PIN
   #define LCD_PINS_D5                EXP1_06_PIN
   #define LCD_PINS_D6                EXP1_07_PIN
@@ -424,18 +476,25 @@
  *  |--------|   Power
  *  |  GND   |
  *  ==========
+<<<<<<< HEAD
  * XS3 Connector
+=======
+ * Servos / XS3 Connector
+>>>>>>> origin/release-2.1.3-beta2
  *  =================
  *  | 65 | GND | 5V |      (65)  PK3 ** Pin86 ** A11
  *  |----|-----|----|
  *  | 66 | GND | 5V |      (66)  PK4 ** Pin85 ** A12
  *  =================
+<<<<<<< HEAD
  * XS3/Servos Connector
  *  =================
  *  | 11 | GND | 5V |      (11)  PB5 ** Pin24 ** PWM11
  *  |----|-----|----|
  *  | 12 | GND | 5V |      (12)  PB6 ** Pin25 ** PWM12
  *  =================
+=======
+>>>>>>> origin/release-2.1.3-beta2
  * ICSP
  *  =================
  *  | 5V | 51 | GND |      (51)  PB2 ** Pin21 ** SPI_MOSI

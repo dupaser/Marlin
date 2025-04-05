@@ -122,8 +122,8 @@
 #define HEATER_2_PIN                          11
 #define HEATER_BED_PIN                         7  // BED H1
 
-#ifndef FAN_PIN
-  #define FAN_PIN                              9
+#ifndef FAN0_PIN
+  #define FAN0_PIN                             9
 #endif
 #define FAN1_PIN                               8
 #define CONTROLLER_FAN_PIN                    -1
@@ -145,7 +145,11 @@
 
 // SPI for MAX Thermocouple
 /*
+<<<<<<< HEAD
 #if DISABLED(SDSUPPORT)
+=======
+#if !HAS_MEDIA
+>>>>>>> origin/release-2.1.3-beta2
   #define TEMP_0_CS_PIN              EXP1_08_PIN
 #else
   #define TEMP_0_CS_PIN                       49
@@ -163,11 +167,13 @@
 #define TFT_LCD_MODULE_COM                     1
 #define TFT_LCD_MODULE_BAUDRATE              115600
 
-// ESP WiFi Use internal USART-2
-#define ESP_WIFI_MODULE_COM                    2
-#define ESP_WIFI_MODULE_BAUDRATE             115600
-#define ESP_WIFI_MODULE_RESET_PIN             -1
-#define PIGGY_GPIO_PIN                        -1
+#if ENABLED(WIFISUPPORT)
+  // ESP WiFi Use internal USART-2
+  #define ESP_WIFI_MODULE_COM                  2
+  #define ESP_WIFI_MODULE_BAUDRATE           115600
+  #define ESP_WIFI_MODULE_RESET_PIN           -1
+  #define PIGGY_GPIO_PIN                      -1
+#endif
 
 //
 // EEPROM
@@ -193,6 +199,7 @@
  *              ------                                ------
  *               EXP1                                  EXP2
  */
+<<<<<<< HEAD
 #define EXP1_01_PIN                           62
 #define EXP1_02_PIN                           40
 #define EXP1_03_PIN                           64
@@ -209,11 +216,30 @@
 #define EXP2_05_PIN                           42
 #define EXP2_06_PIN                           75  // MOSI
 #define EXP2_07_PIN                           51
+=======
+#define EXP1_01_PIN                           62  // BEEPER
+#define EXP1_02_PIN                           40  // ENC
+#define EXP1_03_PIN                           64  // LCD_EN
+#define EXP1_04_PIN                           63  // LCD_RS
+#define EXP1_05_PIN                           48  // LCD_D4 / RESET
+#define EXP1_06_PIN                           50  // LCD_D5
+#define EXP1_07_PIN                           52  // LCD_D6
+#define EXP1_08_PIN                           53  // LCD_D7 / ENABLE
+
+#define EXP2_01_PIN                           74  // MISO
+#define EXP2_02_PIN                           76  // SCK
+#define EXP2_03_PIN                           44  // EN1
+#define EXP2_04_PIN                           10  // SDSS
+#define EXP2_05_PIN                           42  // EN2
+#define EXP2_06_PIN                           75  // MOSI
+#define EXP2_07_PIN                           51  // SD DET
+>>>>>>> origin/release-2.1.3-beta2
 #define EXP2_08_PIN                           -1  // RESET
 
 //
 // LCD / Controller
 //
+
 #if HAS_WIRED_LCD
 
   #if ANY(RADDS_DISPLAY, IS_RRD_SC, IS_RRD_FG_SC)
@@ -225,15 +251,23 @@
     #define SD_DETECT_PIN            EXP2_07_PIN
   #endif
 
-  #if EITHER(RADDS_DISPLAY, IS_RRD_SC)
+  #if ANY(RADDS_DISPLAY, IS_RRD_SC)
 
     #define LCD_PINS_RS              EXP1_04_PIN
+<<<<<<< HEAD
     #define LCD_PINS_ENABLE          EXP1_03_PIN
+=======
+    #define LCD_PINS_EN              EXP1_03_PIN
+>>>>>>> origin/release-2.1.3-beta2
 
   #elif IS_RRD_FG_SC
 
     #define LCD_PINS_RS              EXP1_07_PIN
+<<<<<<< HEAD
     #define LCD_PINS_ENABLE          EXP1_08_PIN
+=======
+    #define LCD_PINS_EN              EXP1_08_PIN
+>>>>>>> origin/release-2.1.3-beta2
 
   #elif HAS_U8GLIB_I2C_OLED
 
@@ -252,7 +286,7 @@
 
     #define LCD_RESET_PIN            EXP1_05_PIN  // Must be high or open for LCD to operate normally.
 
-    #if EITHER(FYSETC_MINI_12864_1_2, FYSETC_MINI_12864_2_0)
+    #if ANY(FYSETC_MINI_12864_1_2, FYSETC_MINI_12864_2_0)
       #ifndef RGB_LED_R_PIN
         #define RGB_LED_R_PIN        EXP1_06_PIN  // D5
       #endif
@@ -268,10 +302,10 @@
 
   #elif ENABLED(SPARK_FULL_GRAPHICS)
 
-    //http://doku.radds.org/dokumentation/other-electronics/sparklcd/
+    // https://sparklab-shop.de/elektronik/40/sparklcd-adapter
     #error "Oops! SPARK_FULL_GRAPHICS not supported with RURAMPS4D."
     //#define LCD_PINS_D4                     29  //?
-    //#define LCD_PINS_ENABLE                 27  //?
+    //#define LCD_PINS_EN                     27  //?
     //#define LCD_PINS_RS                     25  //?
     //#define BTN_EN1                         35  //?
     //#define BTN_EN2                         33  //?

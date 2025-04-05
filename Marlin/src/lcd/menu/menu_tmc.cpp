@@ -90,7 +90,11 @@ void menu_tmc_current() {
 
 #if ENABLED(HYBRID_THRESHOLD)
 
+<<<<<<< HEAD
   #define TMC_EDIT_STORED_HYBRID_THRS(ST, STR) EDIT_ITEM_F(uint8, F(STR), &stepper##ST.stored.hybrid_thrs, 0, 255, []{ stepper##ST.refresh_hybrid_thrs(); });
+=======
+  #define TMC_EDIT_STORED_HYBRID_THRS(ST, STR) EDIT_ITEM_F(uint16_3, F(STR), &stepper##ST.stored.hybrid_thrs, 0, STEPPER_MAX_THRS(ST), []{ stepper##ST.refresh_hybrid_thrs(); });
+>>>>>>> origin/release-2.1.3-beta2
 
   void menu_tmc_hybrid_thrs() {
     START_MENU();
@@ -134,6 +138,12 @@ void menu_tmc_current() {
     TERN_( I_SENSORLESS, TMC_EDIT_STORED_SGT(I));
     TERN_( J_SENSORLESS, TMC_EDIT_STORED_SGT(J));
     TERN_( K_SENSORLESS, TMC_EDIT_STORED_SGT(K));
+<<<<<<< HEAD
+=======
+    TERN_( U_SENSORLESS, TMC_EDIT_STORED_SGT(U));
+    TERN_( V_SENSORLESS, TMC_EDIT_STORED_SGT(V));
+    TERN_( W_SENSORLESS, TMC_EDIT_STORED_SGT(W));
+>>>>>>> origin/release-2.1.3-beta2
     END_MENU();
   }
 

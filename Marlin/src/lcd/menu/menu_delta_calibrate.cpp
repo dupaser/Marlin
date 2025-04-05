@@ -26,12 +26,20 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if HAS_MARLINUI_MENU && EITHER(DELTA_CALIBRATION_MENU, DELTA_AUTO_CALIBRATION)
+=======
+#if HAS_MARLINUI_MENU && ANY(DELTA_CALIBRATION_MENU, DELTA_AUTO_CALIBRATION)
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "menu_item.h"
 #include "../../module/delta.h"
 #include "../../module/motion.h"
 #include "../../module/planner.h"
+<<<<<<< HEAD
+=======
+#include "../../module/probe.h"
+>>>>>>> origin/release-2.1.3-beta2
 
 #if HAS_LEVELING
   #include "../../feature/bedlevel/bedlevel.h"
@@ -39,10 +47,13 @@
 
 #if ENABLED(EXTENSIBLE_UI)
   #include "../extui/ui_api.h"
+<<<<<<< HEAD
 #endif
 
 #if HAS_PROBE_XY_OFFSET
   #include "../../module/probe.h"
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 void _man_probe_pt(const xy_pos_t &xy) {
@@ -68,8 +79,13 @@ void _man_probe_pt(const xy_pos_t &xy) {
   float lcd_probe_pt(const xy_pos_t &xy) {
     _man_probe_pt(xy);
     ui.defer_status_screen();
+<<<<<<< HEAD
     TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_do(PROMPT_USER_CONTINUE, F("Delta Calibration in progress"), FPSTR(CONTINUE_STR)));
     TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired(F("Delta Calibration in progress")));
+=======
+    TERN_(HOST_PROMPT_SUPPORT, hostui.continue_prompt(GET_TEXT_F(MSG_DELTA_CALIBRATION_IN_PROGRESS)));
+    TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_DELTA_CALIBRATION_IN_PROGRESS)));
+>>>>>>> origin/release-2.1.3-beta2
     TERN_(HAS_RESUME_CONTINUE, wait_for_user_response());
     ui.goto_previous_screen_no_defer();
     return current_position.z;
@@ -92,7 +108,11 @@ void _man_probe_pt(const xy_pos_t &xy) {
   }
 
   void _goto_tower_a(const_float_t a) {
+<<<<<<< HEAD
     float dcr = DELTA_PRINTABLE_RADIUS - PROBING_MARGIN;
+=======
+    float dcr = PRINTABLE_RADIUS - PROBING_MARGIN;
+>>>>>>> origin/release-2.1.3-beta2
     TERN_(HAS_PROBE_XY_OFFSET, dcr -= HYPOT(probe.offset_xy.x, probe.offset_xy.y));
     TERN_(HAS_DELTA_SENSORLESS_PROBING, dcr *= sensorless_radius_factor);
     xy_pos_t tower_vec = { cos(RADIANS(a)), sin(RADIANS(a)) };
@@ -132,7 +152,7 @@ void menu_delta_calibrate() {
   #endif
 
   START_MENU();
-  BACK_ITEM(MSG_MAIN);
+  BACK_ITEM(MSG_MAIN_MENU);
 
   #if ENABLED(DELTA_AUTO_CALIBRATION)
     GCODES_ITEM(MSG_DELTA_AUTO_CALIBRATE, F("G33"));

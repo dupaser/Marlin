@@ -90,7 +90,11 @@ bool SW_IIC::read_ack() {
 }
 
 void SW_IIC::send_byte(uint8_t txd) {
+<<<<<<< HEAD
   LOOP_L_N(i, 8) {
+=======
+  for (uint8_t i = 0; i < 8; ++i) {
+>>>>>>> origin/release-2.1.3-beta2
     write_sda(txd & 0x80); // write data bit
     txd <<= 1;
     iic_delay(1);
@@ -107,7 +111,11 @@ uint8_t SW_IIC::read_byte(bool ack) {
   uint8_t data = 0;
 
   set_sda_in();
+<<<<<<< HEAD
   LOOP_L_N(i, 8) {
+=======
+  for (uint8_t i = 0; i < 8; ++i) {
+>>>>>>> origin/release-2.1.3-beta2
     write_scl(HIGH); // SCL = 1
     iic_delay(1);
     data <<= 1;
@@ -128,12 +136,20 @@ SW_IIC GT911::sw_iic = SW_IIC(GT911_SW_I2C_SDA_PIN, GT911_SW_I2C_SCL_PIN);
 void GT911::write_reg(uint16_t reg, uint8_t reg_len, uint8_t* w_data, uint8_t w_len) {
   sw_iic.start();
   sw_iic.send_byte(gt911_slave_address);  // Set IIC Slave address
+<<<<<<< HEAD
   LOOP_L_N(i, reg_len) {  // Set reg address
+=======
+  for (uint8_t i = 0; i < reg_len; ++i) {  // Set reg address
+>>>>>>> origin/release-2.1.3-beta2
     uint8_t r = (reg >> (8 * (reg_len - 1 - i))) & 0xFF;
     sw_iic.send_byte(r);
   }
 
+<<<<<<< HEAD
   LOOP_L_N(i, w_len) {  // Write data to reg
+=======
+  for (uint8_t i = 0; i < w_len; ++i) {  // Write data to reg
+>>>>>>> origin/release-2.1.3-beta2
     sw_iic.send_byte(w_data[i]);
   }
   sw_iic.stop();
@@ -142,7 +158,11 @@ void GT911::write_reg(uint16_t reg, uint8_t reg_len, uint8_t* w_data, uint8_t w_
 void GT911::read_reg(uint16_t reg, uint8_t reg_len, uint8_t* r_data, uint8_t r_len) {
   sw_iic.start();
   sw_iic.send_byte(gt911_slave_address);  // Set IIC Slave address
+<<<<<<< HEAD
   LOOP_L_N(i, reg_len) {  // Set reg address
+=======
+  for (uint8_t i = 0; i < reg_len; ++i) {  // Set reg address
+>>>>>>> origin/release-2.1.3-beta2
     uint8_t r = (reg >> (8 * (reg_len - 1 - i))) & 0xFF;
     sw_iic.send_byte(r);
   }
@@ -150,6 +170,7 @@ void GT911::read_reg(uint16_t reg, uint8_t reg_len, uint8_t* r_data, uint8_t r_l
   sw_iic.start();
   sw_iic.send_byte(gt911_slave_address + 1);  // Set read mode
 
+<<<<<<< HEAD
   LOOP_L_N(i, r_len) {
     r_data[i] = sw_iic.read_byte(1);  // Read data from reg
   }
@@ -157,6 +178,15 @@ void GT911::read_reg(uint16_t reg, uint8_t reg_len, uint8_t* r_data, uint8_t r_l
 }
 
 void GT911::Init() {
+=======
+  for (uint8_t i = 0; i < r_len; ++i)
+    r_data[i] = sw_iic.read_byte(1);  // Read data from reg
+
+  sw_iic.stop();
+}
+
+void GT911::init() {
+>>>>>>> origin/release-2.1.3-beta2
   OUT_WRITE(GT911_RST_PIN, LOW);
   OUT_WRITE(GT911_INT_PIN, LOW);
   delay(11);
@@ -189,8 +219,13 @@ bool GT911::getFirstTouchPoint(int16_t *x, int16_t *y) {
   return false;
 }
 
+<<<<<<< HEAD
 bool GT911::getPoint(int16_t *x, int16_t *y) {
   static bool touched = 0;
+=======
+bool GT911::getRawPoint(int16_t * const x, int16_t * const y) {
+  static bool touched = false;
+>>>>>>> origin/release-2.1.3-beta2
   static int16_t read_x = 0, read_y = 0;
   static millis_t next_time = 0;
 

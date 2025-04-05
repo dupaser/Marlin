@@ -23,6 +23,7 @@
 
 /**
  * VERTEX NANO Arduino Mega with RAMPS EFB v1.4 pin assignments.
+ * ATmega2560, ATmega1280
  */
 
 #if HAS_MULTI_HOTEND
@@ -37,6 +38,7 @@
 //
 #define X_MIN_PIN                              3
 #define Y_MAX_PIN                             14
+<<<<<<< HEAD
 #define Z_MAX_PIN                             18
 #define Z_MIN_PIN                             -1
 
@@ -62,39 +64,61 @@
 #include "pins_RAMPS.h"
 
 //
-// Heaters / Fans
-//
-#undef HEATER_BED_PIN
+=======
+#define Z_STOP_PIN                            18
 
 //
+// Steppers
+//
+#define Z_ENABLE_PIN                          63
+
+//
+>>>>>>> origin/release-2.1.3-beta2
+// Heaters / Fans
+//
+#define HEATER_BED_PIN                        -1
+#define FAN0_PIN                               8
+
+//
+<<<<<<< HEAD
 // LCD / Controller
 //
 #if HAS_WIRED_LCD && IS_NEWPANEL
   #undef BEEPER_PIN
+=======
+// Misc. Functions
+//
+#define SDSS                                  25
+#define CASE_LIGHT_PIN                         7
 
-  #undef LCD_PINS_RS
-  #undef LCD_PINS_ENABLE
-  #undef LCD_PINS_D4
-  #undef LCD_PINS_D5
-  #undef LCD_PINS_D6
-  #undef LCD_PINS_D7
+//
+// LCD / Controller
+//
+>>>>>>> origin/release-2.1.3-beta2
+
+#if HAS_WIRED_LCD && IS_NEWPANEL
+
   #define LCD_PINS_RS                         27
-  #define LCD_PINS_ENABLE                     29
+  #define LCD_PINS_EN                         29
   #define LCD_PINS_D4                         37
   #define LCD_PINS_D5                         35
   #define LCD_PINS_D6                         33
   #define LCD_PINS_D7                         31
 
   // Buttons
-  #undef BTN_EN1
-  #undef BTN_EN2
-  #undef BTN_ENC
   #define BTN_EN1                             17
   #define BTN_EN2                             16
   #define BTN_ENC                             23
+
+  #define LCD_PINS_DEFINED
 
 #else
 
   #define BEEPER_PIN                          33
 
 #endif
+
+//
+// Other RAMPS pins
+//
+#include "pins_RAMPS.h"

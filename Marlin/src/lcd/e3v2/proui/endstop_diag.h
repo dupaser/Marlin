@@ -23,6 +23,7 @@
 
 /**
  * DWIN End Stops diagnostic page for PRO UI
+<<<<<<< HEAD
  * Author: Miguel A. Risco-Castillo (MRISCOC)
  * Version: 1.2.3
  * Date: 2022/02/24
@@ -35,3 +36,18 @@ public:
 };
 
 extern ESDiagClass ESDiag;
+=======
+ * Based on the original work of: Miguel Risco-Castillo (MRISCOC)
+ * https://github.com/mriscoc/Ender3V2S1
+ * Version: 1.4.3
+ * Date: 2023/05/10
+ */
+
+class ESDiag {
+public:
+  static void draw();
+  static void update();
+};
+
+extern ESDiag esDiag;
+>>>>>>> origin/release-2.1.3-beta2

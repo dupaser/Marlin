@@ -26,7 +26,9 @@
 
 #include "../../inc/MarlinConfig.h"
 
-#if ENABLED(SDIO_SUPPORT)
+#if ENABLED(ONBOARD_SDIO)
+
+#include "sdio.h"
 
 #include "sdio.h"
 
@@ -238,7 +240,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef *hsd) {
     hdma_sdio.Init.MemInc = DMA_MINC_ENABLE;
     hdma_sdio.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
     hdma_sdio.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
-    hdma_sdio.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_sdio.Init.Priority = DMA_PRIORITY_MEDIUM;
     __HAL_LINKDMA(&hsd, hdmarx, hdma_sdio);
     __HAL_LINKDMA(&hsd, hdmatx, hdma_sdio);
 
@@ -285,6 +287,9 @@ void HAL_SD_MspInit(SD_HandleTypeDef *hsd) {
     }
 
     go_to_transfer_speed();
+
+    hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_ENABLE;
+    hsd.Init.ClockDiv = 8;
 
     #if PINS_EXIST(SDIO_D1, SDIO_D2, SDIO_D3) // go to 4 bit wide mode if pins are defined
       retry_Cnt = retryCnt;
@@ -414,6 +419,7 @@ bool SDIO_ReadBlock(uint32_t block, uint8_t *dst) {
  */
 bool SDIO_WriteBlock(uint32_t block, const uint8_t *src) {
   #ifdef SDIO_FOR_STM32H7
+<<<<<<< HEAD
 
     uint32_t timeout = HAL_GetTick() + SD_TIMEOUT;
 
@@ -448,4 +454,43 @@ uint32_t SDIO_GetCardSize() {
 }
 
 #endif // SDIO_SUPPORT
+=======
+
+    uint32_t timeout = HAL_GetTick() + SD_TIMEOUT;
+
+    while (HAL_SD_GetCardState(&hsd) != HAL_SD_CARD_TRANSFER)
+      if (HAL_GetTick() >= timeout) return false;
+
+    waitingTxCplt = 1;
+    if (HAL_SD_WriteBlocks_DMA(&hsd, (uint8_t*)src, block, 1) != HAL_OK)
+      return false;
+
+    timeout = HAL_GetTick() + SD_TIMEOUT;
+    while (waitingTxCplt)
+      if (HAL_GetTick() >= timeout) return false;
+
+    return true;
+
+  #else
+
+    uint8_t retries = SDIO_READ_RETRIES;
+    while (retries--) {
+      if (SDIO_ReadWriteBlock_DMA(block, src, nullptr)) return true;
+      delay(10);
+    }
+    return false;
+
+  #endif
+}
+
+bool SDIO_IsReady() {
+  return hsd.State == HAL_SD_STATE_READY;
+}
+
+uint32_t SDIO_GetCardSize() {
+  return (uint32_t)(hsd.SdCard.BlockNbr) * (hsd.SdCard.BlockSize);
+}
+
+#endif // ONBOARD_SDIO
+>>>>>>> origin/release-2.1.3-beta2
 #endif // HAL_STM32

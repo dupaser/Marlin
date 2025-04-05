@@ -28,4 +28,9 @@
 #define BOARD_INFO_NAME      "Creality v4.2.2"
 #define DEFAULT_MACHINE_NAME "Creality3D"
 
+<<<<<<< HEAD
+=======
+#define EMIT_CREALITY_422_WARNING
+
+>>>>>>> origin/release-2.1.3-beta2
 #include "pins_CREALITY_V4.h"

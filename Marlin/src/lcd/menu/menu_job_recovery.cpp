@@ -26,7 +26,11 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if BOTH(HAS_MARLINUI_MENU, POWER_LOSS_RECOVERY)
+=======
+#if ALL(HAS_MARLINUI_MENU, POWER_LOSS_RECOVERY)
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "menu_item.h"
 #include "../../gcode/queue.h"

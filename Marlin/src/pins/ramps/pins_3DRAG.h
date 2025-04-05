@@ -23,6 +23,9 @@
 
 /**
  * 3DRAG (and K8200 / K8400) Arduino Mega with RAMPS v1.4 pin assignments
+ * This may be compatible with the standalone Controller variant.
+ * Schematic: https://reprap.org/wiki/File:Schema_base.jpg
+ * ATmega2560, ATmega1280
  */
 
 #ifndef BOARD_INFO_NAME
@@ -65,6 +68,11 @@
 #define MOSFET_B_PIN                           8
 #define MOSFET_C_PIN                           9
 #define MOSFET_D_PIN                          12
+<<<<<<< HEAD
+=======
+
+#define HEATER_2_PIN                           6
+>>>>>>> origin/release-2.1.3-beta2
 
 //
 // Misc. Functions
@@ -111,7 +119,11 @@
     #define SPINDLE_LASER_PWM_PIN             46  // Hardware PWM
     #define SPINDLE_LASER_ENA_PIN             62  // Pullup!
     #define SPINDLE_DIR_PIN                   48
+<<<<<<< HEAD
   #elif !BOTH(HAS_WIRED_LCD, IS_NEWPANEL)          // Use expansion header if no LCD in use
+=======
+  #elif !ALL(HAS_WIRED_LCD, IS_NEWPANEL)          // Use expansion header if no LCD in use
+>>>>>>> origin/release-2.1.3-beta2
     #define SPINDLE_LASER_ENA_PIN             16  // Pullup or pulldown!
     #define SPINDLE_DIR_PIN                   17
     #if !NUM_SERVOS                               // Use servo connector if possible
@@ -122,6 +134,7 @@
   #endif
 #endif
 
+<<<<<<< HEAD
 #include "pins_RAMPS.h"
 
 //
@@ -135,10 +148,17 @@
 //
 // LCD / Controller
 //
+=======
+//
+// LCD / Controller
+//
+
+>>>>>>> origin/release-2.1.3-beta2
 #if HAS_WIRED_LCD && IS_NEWPANEL
   #undef BEEPER_PIN
 
   // TODO: Remap EXP1/2 based on adapter
+<<<<<<< HEAD
   #undef LCD_PINS_RS
   #undef LCD_PINS_ENABLE
   #undef LCD_PINS_D4
@@ -147,19 +167,31 @@
   #undef LCD_PINS_D7
   #define LCD_PINS_RS                         27
   #define LCD_PINS_ENABLE                     29
+=======
+  #define LCD_PINS_RS                         27
+  #define LCD_PINS_EN                         29
+>>>>>>> origin/release-2.1.3-beta2
   #define LCD_PINS_D4                         37
   #define LCD_PINS_D5                         35
   #define LCD_PINS_D6                         33
   #define LCD_PINS_D7                         31
 
   // Buttons
+<<<<<<< HEAD
   #undef BTN_EN1
   #undef BTN_EN2
   #undef BTN_ENC
+=======
+>>>>>>> origin/release-2.1.3-beta2
   #define BTN_EN1                             16
   #define BTN_EN2                             17
   #define BTN_ENC                             23
 
+<<<<<<< HEAD
+=======
+  #define LCD_PINS_DEFINED
+
+>>>>>>> origin/release-2.1.3-beta2
 #else
 
   #define BEEPER_PIN                          33
@@ -171,3 +203,10 @@
   #define BOARD_ST7920_DELAY_2               188
   #define BOARD_ST7920_DELAY_3                 0
 #endif
+<<<<<<< HEAD
+=======
+
+#define SD_DETECT_PIN                         53
+
+#include "pins_RAMPS.h"
+>>>>>>> origin/release-2.1.3-beta2

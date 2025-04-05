@@ -21,7 +21,11 @@
  */
 #pragma once
 
+<<<<<<< HEAD
 // R25 = 2.5 MOhm, beta25 = 4500 K, 4.7 kOhm pull-up, DyzeDesign 500 °C Thermistor
+=======
+// R25 = 2.5 MOhm, beta25 = 4500 K, 4.7 kOhm pull-up, DyzeDesign / Trianglelab T-D500 500 °C Thermistor
+>>>>>>> origin/release-2.1.3-beta2
 constexpr temp_entry_t temptable_66[] PROGMEM = {
   { OV(  17.5), 850 },
   { OV(  17.9), 500 },

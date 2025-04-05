@@ -35,6 +35,7 @@
 
 namespace ExtUI {
 
+<<<<<<< HEAD
   void onStartup() { nextion.Startup();  }
   void onIdle() { nextion.IdleLoop(); }
   void onPrinterKilled(FSTR_P const error, FSTR_P const component) { nextion.PrinterKilled(error, component); }
@@ -42,15 +43,61 @@ namespace ExtUI {
   void onMediaError() {}
   void onMediaRemoved() {}
   void onPlayTone(const uint16_t frequency, const uint16_t duration) {}
+=======
+  void onStartup() { nextion.startup();  }
+  void onIdle() { nextion.idleLoop(); }
+  void onPrinterKilled(FSTR_P const error, FSTR_P const component) { nextion.printerKilled(error, component); }
+
+  void onMediaMounted() {}
+  void onMediaError() {}
+  void onMediaRemoved() {}
+
+  void onHeatingError(const heater_id_t header_id) {}
+  void onMinTempError(const heater_id_t header_id) {}
+  void onMaxTempError(const heater_id_t header_id) {}
+
+  void onPlayTone(const uint16_t frequency, const uint16_t duration/*=0*/) {}
+>>>>>>> origin/release-2.1.3-beta2
   void onPrintTimerStarted() {}
   void onPrintTimerPaused() {}
   void onPrintTimerStopped() {}
   void onFilamentRunout(const extruder_t) {}
+<<<<<<< HEAD
   void onUserConfirmRequired(const char * const msg) { nextion.ConfirmationRequest(msg); }
   void onStatusChanged(const char * const msg) { nextion.StatusChange(msg); }
 
   void onHomingStart() {}
   void onHomingDone() {}
+=======
+
+  void onUserConfirmRequired(const char * const msg) { nextion.confirmationRequest(msg); }
+
+  // For fancy LCDs include an icon ID, message, and translated button title
+  void onUserConfirmRequired(const int icon, const char * const cstr, FSTR_P const fBtn) {
+    onUserConfirmRequired(cstr);
+    UNUSED(icon); UNUSED(fBtn);
+  }
+  void onUserConfirmRequired(const int icon, FSTR_P const fstr, FSTR_P const fBtn) {
+    onUserConfirmRequired(fstr);
+    UNUSED(icon); UNUSED(fBtn);
+  }
+
+  #if ENABLED(ADVANCED_PAUSE_FEATURE)
+    void onPauseMode(
+      const PauseMessage message,
+      const PauseMode mode/*=PAUSE_MODE_SAME*/,
+      const uint8_t extruder/*=active_extruder*/
+    ) {
+      stdOnPauseMode(message, mode, extruder);
+    }
+  #endif
+
+  void onStatusChanged(const char * const msg) { nextion.statusChange(msg); }
+
+  void onHomingStart() {}
+  void onHomingDone() {}
+
+>>>>>>> origin/release-2.1.3-beta2
   void onPrintDone() { nextion.PrintFinished(); }
 
   void onFactoryReset() {}
@@ -79,20 +126,40 @@ namespace ExtUI {
     // Called after loading or resetting stored settings
   }
 
+<<<<<<< HEAD
   void onSettingsStored(bool success) {
+=======
+  void onSettingsStored(const bool success) {
+>>>>>>> origin/release-2.1.3-beta2
     // Called after the entire EEPROM has been written,
     // whether successful or not.
   }
 
+<<<<<<< HEAD
   void onSettingsLoaded(bool success) {
+=======
+  void onSettingsLoaded(const bool success) {
+>>>>>>> origin/release-2.1.3-beta2
     // Called after the entire EEPROM has been read,
     // whether successful or not.
   }
 
+<<<<<<< HEAD
   #if HAS_MESH
     void onLevelingStart() {}
     void onLevelingDone() {}
 
+=======
+  #if HAS_LEVELING
+    void onLevelingStart() {}
+    void onLevelingDone() {}
+    #if ENABLED(PREHEAT_BEFORE_LEVELING)
+      celsius_t getLevelingBedTemp() { return LEVELING_BED_TEMP; }
+    #endif
+  #endif
+
+  #if HAS_MESH
+>>>>>>> origin/release-2.1.3-beta2
     void onMeshUpdate(const int8_t xpos, const int8_t ypos, const float zval) {
       // Called when any mesh points are updated
     }
@@ -102,13 +169,28 @@ namespace ExtUI {
     }
   #endif
 
+<<<<<<< HEAD
   #if ENABLED(POWER_LOSS_RECOVERY)
+=======
+  #if ENABLED(PREVENT_COLD_EXTRUSION)
+    void onSetMinExtrusionTemp(const celsius_t) {}
+  #endif
+
+  #if ENABLED(POWER_LOSS_RECOVERY)
+    void onSetPowerLoss(const bool onoff) {
+      // Called when power-loss is enabled/disabled
+    }
+    void onPowerLoss() {
+      // Called when power-loss state is detected
+    }
+>>>>>>> origin/release-2.1.3-beta2
     void onPowerLossResume() {
       // Called on resume from power-loss
     }
   #endif
 
   #if HAS_PID_HEATING
+<<<<<<< HEAD
     void onPidTuning(const result_t rst) {
       // Called for temperature PID tuning result
       nextion.PanelInfo(37);
@@ -118,6 +200,31 @@ namespace ExtUI {
   void onSteppersDisabled() {}
   void onSteppersEnabled()  {}
 
+=======
+    void onPIDTuning(const pidresult_t rst) {
+      // Called for temperature PID tuning result
+      nextion.panelInfo(37);
+    }
+    void onStartM303(const int count, const heater_id_t hid, const celsius_t temp) {
+      // Called by M303 to update the UI
+    }
+  #endif
+
+  #if ENABLED(MPC_AUTOTUNE)
+    void onMPCTuning(const mpcresult_t rst) {
+      // Called for temperature PID tuning result
+    }
+  #endif
+
+  #if ENABLED(PLATFORM_M997_SUPPORT)
+    void onFirmwareFlash() {}
+  #endif
+
+  void onSteppersDisabled() {}
+  void onSteppersEnabled() {}
+  void onAxisDisabled(const axis_t) {}
+  void onAxisEnabled(const axis_t) {}
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 #endif // NEXTION_TFT

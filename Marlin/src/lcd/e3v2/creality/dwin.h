@@ -27,12 +27,17 @@
 
 #include "dwin_lcd.h"
 #include "../common/encoder.h"
+<<<<<<< HEAD
+=======
+#include "../common/limits.h"
+>>>>>>> origin/release-2.1.3-beta2
 #include "../../../libs/BL24CXX.h"
 
 #include "../../../inc/MarlinConfigPre.h"
 
 enum processID : uint8_t {
   // Process ID
+<<<<<<< HEAD
   MainMenu,
   SelectFile,
   Prepare,
@@ -96,6 +101,58 @@ enum processID : uint8_t {
   // Window ID
   Print_window,
   Popup_Window
+=======
+  ID_MainMenu,
+  ID_SelectFile,
+  ID_Prepare,
+  ID_Control,
+  ID_Leveling,
+  ID_PrintProcess,
+  ID_AxisMove,
+  ID_TemperatureID,
+  ID_Motion,
+  ID_Info,
+  ID_Tune,
+  #if HAS_PREHEAT
+    ID_PLAPreheat,
+    #if PREHEAT_COUNT > 1
+      ID_ABSPreheat,
+    #endif
+  #endif
+  ID_MaxSpeed, ID_MaxSpeedValue,
+  ID_MaxAcceleration, ID_MaxAccelerationValue,
+  ID_MaxJerk, ID_MaxJerkValue,
+  ID_Step, ID_StepValue,
+  ID_HomeOff, ID_HomeOffX, ID_HomeOffY, ID_HomeOffZ,
+
+  // Last Process ID
+  ID_LastPrepare,
+
+  // Advance Settings
+  ID_AdvSet,
+  ID_ProbeOff, ID_ProbeOffX, ID_ProbeOffY,
+
+  // Back Process ID
+  ID_BackMain, ID_BackPrint,
+
+  // Date variable ID
+  ID_MoveX, ID_MoveY, ID_MoveZ,
+  #if HAS_HOTEND
+    ID_Extruder,
+    ID_ETemp,
+  #endif
+  ID_HomeOffset,
+  #if HAS_HEATED_BED
+    ID_BedTemp,
+  #endif
+  #if HAS_FAN
+    ID_FanSpeed,
+  #endif
+  ID_PrintSpeed,
+
+  // Window ID
+  ID_PrintWindow, ID_PopupWindow
+>>>>>>> origin/release-2.1.3-beta2
 };
 
 extern uint8_t checkkey;
@@ -106,6 +163,7 @@ extern millis_t dwin_heat_time;
 
 typedef struct {
   #if HAS_HOTEND
+<<<<<<< HEAD
     celsius_t E_Temp = 0;
   #endif
   #if HAS_HEATED_BED
@@ -133,6 +191,57 @@ typedef struct {
   float Probe_OffX_scaled = 0;
   float Probe_OffY_scaled = 0;
 } HMI_value_t;
+=======
+    celsius_t tempE = 0;
+  #endif
+  #if HAS_HEATED_BED
+    celsius_t tempBed = 0;
+  #endif
+  #if HAS_FAN
+    int16_t fanSpeed = 0;
+  #endif
+  int16_t printSpeed    = 100;
+  float maxFeedSpeed    = 0;
+  float maxAcceleration = 0;
+  float maxJerkScaled   = 0;
+  float maxStepScaled   = 0;
+  float offset_value    = 0;
+  int8_t show_mode      = 0; // -1: Temperature control    0: Printing temperature
+  struct {
+    #if HAS_X_AXIS
+      float x = 0;
+    #endif
+    #if HAS_Y_AXIS
+      float y = 0;
+    #endif
+    #if HAS_Z_AXIS
+      float z = 0;
+    #endif
+    #if HAS_HOTEND
+      float e = 0;
+    #endif
+  } moveScaled;
+  struct {
+    #if HAS_X_AXIS
+      float x = 0;
+    #endif
+    #if HAS_Y_AXIS
+      float y = 0;
+    #endif
+    #if HAS_Z_AXIS
+      float z = 0;
+    #endif
+  } homeOffsScaled;
+  struct {
+    #if HAS_X_AXIS
+      float x = 0;
+    #endif
+    #if HAS_Y_AXIS
+      float y = 0;
+    #endif
+  } probeOffsScaled;
+} hmi_value_t;
+>>>>>>> origin/release-2.1.3-beta2
 
 #define DWIN_CHINESE 123
 #define DWIN_ENGLISH 0
@@ -150,6 +259,7 @@ typedef struct {
     bool cold_flag:1;
   #endif
   AxisEnum feedspeed_axis, acc_axis, jerk_axis, step_axis;
+<<<<<<< HEAD
 } HMI_flag_t;
 
 extern HMI_value_t HMI_ValueStruct;
@@ -247,3 +357,98 @@ inline void DWIN_HomingStart() { HMI_flag.home_flag = true; }
 
 void DWIN_HomingDone();
 void DWIN_LevelingDone();
+=======
+} hmi_flag_t;
+
+extern hmi_value_t hmiValues;
+extern hmi_flag_t hmiFlag;
+
+#if HAS_HOTEND || HAS_HEATED_BED
+  // Popup message window
+  void dwinPopupTemperature(const bool toohigh);
+#endif
+
+#if HAS_HOTEND
+  void popupWindowETempTooLow();
+#endif
+
+void popupWindowResume();
+void popupWindowHome(const bool parking=false);
+void popupWindowLeveling();
+
+void gotoPrintProcess();
+void gotoMainMenu();
+
+// Variable control
+void hmiMoveX();
+void hmiMoveY();
+void hmiMoveZ();
+void hmiMoveE();
+
+void hmiZoffset();
+
+#if HAS_HOTEND
+  void hmiETemp();
+#endif
+#if HAS_HEATED_BED
+  void hmiBedTemp();
+#endif
+#if HAS_FAN
+  void hmiFanSpeed();
+#endif
+
+void hmiPrintSpeed();
+
+void hmiMaxFeedspeedXYZE();
+void hmiMaxAccelerationXYZE();
+void hmiMaxJerkXYZE();
+#if ENABLED(EDITABLE_STEPS_PER_UNIT)
+  void hmiStepXYZE();
+#endif
+
+void hmiSetLanguageCache();
+
+void updateVariable();
+void dwinDrawSignedFloat(uint8_t size, uint16_t bColor, uint8_t iNum, uint8_t fNum, uint16_t x, uint16_t y, long value);
+
+// SD Card
+void hmiSDCardInit();
+void hmiSDCardUpdate();
+
+// Other
+void drawStatusArea(const bool with_update); // Status Area
+void hmiStartFrame(const bool with_update);   // Prepare the menu view
+void hmiMainMenu();    // Main process screen
+void hmiSelectFile();  // File page
+void hmiPrinting();    // Print page
+void hmiPrepare();     // Prepare page
+void hmiControl();     // Control page
+void hmiLeveling();    // Level the page
+void hmiAxisMove();    // Axis movement menu
+void hmiTemperature(); // Temperature menu
+void hmiMotion();      // Sports menu
+void hmiInfo();        // Information menu
+void hmiTune();        // Adjust the menu
+
+#if HAS_PREHEAT
+  void hmiPLAPreheatSetting(); // PLA warm-up setting
+  void hmiABSPreheatSetting(); // ABS warm-up setting
+#endif
+
+void hmiMaxSpeed();        // Maximum speed submenu
+void hmiMaxAcceleration(); // Maximum acceleration submenu
+void hmiMaxJerk();         // Maximum jerk speed submenu
+void hmiStep();            // Transmission ratio
+
+void hmiInit();
+void dwinInitScreen();
+void eachMomentUpdate();
+void dwinHandleScreen();
+void dwinStatusChanged(const char * const cstr=nullptr);
+void dwinStatusChanged(FSTR_P const fstr);
+
+inline void dwinHomingStart() { hmiFlag.home_flag = true; }
+
+void dwinHomingDone();
+void dwinLevelingDone();
+>>>>>>> origin/release-2.1.3-beta2

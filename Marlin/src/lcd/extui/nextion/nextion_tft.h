@@ -40,6 +40,7 @@ class NextionTFT {
 
   public:
     NextionTFT();
+<<<<<<< HEAD
     static void Startup();
     static void IdleLoop();
     static void PrinterKilled(FSTR_P const, FSTR_P const);
@@ -47,16 +48,25 @@ class NextionTFT {
     static void StatusChange(const char * const);
     static void SendtoTFT(FSTR_P const=nullptr);
     //static void SendtoTFTLN(FSTR_P const=nullptr);
+=======
+    static void startup();
+    static void idleLoop();
+    static void printerKilled(FSTR_P const, FSTR_P const);
+    static void confirmationRequest(const char * const);
+    static void statusChange(const char * const);
+    static void tftSend(FSTR_P const=nullptr);
+    //static void tftSendLn(FSTR_P const=nullptr);
+>>>>>>> origin/release-2.1.3-beta2
     static void UpdateOnChange();
     static void PrintFinished();
-    static void PanelInfo(uint8_t);
+    static void panelInfo(uint8_t);
 
   private:
-    static bool ReadTFTCommand();
-    static void SendFileList(int8_t);
-    static void SelectFile();
-    static void ProcessPanelRequest();
-    static void PanelAction(uint8_t);
+    static bool readTFTCommand();
+    static void sendFileList(int8_t);
+    static void selectFile();
+    static void processPanelRequest();
+    static void panelAction(uint8_t);
     static void _format_time(char *, uint32_t);
 };
 

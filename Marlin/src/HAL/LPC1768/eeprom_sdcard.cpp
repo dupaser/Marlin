@@ -49,7 +49,11 @@ bool eeprom_file_open = false;
   #define MARLIN_EEPROM_SIZE size_t(0x1000) // 4KiB of Emulated EEPROM
 #endif
 
+<<<<<<< HEAD
 size_t PersistentStore::capacity() { return MARLIN_EEPROM_SIZE; }
+=======
+size_t PersistentStore::capacity() { return MARLIN_EEPROM_SIZE - eeprom_exclude_size; }
+>>>>>>> origin/release-2.1.3-beta2
 
 bool PersistentStore::access_start() {
   const char eeprom_erase_value = 0xFF;
@@ -91,6 +95,7 @@ bool PersistentStore::access_finish() {
 static void debug_rw(const bool write, int &pos, const uint8_t *value, const size_t size, const FRESULT s, const size_t total=0) {
   #if ENABLED(DEBUG_SD_EEPROM_EMULATION)
     FSTR_P const rw_str = write ? F("write") : F("read");
+<<<<<<< HEAD
     SERIAL_CHAR(' ');
     SERIAL_ECHOF(rw_str);
     SERIAL_ECHOLNPGM("_data(", pos, ",", *value, ",", size, ", ...)");
@@ -100,6 +105,11 @@ static void debug_rw(const bool write, int &pos, const uint8_t *value, const siz
       SERIAL_ECHOPGM("()=", s, "\n size=", size, "\n bytes_");
       SERIAL_ECHOLNF(write ? F("written=") : F("read="), total);
     }
+=======
+    SERIAL_ECHOLN(C(' '), rw_str, F("_data("), pos, C(','), *value, C(','), size, F(", ...)"));
+    if (total)
+      SERIAL_ECHOLN(F(" f_"), rw_str, F("()="), s, F("\n size="), size, F("\n bytes_"), write ? F("written=") : F("read="), total);
+>>>>>>> origin/release-2.1.3-beta2
     else
       SERIAL_ECHOLNPGM(" f_lseek()=", s);
   #endif

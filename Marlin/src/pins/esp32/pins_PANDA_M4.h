@@ -27,6 +27,13 @@
 
 #define BOARD_INFO_NAME "Panda_M4"
 
+<<<<<<< HEAD
+=======
+#if HAS_MULTI_HOTEND || E_STEPPERS > 1
+  #error "PANDA M4 only supports 1 hotend / E stepper."
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 #include "pins_PANDA_common.h"
 
 //

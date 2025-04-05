@@ -28,7 +28,11 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
+<<<<<<< HEAD
 #if HAS_EXTRUDERS
+=======
+#if HAS_HOTEND
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "../gcode.h"
 #include "../../module/temperature.h"
@@ -47,10 +51,6 @@
   #if ENABLED(CANCEL_OBJECTS)
     #include "../../feature/cancel_object.h"
   #endif
-#endif
-
-#if ENABLED(SINGLENOZZLE_STANDBY_TEMP)
-  #include "../../module/tool_change.h"
 #endif
 
 /**
@@ -136,12 +136,15 @@ void GcodeSuite::M104_M109(const bool isM109) {
   TERN_(AUTOTEMP, planner.autotemp_M104_M109());
 
   if (isM109 && got_temp)
+<<<<<<< HEAD
   {
     #if ENABLED(DGUS_LCD_UI_MKS)
       dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_NOZZLE_HEATING), VP_Status_LEN); //Свое
     #endif
+=======
+>>>>>>> origin/release-2.1.3-beta2
     (void)thermalManager.wait_for_hotend(target_extruder, no_wait_for_cooling);
   }
 }
 
-#endif // EXTRUDERS
+#endif // HAS_HOTEND

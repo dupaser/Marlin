@@ -34,6 +34,13 @@
   #include "../../feature/power.h"
 #endif
 
+<<<<<<< HEAD
+=======
+#if ENABLED(POWER_LOSS_RECOVERY)
+  #include "../../feature/powerloss.h"
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 #if HAS_SUICIDE
   #include "../../MarlinCore.h"
 #endif
@@ -48,7 +55,11 @@
 
     // S: Report the current power supply state and exit
     if (parser.seen('S')) {
+<<<<<<< HEAD
       SERIAL_ECHOF(powerManager.psu_on ? F("PS:1\n") : F("PS:0\n"));
+=======
+      SERIAL_ECHO(powerManager.psu_on ? F("PS:1\n") : F("PS:0\n"));
+>>>>>>> origin/release-2.1.3-beta2
       return;
     }
 
@@ -79,10 +90,16 @@ void GcodeSuite::M81() {
 
   print_job_timer.stop();
 
+<<<<<<< HEAD
   #if BOTH(HAS_FAN, PROBING_FANS_OFF)
+=======
+  #if ALL(HAS_FAN, PROBING_FANS_OFF)
+>>>>>>> origin/release-2.1.3-beta2
     thermalManager.fans_paused = false;
     ZERO(thermalManager.saved_fan_speed);
   #endif
+
+  TERN_(POWER_LOSS_RECOVERY, recovery.purge()); // Clear PLR on intentional shutdown
 
   safe_delay(1000); // Wait 1 second before switching off
 
@@ -98,6 +115,7 @@ void GcodeSuite::M81() {
         powerManager.setPowerOffTimer(SEC_TO_MS(delay - 1));
       }
     }
+<<<<<<< HEAD
   #endif
 
   #if ENABLED(POWER_OFF_WAIT_FOR_COOLDOWN)
@@ -117,4 +135,25 @@ void GcodeSuite::M81() {
   #elif ENABLED(PSU_CONTROL)
     powerManager.power_off_soon();
   #endif
+=======
+  #endif
+
+  #if ENABLED(POWER_OFF_WAIT_FOR_COOLDOWN)
+    if (parser.boolval('S')) {
+      delayed_power_off = true;
+      powerManager.setPowerOffOnCooldown(true);
+    }
+  #endif
+
+  if (delayed_power_off) {
+    SERIAL_ECHOLNPGM(STR_DELAYED_POWEROFF);
+    return;
+  }
+
+  #if ENABLED(PSU_CONTROL)
+    powerManager.power_off_soon();
+  #elif HAS_SUICIDE
+    suicide();
+  #endif
+>>>>>>> origin/release-2.1.3-beta2
 }

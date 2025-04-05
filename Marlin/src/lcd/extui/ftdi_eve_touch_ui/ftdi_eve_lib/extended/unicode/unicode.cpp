@@ -21,7 +21,7 @@
 
 #include "../ftdi_extended.h"
 
-#if BOTH(FTDI_EXTENDED, TOUCH_UI_USE_UTF8)
+#if ALL(FTDI_EXTENDED, TOUCH_UI_USE_UTF8)
 
   using namespace FTDI;
 
@@ -71,6 +71,7 @@
     if ((val & 0xC0) == 0xC0)
       while ((*c & 0xC0) == 0x80)
         val = (val << 8) | *(uint8_t*)c++;
+<<<<<<< HEAD
     return val;
   }
 
@@ -79,6 +80,8 @@
     if ((val & 0xC0) == 0xC0)
       while ((*c & 0xC0) == 0x80)
         val = (val << 8) | *(uint8_t*)c++;
+=======
+>>>>>>> origin/release-2.1.3-beta2
     return val;
   }
 

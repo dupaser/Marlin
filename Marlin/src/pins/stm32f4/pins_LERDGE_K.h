@@ -114,12 +114,13 @@
 //#endif
 
 #if HAS_TMC_UART
-  /**
-   * TMC2208/TMC2209 stepper drivers
-   */
+  //
+  // TMC2208/TMC2209 stepper drivers
+  //
   #ifndef X_SERIAL_TX_PIN
     #define X_SERIAL_TX_PIN                 PB2
   #endif
+<<<<<<< HEAD
   #ifndef X_SERIAL_RX_PIN
     #define X_SERIAL_RX_PIN      X_SERIAL_TX_PIN
   #endif
@@ -158,9 +159,33 @@
   //#define Z2_SERIAL_TX_PIN EX_SERIAL_TX_PIN
   //#define E2_SERIAL_RX_PIN EX_SERIAL_RX_PIN
   //#define E2_SERIAL_TX_PIN EX_SERIAL_TX_PIN
+=======
+  #ifndef Y_SERIAL_TX_PIN
+    #define Y_SERIAL_TX_PIN                 PE2
+  #endif
+  #ifndef Z_SERIAL_TX_PIN
+    #define Z_SERIAL_TX_PIN                 PE3
+  #endif
+  #ifndef E0_SERIAL_TX_PIN
+    #define E0_SERIAL_TX_PIN                PE4
+  #endif
+  #ifndef E1_SERIAL_TX_PIN
+    #define E1_SERIAL_TX_PIN                PE1
+  #endif
+  // Ex-motor can be any... X2/Y2/Z2 or E2
+  #ifndef EX_SERIAL_TX_PIN
+    #define EX_SERIAL_TX_PIN                PE0
+  #endif
+  //#define Z2_SERIAL_TX_PIN    EX_SERIAL_TX_PIN
+  //#define E2_SERIAL_TX_PIN    EX_SERIAL_TX_PIN
+
+>>>>>>> origin/release-2.1.3-beta2
   // Reduce baud rate to improve software serial reliability
-  #define TMC_BAUD_RATE                    19200
-#endif
+  #ifndef TMC_BAUD_RATE
+    #define TMC_BAUD_RATE                  19200
+  #endif
+
+#endif // HAS_TMC_UART
 
 //
 // Temperature Sensors
@@ -182,8 +207,8 @@
 #define HEATER_1_PIN                        PA0
 #define HEATER_BED_PIN                      PA2
 
-#ifndef FAN_PIN
-  #define FAN_PIN                           PF7
+#ifndef FAN0_PIN
+  #define FAN0_PIN                          PF7
 #endif
 
 #define FAN1_PIN                            PF6
@@ -203,7 +228,10 @@
 //
 #define LED_PIN                             PA15  // Status LED
 //#define CASE_LIGHT_PIN                    PB6   // LED Ribbon Connector (PWM TIM4_CH1)
+<<<<<<< HEAD
 //#define NEOPIXEL_PIN                      -1
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #ifndef RGB_LED_R_PIN
   #define RGB_LED_R_PIN                     PB8   // swap R and G pin for compatibility with real wires
 #endif
@@ -217,10 +245,14 @@
 //
 // SD support
 //
-#define SDIO_SUPPORT
+#define ONBOARD_SDIO
 #define SDIO_CLOCK                       4800000
 #define SD_DETECT_PIN                       PA8
+<<<<<<< HEAD
 #if DISABLED(SDIO_SUPPORT)
+=======
+#if DISABLED(ONBOARD_SDIO)
+>>>>>>> origin/release-2.1.3-beta2
   #define SOFTWARE_SPI
   #define SD_SCK_PIN                        PC12
   #define SD_MISO_PIN                       PC8
@@ -248,6 +280,7 @@
   #define TFT_RESET_PIN                     PD6
   #define TFT_BACKLIGHT_PIN                 PD3
 
+<<<<<<< HEAD
   #define FSMC_CS_PIN                       PD7
   #define FSMC_RS_PIN                       PD11
 
@@ -261,6 +294,21 @@
   #define TOUCH_INT_PIN                     PG12
 #endif
 
+=======
+  // TODO: See if FSMC DMA can work
+  #define FSMC_CS_PIN                       PD7
+  #define FSMC_RS_PIN                       PD11
+  #define TFT_CS_PIN                 FSMC_CS_PIN
+  #define TFT_RS_PIN                 FSMC_RS_PIN
+
+  #define TOUCH_CS_PIN                      PG15
+  #define TOUCH_SCK_PIN                     PB3
+  #define TOUCH_MOSI_PIN                    PB5
+  #define TOUCH_MISO_PIN                    PB4
+  #define TOUCH_INT_PIN                     PG12
+#endif
+
+>>>>>>> origin/release-2.1.3-beta2
 #if IS_NEWPANEL
   #define BEEPER_PIN                        PC7
   #define BTN_EN1                           PG11

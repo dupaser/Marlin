@@ -21,6 +21,7 @@
  */
 #pragma once
 
+<<<<<<< HEAD
 void usleep(uint64_t microsec);
 // The following are optional depending on the platform.
 
@@ -42,3 +43,16 @@ uint8_t u8g_com_ST7920_sw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void 
 #define U8G_COM_UC_I2C u8g_com_null_fn
 
 
+=======
+/**
+ * Native/Simulator LCD-specific defines
+ */
+
+void usleep(uint64_t microsec);
+
+uint8_t u8g_com_sw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);
+uint8_t u8g_com_ST7920_sw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);
+
+#define U8G_COM_HAL_SW_SPI_FN       u8g_com_sw_spi_fn
+#define U8G_COM_ST7920_HAL_SW_SPI   u8g_com_ST7920_sw_spi_fn
+>>>>>>> origin/release-2.1.3-beta2

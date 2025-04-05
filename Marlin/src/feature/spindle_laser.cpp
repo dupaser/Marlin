@@ -35,7 +35,11 @@
 #endif
 
 #if ENABLED(I2C_AMMETER)
+<<<<<<< HEAD
   #include "../feature/ammeter.h"
+=======
+  #include "ammeter.h"
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 SpindleLaser cutter;
@@ -67,7 +71,11 @@ cutter_frequency_t SpindleLaser::frequency;                           // PWM fre
 void SpindleLaser::init() {
   #if ENABLED(SPINDLE_SERVO)
     servo[SPINDLE_SERVO_NR].move(SPINDLE_SERVO_MIN);
+<<<<<<< HEAD
   #else
+=======
+  #elif PIN_EXISTS(SPINDLE_LASER_ENA)
+>>>>>>> origin/release-2.1.3-beta2
     OUT_WRITE(SPINDLE_LASER_ENA_PIN, !SPINDLE_LASER_ACTIVE_STATE);    // Init spindle to off
   #endif
   #if ENABLED(SPINDLE_CHANGE_DIR)
@@ -104,12 +112,16 @@ void SpindleLaser::init() {
   }
 
   void SpindleLaser::set_ocr(const uint8_t ocr) {
-    WRITE(SPINDLE_LASER_ENA_PIN,  SPINDLE_LASER_ACTIVE_STATE); // Cutter ON
+    #if PIN_EXISTS(SPINDLE_LASER_ENA)
+      WRITE(SPINDLE_LASER_ENA_PIN,  SPINDLE_LASER_ACTIVE_STATE); // Cutter ON
+    #endif
     _set_ocr(ocr);
   }
 
   void SpindleLaser::ocr_off() {
-    WRITE(SPINDLE_LASER_ENA_PIN, !SPINDLE_LASER_ACTIVE_STATE); // Cutter OFF
+    #if PIN_EXISTS(SPINDLE_LASER_ENA)
+      WRITE(SPINDLE_LASER_ENA_PIN, !SPINDLE_LASER_ACTIVE_STATE); // Cutter OFF
+    #endif
     _set_ocr(0);
   }
 #endif // SPINDLE_LASER_USE_PWM
@@ -137,7 +149,11 @@ void SpindleLaser::apply_power(const uint8_t opwr) {
       else
         ocr_off();
     #elif ENABLED(SPINDLE_SERVO)
+<<<<<<< HEAD
       MOVE_SERVO(SPINDLE_SERVO_NR, power);
+=======
+      servo[SPINDLE_SERVO_NR].move(opwr);
+>>>>>>> origin/release-2.1.3-beta2
     #else
       WRITE(SPINDLE_LASER_ENA_PIN, enabled() ? SPINDLE_LASER_ACTIVE_STATE : !SPINDLE_LASER_ACTIVE_STATE);
       isReadyForUI = true;

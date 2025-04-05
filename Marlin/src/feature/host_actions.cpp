@@ -41,8 +41,12 @@ HostUI hostui;
 
 void HostUI::action(FSTR_P const fstr, const bool eol) {
   PORT_REDIRECT(SerialMask::All);
+<<<<<<< HEAD
   SERIAL_ECHOPGM("//action:");
   SERIAL_ECHOF(fstr);
+=======
+  SERIAL_ECHOPGM("//action:", fstr);
+>>>>>>> origin/release-2.1.3-beta2
   if (eol) SERIAL_EOL();
 }
 
@@ -107,6 +111,7 @@ void HostUI::action(FSTR_P const fstr, const bool eol) {
   void HostUI::prompt(FSTR_P const ptype, const bool eol/*=true*/) {
     PORT_REDIRECT(SerialMask::All);
     action(F("prompt_"), false);
+<<<<<<< HEAD
     SERIAL_ECHOF(ptype);
     if (eol) SERIAL_EOL();
   }
@@ -119,11 +124,30 @@ void HostUI::action(FSTR_P const fstr, const bool eol) {
     if (extra_char != '\0') SERIAL_CHAR(extra_char);
     SERIAL_EOL();
   }
+=======
+    SERIAL_ECHO(ptype);
+    if (eol) SERIAL_EOL();
+  }
+
+  void HostUI::prompt_plus(const bool pgm, FSTR_P const ptype, const char * const str, const char extra_char/*='\0'*/) {
+    prompt(ptype, false);
+    PORT_REDIRECT(SerialMask::All);
+    SERIAL_CHAR(' ');
+    if (pgm)
+      SERIAL_ECHOPGM_P(str);
+    else
+      SERIAL_ECHO(str);
+    if (extra_char != '\0') SERIAL_CHAR(extra_char);
+    SERIAL_EOL();
+  }
+
+>>>>>>> origin/release-2.1.3-beta2
   void HostUI::prompt_begin(const PromptReason reason, FSTR_P const fstr, const char extra_char/*='\0'*/) {
     prompt_end();
     host_prompt_reason = reason;
     prompt_plus(F("begin"), fstr, extra_char);
   }
+<<<<<<< HEAD
   void HostUI::prompt_button(FSTR_P const fstr) { prompt_plus(F("button"), fstr); }
   void HostUI::prompt_end() { prompt(F("end")); }
   void HostUI::prompt_show() { prompt(F("show")); }
@@ -139,6 +163,51 @@ void HostUI::action(FSTR_P const fstr, const bool eol) {
   }
   void HostUI::prompt_do(const PromptReason reason, FSTR_P const fstr, const char extra_char, FSTR_P const btn1/*=nullptr*/, FSTR_P const btn2/*=nullptr*/) {
     prompt_begin(reason, fstr, extra_char);
+    _prompt_show(btn1, btn2);
+  }
+
+  #if ENABLED(ADVANCED_PAUSE_FEATURE)
+    void HostUI::filament_load_prompt() {
+      const bool disable_to_continue = TERN0(HAS_FILAMENT_SENSOR, runout.filament_ran_out);
+      prompt_do(PROMPT_FILAMENT_RUNOUT, F("Paused"), F("PurgeMore"),
+        disable_to_continue ? F("DisableRunout") : FPSTR(CONTINUE_STR)
+      );
+    }
+  #endif
+=======
+  void HostUI::prompt_begin(const PromptReason reason, const char * const cstr, const char extra_char/*='\0'*/) {
+    prompt_end();
+    host_prompt_reason = reason;
+    prompt_plus(F("begin"), cstr, extra_char);
+  }
+
+  void HostUI::prompt_end() { prompt(F("end")); }
+  void HostUI::prompt_show() { prompt(F("show")); }
+
+  void HostUI::_prompt_show(FSTR_P const btn1, FSTR_P const btn2) {
+    if (btn1) prompt_button(btn1);
+    if (btn2) prompt_button(btn2);
+    prompt_show();
+  }
+>>>>>>> origin/release-2.1.3-beta2
+
+  void HostUI::prompt_button(FSTR_P const fstr) { prompt_plus(F("button"), fstr); }
+  void HostUI::prompt_button(const char * const cstr) { prompt_plus(F("button"), cstr); }
+
+  void HostUI::prompt_do(const PromptReason reason, FSTR_P const fstr, FSTR_P const btn1/*=nullptr*/, FSTR_P const btn2/*=nullptr*/) {
+    prompt_begin(reason, fstr);
+    _prompt_show(btn1, btn2);
+  }
+  void HostUI::prompt_do(const PromptReason reason, const char * const cstr, FSTR_P const btn1/*=nullptr*/, FSTR_P const btn2/*=nullptr*/) {
+    prompt_begin(reason, cstr);
+    _prompt_show(btn1, btn2);
+  }
+  void HostUI::prompt_do(const PromptReason reason, FSTR_P const fstr, const char extra_char, FSTR_P const btn1/*=nullptr*/, FSTR_P const btn2/*=nullptr*/) {
+    prompt_begin(reason, fstr, extra_char);
+    _prompt_show(btn1, btn2);
+  }
+  void HostUI::prompt_do(const PromptReason reason, const char * const cstr, const char extra_char, FSTR_P const btn1/*=nullptr*/, FSTR_P const btn2/*=nullptr*/) {
+    prompt_begin(reason, cstr, extra_char);
     _prompt_show(btn1, btn2);
   }
 
@@ -166,13 +235,13 @@ void HostUI::action(FSTR_P const fstr, const bool eol) {
         switch (response) {
 
           case 0: // "Purge More" button
-            #if BOTH(M600_PURGE_MORE_RESUMABLE, ADVANCED_PAUSE_FEATURE)
+            #if ENABLED(M600_PURGE_MORE_RESUMABLE)
               pause_menu_response = PAUSE_RESPONSE_EXTRUDE_MORE;  // Simulate menu selection (menu exits, doesn't extrude more)
             #endif
             break;
 
           case 1: // "Continue" / "Disable Runout" button
-            #if BOTH(M600_PURGE_MORE_RESUMABLE, ADVANCED_PAUSE_FEATURE)
+            #if ENABLED(M600_PURGE_MORE_RESUMABLE)
               pause_menu_response = PAUSE_RESPONSE_RESUME_PRINT;  // Simulate menu selection
             #endif
             #if HAS_FILAMENT_SENSOR
@@ -188,7 +257,7 @@ void HostUI::action(FSTR_P const fstr, const bool eol) {
         TERN_(HAS_RESUME_CONTINUE, wait_for_user = false);
         break;
       case PROMPT_PAUSE_RESUME:
-        #if BOTH(ADVANCED_PAUSE_FEATURE, SDSUPPORT)
+        #if ALL(ADVANCED_PAUSE_FEATURE, HAS_MEDIA)
           extern const char M24_STR[];
           queue.inject_P(M24_STR);
         #endif

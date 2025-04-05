@@ -41,6 +41,7 @@
   #include "mks_hardware.h"
   #include "../../../module/endstops.h"
 
+<<<<<<< HEAD
   bool pw_det_sta, pw_off_sta, mt_det_sta;
   #if PIN_EXISTS(MT_DET_2)
     bool mt_det2_sta;
@@ -51,30 +52,73 @@
     constexpr static bool endstopx1_sta = true;
   #endif
   #if HAS_X2_MIN || HAS_X2_MAX
+=======
+  bool pw_det_sta, pw_off_sta;
+  #if PIN_EXISTS(FIL_RUNOUT)
+    bool mt_det1_sta;
+  #endif
+  #if PIN_EXISTS(FIL_RUNOUT2)
+    bool mt_det2_sta;
+  #endif
+  #if USE_X_MIN
+    bool endstopx1_min;
+  #else
+    constexpr static bool endstopx1_min = true;
+  #endif
+  #if USE_X_MAX
+    bool endstopx1_max;
+  #else
+    constexpr static bool endstopx1_max = true;
+  #endif
+  #if USE_X2_MIN
+>>>>>>> origin/release-2.1.3-beta2
     bool endstopx2_sta;
   #else
     constexpr static bool endstopx2_sta = true;
   #endif
+<<<<<<< HEAD
   #if HAS_Y_AXIS && Y_HOME_DIR
+=======
+  #if USE_Y_MIN
+>>>>>>> origin/release-2.1.3-beta2
     bool endstopy1_sta;
   #else
     constexpr static bool endstopy1_sta = true;
   #endif
+<<<<<<< HEAD
   #if HAS_Y2_MIN || HAS_Y2_MAX
+=======
+  #if USE_Y2_MIN
+>>>>>>> origin/release-2.1.3-beta2
     bool endstopy2_sta;
   #else
     constexpr static bool endstopy2_sta = true;
   #endif
+<<<<<<< HEAD
   #if HAS_Z_AXIS && Z_HOME_DIR
     bool endstopz1_sta;
   #else
     constexpr static bool endstopz1_sta = true;
   #endif
   #if HAS_Z2_MIN || HAS_Z2_MAX
+=======
+  #if USE_Z_MIN
+    bool endstopz1_min;
+  #else
+    constexpr static bool endstopz1_min = true;
+  #endif
+  #if USE_Z_MAX
+    bool endstopz1_max;
+  #else
+    constexpr static bool endstopz1_max = true;
+  #endif
+  #if USE_Z2_MIN || USE_Z2_MAX
+>>>>>>> origin/release-2.1.3-beta2
     bool endstopz2_sta;
   #else
     constexpr static bool endstopz2_sta = true;
   #endif
+<<<<<<< HEAD
 
   #define ESTATE(S) (READ(S##_PIN) != S##_ENDSTOP_INVERTING)
 
@@ -164,21 +208,130 @@
 
   void init_test_gpio() {
     endstops.init();
+=======
+  #if USE_Z3_MIN || USE_Z3_MAX
+    bool endstopz3_sta;
+  #else
+    constexpr static bool endstopz3_sta = true;
+  #endif
+  #if USE_Z4_MIN || USE_Z4_MAX
+    bool endstopz4_sta;
+  #else
+    constexpr static bool endstopz4_sta = true;
+  #endif
 
-    SET_OUTPUT(WIFI_IO0_PIN);
+  #define LOWSTATE(S) (READ(S##_PIN) == LOW)
+>>>>>>> origin/release-2.1.3-beta2
 
+  void test_gpio_readlevel_L() {
+    #if PIN_EXISTS(WIFI_IO0)
+      WRITE(WIFI_IO0_PIN, HIGH);
+    #endif
+    delay(10);
+    pw_det_sta = LOWSTATE(MKS_TEST_POWER_LOSS);
+    pw_off_sta = LOWSTATE(MKS_TEST_PS_ON);
+    #if PIN_EXISTS(FIL_RUNOUT)
+      mt_det1_sta = LOWSTATE(FIL_RUNOUT);
+    #endif
+    #if PIN_EXISTS(FIL_RUNOUT2)
+      mt_det2_sta = LOWSTATE(FIL_RUNOUT2);
+    #endif
+    TERN_(USE_X_MIN, endstopx1_min = LOWSTATE(X_MIN));
+    TERN_(USE_X_MAX, endstopx1_max = LOWSTATE(X_MAX));
+    #if USE_X2_MIN || USE_X2_MAX
+      endstopx2_sta = LOWSTATE(TERN(USE_X2_MIN, X2_MIN, X2_MAX));
+    #endif
+    #if USE_Y_MIN || USE_Y_MAX
+      endstopy1_sta = LOWSTATE(TERN(USE_Y_MIN,   Y_MIN,  Y_MAX));
+    #endif
+    #if USE_Y2_MIN || USE_Y2_MAX
+      endstopy2_sta = LOWSTATE(TERN(USE_Y2_MIN, Y2_MIN, Y2_MAX));
+    #endif
+    TERN_(USE_Z_MIN, endstopz1_min = LOWSTATE(Z_MIN));
+    TERN_(USE_Z_MAX, endstopz1_max = LOWSTATE(Z_MAX));
+    #if USE_Z2_MIN || USE_Z2_MAX
+      endstopz2_sta = LOWSTATE(TERN(USE_Z2_MIN, Z2_MIN, Z2_MAX));
+    #endif
+    #if USE_Z3_MIN || USE_Z3_MAX
+      endstopz3_sta = LOWSTATE(TERN(USE_Z3_MIN, Z3_MIN, Z3_MAX));
+    #endif
+    #if USE_Z4_MIN || USE_Z4_MAX
+      endstopz4_sta = LOWSTATE(TERN(USE_Z4_MIN, Z4_MIN, Z4_MAX));
+    #endif
+  }
+
+<<<<<<< HEAD
     #if PIN_EXISTS(MT_DET_1)
       SET_INPUT_PULLUP(MT_DET_1_PIN);
     #endif
     #if PIN_EXISTS(MT_DET_2)
       SET_INPUT_PULLUP(MT_DET_2_PIN);
+=======
+  void test_gpio_readlevel_H() {
+    #if PIN_EXISTS(WIFI_IO0)
+      WRITE(WIFI_IO0_PIN, LOW);
+    #endif
+    delay(10);
+    pw_det_sta = !LOWSTATE(MKS_TEST_POWER_LOSS);
+    pw_off_sta = !LOWSTATE(MKS_TEST_PS_ON);
+    #if PIN_EXISTS(FIL_RUNOUT)
+      mt_det1_sta = !LOWSTATE(FIL_RUNOUT);
+    #endif
+    #if PIN_EXISTS(FIL_RUNOUT2)
+      mt_det2_sta = !LOWSTATE(FIL_RUNOUT2);
+    #endif
+    TERN_(USE_X_MIN, endstopx1_min = !LOWSTATE(X_MIN));
+    TERN_(USE_X_MAX, endstopx1_max = !LOWSTATE(X_MAX));
+    #if USE_X2_MIN || USE_X2_MAX
+      endstopx2_sta = !LOWSTATE(TERN(USE_X2_MIN, X2_MIN, X2_MAX));
+    #endif
+    #if USE_Y_MIN || USE_Y_MAX
+      endstopy1_sta = !LOWSTATE(TERN(USE_Y_MIN,   Y_MIN,  Y_MAX));
+    #endif
+    #if USE_Y2_MIN || USE_Y2_MAX
+      endstopy2_sta = !LOWSTATE(TERN(USE_Y2_MIN, Y2_MIN, Y2_MAX));
+    #endif
+    TERN_(USE_Z_MIN, endstopz1_min = !LOWSTATE(Z_MIN));
+    TERN_(USE_Z_MAX, endstopz1_max = !LOWSTATE(Z_MAX));
+    #if USE_Z2_MIN || USE_Z2_MAX
+      endstopz2_sta = !LOWSTATE(TERN(USE_Z2_MIN, Z2_MIN, Z2_MAX));
+    #endif
+    #if USE_Z3_MIN || USE_Z3_MAX
+      endstopz3_sta = !LOWSTATE(TERN(USE_Z3_MIN, Z3_MIN, Z3_MAX));
+    #endif
+    #if USE_Z4_MIN || USE_Z4_MAX
+      endstopz4_sta = !LOWSTATE(TERN(USE_Z4_MIN, Z4_MIN, Z4_MAX));
+    #endif
+  }
+
+  #include "../../../libs/buzzer.h"
+
+  void init_test_gpio() {
+    endstops.init();
+
+    #if PIN_EXISTS(WIFI_IO0)
+      SET_OUTPUT(WIFI_IO0_PIN);
+    #endif
+
+    #if PIN_EXISTS(FIL_RUNOUT)
+      SET_INPUT_PULLUP(FIL_RUNOUT_PIN);
+    #endif
+    #if PIN_EXISTS(FIL_RUNOUT2)
+      SET_INPUT_PULLUP(FIL_RUNOUT2_PIN);
+>>>>>>> origin/release-2.1.3-beta2
     #endif
 
     SET_INPUT_PULLUP(MKS_TEST_POWER_LOSS_PIN);
     SET_INPUT_PULLUP(MKS_TEST_PS_ON_PIN);
     SET_INPUT_PULLUP(SERVO0_PIN);
 
+<<<<<<< HEAD
     OUT_WRITE(X_ENABLE_PIN, LOW);
+=======
+    #if HAS_X_AXIS
+      OUT_WRITE(X_ENABLE_PIN, LOW);
+    #endif
+>>>>>>> origin/release-2.1.3-beta2
     #if HAS_Y_AXIS
       OUT_WRITE(Y_ENABLE_PIN, LOW);
     #endif
@@ -205,7 +358,11 @@
 
   void mks_test_beeper() { buzzer.click(100); }
 
+<<<<<<< HEAD
   #if ENABLED(SDSUPPORT)
+=======
+  #if HAS_MEDIA
+>>>>>>> origin/release-2.1.3-beta2
 
     void mks_gpio_test() {
       init_test_gpio();
@@ -213,8 +370,16 @@
       test_gpio_readlevel_L();
       test_gpio_readlevel_H();
       test_gpio_readlevel_L();
+<<<<<<< HEAD
       if (pw_det_sta && pw_off_sta && mt_det_sta
         #if PIN_EXISTS(MT_DET_2)
+=======
+      if (pw_det_sta && pw_off_sta
+        #if PIN_EXISTS(FIL_RUNOUT)
+          && mt_det1_sta
+        #endif
+        #if PIN_EXISTS(FIL_RUNOUT2)
+>>>>>>> origin/release-2.1.3-beta2
           && mt_det2_sta
         #endif
         #if ENABLED(MKS_HARDWARE_TEST_ONLY_E0)
@@ -231,7 +396,11 @@
       else
         disp_det_error();
 
+<<<<<<< HEAD
       if (endstopx1_sta && endstopy1_sta && endstopz1_sta && endstopz2_sta)
+=======
+      if (endstopx1_min && endstopx1_max && endstopy1_sta && endstopz1_min && endstopz1_max && endstopz2_sta && endstopz3_sta && endstopz4_sta)
+>>>>>>> origin/release-2.1.3-beta2
         disp_Limit_ok();
       else
         disp_Limit_error();
@@ -240,7 +409,13 @@
     void mks_hardware_test() {
       if (millis() % 2000 < 1000) {
         thermalManager.fan_speed[0] = 255;
+<<<<<<< HEAD
         WRITE(X_DIR_PIN, LOW);
+=======
+        #if HAS_X_AXIS
+          WRITE(X_DIR_PIN, LOW);
+        #endif
+>>>>>>> origin/release-2.1.3-beta2
         #if HAS_Y_AXIS
           WRITE(Y_DIR_PIN, LOW);
         #endif
@@ -265,11 +440,21 @@
       }
       else {
         thermalManager.fan_speed[0] = 0;
+<<<<<<< HEAD
         WRITE(X_DIR_PIN, HIGH);
         #if HAS_Y_AXIS
           WRITE(Y_DIR_PIN, HIGH);
         #endif
         #if HAS_Y_AXIS
+=======
+        #if HAS_X_AXIS
+          WRITE(X_DIR_PIN, HIGH);
+        #endif
+        #if HAS_Y_AXIS
+          WRITE(Y_DIR_PIN, HIGH);
+        #endif
+        #if HAS_Z_AXIS
+>>>>>>> origin/release-2.1.3-beta2
           WRITE(Z_DIR_PIN, HIGH);
         #endif
         #if HAS_EXTRUDERS
@@ -289,7 +474,13 @@
         #endif
       }
 
+<<<<<<< HEAD
       if (endstopx1_sta && endstopx2_sta && endstopy1_sta && endstopy2_sta && endstopz1_sta && endstopz2_sta) {
+=======
+      if ( endstopx1_min && endstopx1_max && endstopx2_sta && endstopy1_sta && endstopy2_sta
+        && endstopz1_min && endstopz1_max && endstopz2_sta && endstopz3_sta && endstopz4_sta
+      ) {
+>>>>>>> origin/release-2.1.3-beta2
         // nothing here
       }
       else {
@@ -690,7 +881,7 @@ void disp_char_1624(uint16_t x, uint16_t y, uint8_t c, uint16_t charColor, uint1
   for (uint16_t i = 0; i < 24; i++) {
     const uint16_t tmp_char = pgm_read_word(&ASCII_Table_16x24[((c - 0x20) * 24) + i]);
     for (uint16_t j = 0; j < 16; j++)
-      SPI_TFT.SetPoint(x + j, y + i, ((tmp_char >> j) & 0x01) ? charColor : bkColor);
+      SPI_TFT.setPoint(x + j, y + i, ((tmp_char >> j) & 0x01) ? charColor : bkColor);
   }
 }
 
@@ -706,7 +897,11 @@ void disp_string(uint16_t x, uint16_t y, FSTR_P const fstr, uint16_t charColor, 
 }
 
 void disp_assets_update() {
+<<<<<<< HEAD
   SPI_TFT.LCD_clear(0x0000);
+=======
+  SPI_TFT.lcdClear(0x0000);
+>>>>>>> origin/release-2.1.3-beta2
   disp_string(100, 140, F("Assets Updating..."), 0xFFFF, 0x0000);
 }
 
@@ -715,19 +910,27 @@ void disp_assets_update_progress(FSTR_P const fmsg) {
     static constexpr int buflen = 30;
     char buf[buflen];
     memset(buf, ' ', buflen);
+<<<<<<< HEAD
     strncpy_P(buf, FTOP(fmsg), buflen - 1);
     buf[buflen - 1] = '\0';
+=======
+    strlcpy_P(buf, FTOP(fmsg), buflen);
+>>>>>>> origin/release-2.1.3-beta2
     disp_string(100, 165, buf, 0xFFFF, 0x0000);
   #else
     disp_string(100, 165, FTOP(fmsg), 0xFFFF, 0x0000);
   #endif
 }
 
+<<<<<<< HEAD
 #if BOTH(MKS_TEST, SDSUPPORT)
+=======
+#if ALL(MKS_TEST, HAS_MEDIA)
+>>>>>>> origin/release-2.1.3-beta2
   uint8_t mks_test_flag = 0;
   const char *MKSTestPath = "MKS_TEST";
   void mks_test_get() {
-    SdFile dir, root = card.getroot();
+    MediaFile dir, root = card.getroot();
     if (dir.open(&root, MKSTestPath, O_RDONLY))
       mks_test_flag = 0x1E;
   }

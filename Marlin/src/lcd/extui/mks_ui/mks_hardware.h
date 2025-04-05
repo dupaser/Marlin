@@ -26,7 +26,11 @@
 #include <lvgl.h>
 
 // Functions for MKS_TEST
+<<<<<<< HEAD
 #if BOTH(MKS_TEST, SDSUPPORT)
+=======
+#if ALL(MKS_TEST, HAS_MEDIA)
+>>>>>>> origin/release-2.1.3-beta2
   void mks_hardware_test();
   void mks_test_get();
   void mks_gpio_test();

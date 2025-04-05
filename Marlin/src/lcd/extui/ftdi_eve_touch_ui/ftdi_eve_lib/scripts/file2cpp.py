@@ -16,10 +16,14 @@
 # location: <https://www.gnu.org/licenses/>.
 
 from __future__ import print_function
+<<<<<<< HEAD
 import argparse
 import textwrap
 import os
 import zlib
+=======
+import argparse, textwrap, os, zlib
+>>>>>>> origin/release-2.1.3-beta2
 
 def deflate(data):
   return zlib.compress(data)
@@ -30,7 +34,11 @@ if __name__ == "__main__":
   parser.add_argument("-d", "--deflate", action="store_true", help="Packs the data using the deflate algorithm")
   args = parser.parse_args()
 
+<<<<<<< HEAD
   varname = os.path.splitext(os.path.basename(args.input))[0];
+=======
+  varname = os.path.splitext(os.path.basename(args.input))[0]
+>>>>>>> origin/release-2.1.3-beta2
 
   with open(args.input, "rb") as in_file:
     data = in_file.read()

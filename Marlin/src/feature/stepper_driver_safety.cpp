@@ -30,9 +30,14 @@ static uint32_t axis_plug_backward = 0;
 
 void stepper_driver_backward_error(FSTR_P const fstr) {
   SERIAL_ERROR_START();
+<<<<<<< HEAD
   SERIAL_ECHOF(fstr);
   SERIAL_ECHOLNPGM(" driver is backward!");
   ui.status_printf(2, F(S_FMT S_FMT), FTOP(fstr), GET_TEXT(MSG_DRIVER_BACKWARD));
+=======
+  SERIAL_ECHOLN(fstr, F(" driver is backward!"));
+  ui.status_printf(2, F(S_FMT S_FMT), FTOP(fstr), GET_TEXT_F(MSG_DRIVER_BACKWARD));
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 void stepper_driver_backward_check() {
@@ -43,7 +48,7 @@ void stepper_driver_backward_check() {
       SET_INPUT(AXIS##_ENABLE_PIN); \
       OUT_WRITE(AXIS##_STEP_PIN, false); \
       delay(20); \
-      if (READ(AXIS##_ENABLE_PIN) == false) { \
+      if (READ(AXIS##_ENABLE_PIN) == LOW) { \
         SBI(axis_plug_backward, BIT); \
         stepper_driver_backward_error(F(STRINGIFY(AXIS))); \
       } \
@@ -65,6 +70,7 @@ void stepper_driver_backward_check() {
   TEST_BACKWARD(I,   8);
   TEST_BACKWARD(J,   9);
   TEST_BACKWARD(K,  10);
+<<<<<<< HEAD
 
   TEST_BACKWARD(E0, 11);
   TEST_BACKWARD(E1, 12);
@@ -74,6 +80,20 @@ void stepper_driver_backward_check() {
   TEST_BACKWARD(E5, 16);
   TEST_BACKWARD(E6, 17);
   TEST_BACKWARD(E7, 18);
+=======
+  TEST_BACKWARD(U,  11);
+  TEST_BACKWARD(V,  12);
+  TEST_BACKWARD(W,  13);
+
+  TEST_BACKWARD(E0, 14);
+  TEST_BACKWARD(E1, 15);
+  TEST_BACKWARD(E2, 16);
+  TEST_BACKWARD(E3, 17);
+  TEST_BACKWARD(E4, 18);
+  TEST_BACKWARD(E5, 19);
+  TEST_BACKWARD(E6, 20);
+  TEST_BACKWARD(E7, 21);
+>>>>>>> origin/release-2.1.3-beta2
 
   if (!axis_plug_backward)
     WRITE(SAFE_POWER_PIN, HIGH);
@@ -103,6 +123,7 @@ void stepper_driver_backward_report() {
   REPORT_BACKWARD(I,   8);
   REPORT_BACKWARD(J,   9);
   REPORT_BACKWARD(K,  10);
+<<<<<<< HEAD
 
   REPORT_BACKWARD(E0, 11);
   REPORT_BACKWARD(E1, 12);
@@ -112,6 +133,20 @@ void stepper_driver_backward_report() {
   REPORT_BACKWARD(E5, 16);
   REPORT_BACKWARD(E6, 17);
   REPORT_BACKWARD(E7, 18);
+=======
+  REPORT_BACKWARD(U,  11);
+  REPORT_BACKWARD(V,  12);
+  REPORT_BACKWARD(W,  13);
+
+  REPORT_BACKWARD(E0, 14);
+  REPORT_BACKWARD(E1, 15);
+  REPORT_BACKWARD(E2, 16);
+  REPORT_BACKWARD(E3, 17);
+  REPORT_BACKWARD(E4, 18);
+  REPORT_BACKWARD(E5, 19);
+  REPORT_BACKWARD(E6, 20);
+  REPORT_BACKWARD(E7, 21);
+>>>>>>> origin/release-2.1.3-beta2
 }
 
 #endif // HAS_DRIVER_SAFE_POWER_PROTECT

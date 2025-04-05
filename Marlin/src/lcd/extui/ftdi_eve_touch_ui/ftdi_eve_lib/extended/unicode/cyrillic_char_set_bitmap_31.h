@@ -100,7 +100,10 @@ const uint8_t cyrillic_font_widths[] PROGMEM = {
   21, // ё
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
 /* This is a dump of "font_bitmaps/cyrillic_char_set_bitmap_31.png"
  * using the tool "bitmap2cpp.py". The tool converts the image into
  * 16-level grayscale and packs two pixels per byte. The resulting

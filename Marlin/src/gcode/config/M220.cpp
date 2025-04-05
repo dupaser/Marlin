@@ -36,16 +36,23 @@
  *   R : Flag to restore the last-saved factor
  */
 void GcodeSuite::M220() {
+  if (!parser.seen_any()) {
+    SERIAL_ECHOLNPGM("FR:", feedrate_percentage, "%");
+    return;
+  }
 
   static int16_t backup_feedrate_percentage = 100;
-  if (parser.seen('B')) backup_feedrate_percentage = feedrate_percentage;
-  if (parser.seen('R')) feedrate_percentage = backup_feedrate_percentage;
-
+  const int16_t now_feedrate_perc = feedrate_percentage;
+  if (parser.seen_test('R')) feedrate_percentage = backup_feedrate_percentage;
+  if (parser.seen_test('B')) backup_feedrate_percentage = now_feedrate_perc;
   if (parser.seenval('S')) feedrate_percentage = parser.value_int();
 
+<<<<<<< HEAD
   if (!parser.seen_any()) {
     SERIAL_ECHOPGM("FR:", feedrate_percentage);
     SERIAL_CHAR('%');
     SERIAL_EOL();
   }
+=======
+>>>>>>> origin/release-2.1.3-beta2
 }

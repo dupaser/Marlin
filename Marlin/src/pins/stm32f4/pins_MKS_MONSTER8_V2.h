@@ -24,6 +24,15 @@
 #define BOARD_INFO_NAME "MKS Monster8 V2"
 
 //
+<<<<<<< HEAD
+=======
+// Limit Switches
+//
+#define X_STOP_PIN                          PA14
+#define Y_STOP_PIN                          PA15
+
+//
+>>>>>>> origin/release-2.1.3-beta2
 // Steppers
 //
 #define E4_ENABLE_PIN                       PB6   // Driver7
@@ -33,6 +42,7 @@
 //
 #define PW_DET                              PA13  // MT_DET
 #define PW_OFF                              PB12  // Z+
+<<<<<<< HEAD
 #define MT_DET_1_PIN                      PW_DET
 #define MT_DET_2_PIN                      PW_OFF
 #ifndef FIL_RUNOUT_PIN
@@ -40,11 +50,19 @@
 #endif
 #ifndef FIL_RUNOUT2_PIN
   #define FIL_RUNOUT2_PIN           MT_DET_2_PIN
+=======
+#ifndef FIL_RUNOUT_PIN
+  #define FIL_RUNOUT_PIN                    PA13  // MT_DET
+#endif
+#ifndef FIL_RUNOUT2_PIN
+  #define FIL_RUNOUT2_PIN                   PB12  // Z+
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 //
 // MKS WIFI MODULE
 //
+<<<<<<< HEAD
 //#define WIFI_SERIAL 1// USART1
 #if ENABLED(MKS_WIFI_MODULE)
   #define WIFI_IO0_PIN PB14	// MKS ESP WIFI IO0 PIN
@@ -53,5 +71,16 @@
 #endif
 
 #define NEOPIXEL_PIN                         PC5
+=======
+//#define WIFI_SERIAL_PORT                     1  // USART1
+#if ENABLED(MKS_WIFI_MODULE)
+  #define WIFI_IO0_PIN                      PB14  // MKS ESP WIFI IO0 PIN
+  #define WIFI_IO1_PIN                      PB15  // MKS ESP WIFI IO1 PIN
+  #define WIFI_RESET_PIN                    PD14  // MKS ESP WIFI RESET PIN
+#endif
+
+// The FYSETC_MINI_12864_2_1 uses one of the EXP pins
+#define BOARD_NEOPIXEL_PIN                  PC5
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "pins_MKS_MONSTER8_common.h"

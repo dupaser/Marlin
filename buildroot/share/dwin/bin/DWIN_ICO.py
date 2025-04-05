@@ -54,8 +54,12 @@
 #   does not define a name for 39. This is specially handled to
 #   prevent reordering stock icons.
 
+<<<<<<< HEAD
 import os
 import struct
+=======
+import os, struct
+>>>>>>> origin/release-2.1.3-beta2
 from PIL import Image
 
 def getJpegResolution(jpegFile):
@@ -76,23 +80,37 @@ class DWIN_ICO_File():
             self._parseHeader(infile)
             self._splitEntryData(infile, outDir)
 
+<<<<<<< HEAD
         return
 
     def _parseHeader(self, infile):
         maxEntries = 256
         count = 0
         validEntries = 0
+=======
+    def _parseHeader(self, infile):
+        maxEntries = 256
+        count = 0
+        icon_nums = _iconNames.keys()
+>>>>>>> origin/release-2.1.3-beta2
         while count < maxEntries:
             rawBytes = infile.read(16)
             entry = Entry()
             entry.parseRawData(rawBytes)
             # check that it is valid: is offset nonzero?
+<<<<<<< HEAD
             # Special case: treat 39 as valid
             if (entry.offset > 0) or (count == 39):
                 validEntries += 1
                 self.entries.append(entry)
             count += 1
         return
+=======
+            # Special case: treat missing numbers as valid
+            if (entry.offset > 0) or count not in icon_nums:
+                self.entries.append(entry)
+            count += 1
+>>>>>>> origin/release-2.1.3-beta2
 
     def _splitEntryData(self, infile, outDir):
         print('Splitting Entry Data...')
@@ -110,15 +128,20 @@ class DWIN_ICO_File():
             if entry.length == 0:
                 count += 1
                 continue
+<<<<<<< HEAD
             # Seek file position, read length bytes, and write to new output file.
             print('%02d: offset: 0x%06x len: 0x%04x width: %d height: %d' %
                   (count, entry.offset, entry.length, entry.width, entry.height))
             outfilename = os.path.join(outDir,
                                        '%03d-%s.jpg' % (count, _iconNames[count]))
+=======
+            outfilename = os.path.join(outDir, '%03d-ICON_%s.jpg' % (count, _iconNames.get(count, "UNKNOWN")))
+>>>>>>> origin/release-2.1.3-beta2
             with open(outfilename, 'wb') as outfile:
                 infile.seek(entry.offset)
                 blob = infile.read(entry.length)
                 outfile.write(blob)
+<<<<<<< HEAD
                 print('Wrote %d bytes to %s' % (entry.length, outfilename))
 
             count += 1
@@ -126,13 +149,27 @@ class DWIN_ICO_File():
 
     def createFile(self, iconDir, filename):
         '''Create a new .ico file from the contents of iconDir.
+=======
+                # Seek file position, read length bytes, and write to new output file.
+                print('(%3d: width=%3d height=%3d offset=%6d len=%4d) ... %s' %
+                      (count, entry.width, entry.height, entry.offset, entry.length, os.path.basename(outfilename)))
+
+            count += 1
+
+    def createFile(self, iconDir, filename):
+        """Create a new .ico file from the contents of iconDir.
+>>>>>>> origin/release-2.1.3-beta2
 
         The contents of iconDir are processed to get image
         resolution, and a new entry is created for each.
 
         Each filename must have a leading number followed by a
         dash, which is the icon index. E.g., "071-ICON_StepX.jpg".
+<<<<<<< HEAD
         '''
+=======
+        """
+>>>>>>> origin/release-2.1.3-beta2
         self.entries = [Entry() for i in range(0,256)]
         # 1. Scan icon directory and record all valid files
         print('Scanning icon directory', iconDir)
@@ -144,10 +181,17 @@ class DWIN_ICO_File():
             # process each file:
             try:
                 index = int(dirEntry.name[0:3])
+<<<<<<< HEAD
                 if (index < 0) or (index > 255):
                     print('...Ignoring invalid index on', dirEntry.path)
                     continue
                 #dirEntry.path is iconDir/name
+=======
+                if not (0 <= index <= 255):
+                    print('...Ignoring invalid index on', dirEntry.path)
+                    continue
+                # dirEntry.path is iconDir/name
+>>>>>>> origin/release-2.1.3-beta2
                 w,h = getJpegResolution(dirEntry.path)
                 length = dirEntry.stat().st_size
                 e = self.entries[index]
@@ -178,9 +222,14 @@ class DWIN_ICO_File():
                 continue
             e.offset = offset
             offset += e.length
+<<<<<<< HEAD
             #print('%03d: (%d x %d) len=%d off=%d' %
             #      (i, e.width, e.height, e.length, e.offset))
         return
+=======
+            # print('%03d: (%d x %d) len=%d off=%d' %
+            #      (i, e.width, e.height, e.length, e.offset))
+>>>>>>> origin/release-2.1.3-beta2
 
     def _combineAndWriteIcoFile(self, filename):
         """Write out final .ico file.
@@ -199,7 +248,10 @@ class DWIN_ICO_File():
                 if 0 == e.length: continue
                 guts = self._getFileContents(e.filename, e.length)
                 outfile.write(guts)
+<<<<<<< HEAD
         return
+=======
+>>>>>>> origin/release-2.1.3-beta2
 
     def _getFileContents(self, filename, length):
         """Read contents of filename, and return bytes"""
@@ -210,17 +262,30 @@ class DWIN_ICO_File():
             return contents
 
 class Entry():
+<<<<<<< HEAD
     '''Entry objects record resolution and size information
     about each icon stored in an ICO file.
     '''
     __slots__ = ('width', 'height', 'offset', 'length', 'filename')
 
     def __init__(self, w=0, h=0, length=0, offset=0):
+=======
+    """Entry objects record resolution and size information
+    about each icon stored in an ICO file.
+    """
+    __slots__ = ('width', 'height', 'offset', 'length', 'filename')
+
+    def __init__(self, w=0, h=0, length=0, offset=0, filename=None):
+>>>>>>> origin/release-2.1.3-beta2
         self.width = w
         self.height = h
         self.offset = offset
         self.length = length
+<<<<<<< HEAD
         self.filename = None
+=======
+        self.filename = filename
+>>>>>>> origin/release-2.1.3-beta2
 
     def parseRawData(self, rawEntryBytes):
         if len(rawEntryBytes) != 16:
@@ -233,7 +298,10 @@ class Entry():
         self.height = h
         self.offset = off
         self.length = len3 * 65536 + len21
+<<<<<<< HEAD
         return
+=======
+>>>>>>> origin/release-2.1.3-beta2
 
     def serialize(self):
         """Convert this Entry's information into a 16-byte
@@ -247,6 +315,7 @@ class Entry():
         return rawdata
 
 _iconNames = {
+<<<<<<< HEAD
     0 : 'ICON_LOGO',
     1 : 'ICON_Print_0',
     2 : 'ICON_Print_1',
@@ -340,3 +409,113 @@ _iconNames = {
     90 : 'ICON_Info_0',
     91 : 'ICON_Info_1'
     }
+=======
+      0 : "LOGO_Creality",
+      1 : "Print_0",
+      2 : "Print_1",
+      3 : "Prepare_0",
+      4 : "Prepare_1",
+      5 : "Control_0",
+      6 : "Control_1",
+      7 : "Leveling_0",
+      8 : "Leveling_1",
+      9 : "HotendTemp",
+     10 : "BedTemp",
+     11 : "Speed",
+     12 : "Zoffset",
+     13 : "Back",
+     14 : "File",
+     15 : "PrintTime",
+     16 : "RemainTime",
+     17 : "Setup_0",
+     18 : "Setup_1",
+     19 : "Pause_0",
+     20 : "Pause_1",
+     21 : "Continue_0",
+     22 : "Continue_1",
+     23 : "Stop_0",
+     24 : "Stop_1",
+     25 : "Bar",
+     26 : "More",
+     27 : "Axis",
+     28 : "CloseMotor",
+     29 : "Homing",
+     30 : "SetHome",
+     31 : "PLAPreheat",
+     32 : "ABSPreheat",
+     33 : "Cool",
+     34 : "Language",
+     35 : "MoveX",
+     36 : "MoveY",
+     37 : "MoveZ",
+     38 : "Extruder",
+     # Skip 39
+     40 : "Temperature",
+     41 : "Motion",
+     42 : "WriteEEPROM",
+     43 : "ReadEEPROM",
+     44 : "ResetEEPROM",
+     45 : "Info",
+     46 : "SetEndTemp",
+     47 : "SetBedTemp",
+     48 : "FanSpeed",
+     49 : "SetPLAPreheat",
+     50 : "SetABSPreheat",
+     51 : "MaxSpeed",
+     52 : "MaxAccelerated",
+     53 : "MaxJerk",
+     54 : "Step",
+     55 : "PrintSize",
+     56 : "Version",
+     57 : "Contact",
+     58 : "StockConfiguraton",
+     59 : "MaxSpeedX",
+     60 : "MaxSpeedY",
+     61 : "MaxSpeedZ",
+     62 : "MaxSpeedE",
+     63 : "MaxAccX",
+     64 : "MaxAccY",
+     65 : "MaxAccZ",
+     66 : "MaxAccE",
+     67 : "MaxSpeedJerkX",
+     68 : "MaxSpeedJerkY",
+     69 : "MaxSpeedJerkZ",
+     70 : "MaxSpeedJerkE",
+     71 : "StepX",
+     72 : "StepY",
+     73 : "StepZ",
+     74 : "StepE",
+     75 : "Setspeed",
+     76 : "SetZOffset",
+     77 : "Rectangle",
+     78 : "BLTouch",
+     79 : "TempTooLow",
+     80 : "AutoLeveling",
+     81 : "TempTooHigh",
+     82 : "NoTips_C",
+     83 : "NoTips_E",
+     84 : "Continue_C",
+     85 : "Continue_E",
+     86 : "Cancel_C",
+     87 : "Cancel_E",
+     88 : "Confirm_C",
+     89 : "Confirm_E",
+     90 : "Info_0",
+     91 : "Info_1",
+     92 : "DegreesC",
+     93 : "Printer_0",
+    200 : "Checkbox_F",
+    201 : "Checkbox_T",
+    202 : "Fade",
+    203 : "Mesh",
+    204 : "Tilt",
+    205 : "Brightness",
+    206 : "Probe",
+    249 : "AxisD",
+    250 : "AxisBR",
+    251 : "AxisTR",
+    252 : "AxisBL",
+    253 : "AxisTL",
+    254 : "AxisC"
+}
+>>>>>>> origin/release-2.1.3-beta2

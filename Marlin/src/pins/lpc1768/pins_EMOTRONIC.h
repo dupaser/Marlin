@@ -23,6 +23,10 @@
 
 /**
  * eMotion-Tech eMotronic pin assignments
+<<<<<<< HEAD
+=======
+ * Schematic: https://data.emotion-tech.com/ftp/Datasheets_et_sources/Sources/eMotronic_brd_sources_1.0.4.zip
+>>>>>>> origin/release-2.1.3-beta2
  *
  * Board pins<->features assignments are based on the
  * Micro-Delta Rework printer default connections.
@@ -85,7 +89,11 @@
 #define HEATER_0_PIN                       P2_06  // (H2: 10A shared)
 #define HEATER_1_PIN                       P2_07  // (H3: 10A shared)
 
+<<<<<<< HEAD
 #define FAN_PIN                            P2_11  // (FAN0: 1A)
+=======
+#define FAN0_PIN                           P2_11  // (FAN0: 1A)
+>>>>>>> origin/release-2.1.3-beta2
 #define FAN1_PIN                           P2_13  // (FAN1: 1A)
 
 //
@@ -136,6 +144,10 @@
 //
 // LCD / Controller
 //
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/release-2.1.3-beta2
 #if ENABLED(EMOTION_TECH_LCD)
   #define BEEPER_PIN                 EXP2_01_PIN
   #define DOGLCD_A0                  EXP2_06_PIN

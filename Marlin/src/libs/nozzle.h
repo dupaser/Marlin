@@ -41,7 +41,11 @@ class Nozzle {
      * @param end xyz_pos_t defining the ending point
      * @param strokes number of strokes to execute
      */
+<<<<<<< HEAD
     static void stroke(const xyz_pos_t &start, const xyz_pos_t &end, const uint8_t &strokes) __Os;
+=======
+    static void stroke(const xyz_pos_t &start, const xyz_pos_t &end, const uint8_t strokes) __Os;
+>>>>>>> origin/release-2.1.3-beta2
 
     /**
      * @brief Zig-zag clean pattern
@@ -52,7 +56,11 @@ class Nozzle {
      * @param strokes number of strokes to execute
      * @param objects number of objects to create
      */
+<<<<<<< HEAD
     static void zigzag(const xyz_pos_t &start, const xyz_pos_t &end, const uint8_t &strokes, const uint8_t &objects) __Os;
+=======
+    static void zigzag(const xyz_pos_t &start, const xyz_pos_t &end, const uint8_t strokes, const uint8_t objects) __Os;
+>>>>>>> origin/release-2.1.3-beta2
 
     /**
      * @brief Circular clean pattern
@@ -62,7 +70,11 @@ class Nozzle {
      * @param strokes number of strokes to execute
      * @param radius radius of circle
      */
+<<<<<<< HEAD
     static void circle(const xyz_pos_t &start, const xyz_pos_t &middle, const uint8_t &strokes, const_float_t radius) __Os;
+=======
+    static void circle(const xyz_pos_t &start, const xyz_pos_t &middle, const uint8_t strokes, const_float_t radius) __Os;
+>>>>>>> origin/release-2.1.3-beta2
 
   #endif // NOZZLE_CLEAN_FEATURE
 
@@ -77,7 +89,11 @@ class Nozzle {
      * @param pattern one of the available patterns
      * @param argument depends on the cleaning pattern
      */
+<<<<<<< HEAD
     static void clean(const uint8_t &pattern, const uint8_t &strokes, const_float_t radius, const uint8_t &objects, const uint8_t cleans) __Os;
+=======
+    static void clean(const uint8_t pattern, const uint8_t strokes, const_float_t radius, const uint8_t objects, const uint8_t cleans) __Os;
+>>>>>>> origin/release-2.1.3-beta2
 
   #endif // NOZZLE_CLEAN_FEATURE
 

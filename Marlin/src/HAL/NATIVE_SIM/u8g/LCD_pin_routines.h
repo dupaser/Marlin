@@ -31,7 +31,10 @@
  * resulted in using about about 25% of the CPU's time.
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
 #ifdef __cplusplus
   extern "C" {
 #endif

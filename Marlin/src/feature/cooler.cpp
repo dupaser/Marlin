@@ -22,7 +22,11 @@
 
 #include "../inc/MarlinConfig.h"
 
+<<<<<<< HEAD
 #if EITHER(HAS_COOLER, LASER_COOLANT_FLOW_METER)
+=======
+#if ANY(HAS_COOLER, LASER_COOLANT_FLOW_METER)
+>>>>>>> origin/release-2.1.3-beta2
 
 #include "cooler.h"
 Cooler cooler;

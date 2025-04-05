@@ -255,6 +255,7 @@ enum ClockSource2 : uint8_t {
 #define SET_FOCB(T,V) SET_FOC(T,B,V)
 #define SET_FOCC(T,V) SET_FOC(T,C,V)
 
+<<<<<<< HEAD
 #if 0
 
 /**
@@ -333,6 +334,8 @@ enum ClockSource2 : uint8_t {
 
 #endif // PWM_CHK is not used in Marlin
 
+=======
+>>>>>>> origin/release-2.1.3-beta2
 // define which hardware PWMs are available for the current CPU
 // all timer 1 PWMS deleted from this list because they are never available
 #if AVR_ATmega2560_FAMILY

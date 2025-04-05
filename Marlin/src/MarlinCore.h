@@ -30,7 +30,11 @@
 void stop();
 
 // Pass true to keep steppers from timing out
+<<<<<<< HEAD
 void idle(bool no_stepper_sleep=false);
+=======
+void idle(const bool no_stepper_sleep=false);
+>>>>>>> origin/release-2.1.3-beta2
 inline void idle_no_sleep() { idle(true); }
 
 #if ENABLED(G38_PROBE_TARGET)
@@ -42,7 +46,11 @@ void kill(FSTR_P const lcd_error=nullptr, FSTR_P const lcd_component=nullptr, co
 void minkill(const bool steppers_off=false);
 
 // Global State of the firmware
+<<<<<<< HEAD
 enum MarlinState : uint8_t {
+=======
+enum class MarlinState : uint8_t {
+>>>>>>> origin/release-2.1.3-beta2
   MF_INITIALIZING = 0,
   MF_STOPPED,
   MF_KILLED,
@@ -53,8 +61,13 @@ enum MarlinState : uint8_t {
 };
 
 extern MarlinState marlin_state;
+<<<<<<< HEAD
 inline bool IsRunning() { return marlin_state >= MF_RUNNING; }
 inline bool IsStopped() { return marlin_state == MF_STOPPED; }
+=======
+inline bool IsRunning() { return marlin_state >= MarlinState::MF_RUNNING; }
+inline bool IsStopped() { return marlin_state == MarlinState::MF_STOPPED; }
+>>>>>>> origin/release-2.1.3-beta2
 
 bool printingIsActive();
 bool printJobOngoing();

@@ -23,16 +23,29 @@
 
 /**
  * Geeetech A20 GT2560 V4.x board pin assignments
+<<<<<<< HEAD
+=======
+ * ATmega2560
+>>>>>>> origin/release-2.1.3-beta2
  */
 
 #define BOARD_INFO_NAME "GT2560 4.x"
 
+<<<<<<< HEAD
 #define LCD_PINS_RS                            5
 #define LCD_PINS_ENABLE                       36
 #define LCD_PINS_D4                           21
 #define LCD_PINS_D7                            6
 
 #define SPEAKER                                  // The speaker can produce tones
+=======
+#if HAS_WIRED_LCD
+  #define LCD_PINS_RS                          5
+  #define LCD_PINS_EN                         36
+  #define LCD_PINS_D4                         21
+  #define LCD_PINS_D7                          6
+#endif
+>>>>>>> origin/release-2.1.3-beta2
 
 #if IS_NEWPANEL
   #define BTN_EN1                             16

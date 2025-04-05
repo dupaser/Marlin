@@ -58,7 +58,7 @@
   #define MULTIPLE_NEOPIXEL_TYPES 1
 #endif
 
-#if EITHER(MULTIPLE_NEOPIXEL_TYPES, NEOPIXEL2_INSERIES)
+#if ANY(MULTIPLE_NEOPIXEL_TYPES, NEOPIXEL2_INSERIES)
   #define CONJOINED_NEOPIXEL 1
 #endif
 
@@ -66,7 +66,11 @@
 // Types
 // ------------------------
 
+<<<<<<< HEAD
 typedef IF<(TERN0(NEOPIXEL_LED, NEOPIXEL_PIXELS > 127)), int16_t, int8_t>::type pixel_index_t;
+=======
+typedef value_t(TERN0(NEOPIXEL_LED, NEOPIXEL_PIXELS)) pixel_index_t;
+>>>>>>> origin/release-2.1.3-beta2
 
 // ------------------------
 // Classes
@@ -91,6 +95,10 @@ public:
     static void set_background_color(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t w);
     static void set_background_color(const uint8_t (&rgbw)[4]) { set_background_color(rgbw[0], rgbw[1], rgbw[2], rgbw[3]); }
     static void reset_background_color();
+<<<<<<< HEAD
+=======
+    static void set_background_off();
+>>>>>>> origin/release-2.1.3-beta2
   #endif
 
   static void begin() {
@@ -129,7 +137,18 @@ public:
   }
 
   // Accessors
+<<<<<<< HEAD
   static uint16_t pixels() { return adaneo1.numPixels() * TERN1(NEOPIXEL2_INSERIES, 2); }
+=======
+  static uint16_t pixels() { return MUL_TERN(NEOPIXEL2_INSERIES, adaneo1.numPixels(), 2); }
+
+  static uint32_t pixel_color(const uint16_t n) {
+    #if ENABLED(NEOPIXEL2_INSERIES)
+      if (n >= NEOPIXEL_PIXELS) return adaneo2.getPixelColor(n - (NEOPIXEL_PIXELS));
+    #endif
+    return adaneo1.getPixelColor(n);
+  }
+>>>>>>> origin/release-2.1.3-beta2
 
   static uint8_t brightness() { return adaneo1.getBrightness(); }
 
@@ -174,6 +193,10 @@ extern Marlin_NeoPixel neo;
 
     // Accessors
     static uint16_t pixels() { return adaneo.numPixels();}
+<<<<<<< HEAD
+=======
+    static uint32_t pixel_color(const uint16_t n) { return adaneo.getPixelColor(n); }
+>>>>>>> origin/release-2.1.3-beta2
     static uint8_t brightness() { return adaneo.getBrightness(); }
     static uint32_t Color(uint8_t r, uint8_t g, uint8_t b OPTARG(HAS_WHITE_LED2, uint8_t w)) {
       return adaneo.Color(r, g, b OPTARG(HAS_WHITE_LED2, w));

@@ -1,10 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- *
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
- * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
- * Copyright (c) 2015-2016 Nico Tonnhofer wurstnase.reprap@gmail.com
- * Copyright (c) 2017 Victor Perez
+ *
+ * Based on Sprinter and grbl.
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +69,7 @@ void MarlinHAL::init() {
   constexpr int cpuFreq = F_CPU;
   UNUSED(cpuFreq);
 
-  #if ENABLED(SDSUPPORT) && DISABLED(SDIO_SUPPORT) && (defined(SDSS) && SDSS != -1)
+  #if HAS_MEDIA && DISABLED(ONBOARD_SDIO) && (defined(SDSS) && SDSS != -1)
     OUT_WRITE(SDSS, HIGH); // Try to set SDSS inactive before any other SPI users start up
   #endif
 
@@ -146,7 +145,11 @@ void MarlinHAL::clear_reset_source() { __HAL_RCC_CLEAR_RESET_FLAGS(); }
 
 #if ENABLED(USE_WATCHDOG)
 
+<<<<<<< HEAD
   #define WDT_TIMEOUT_US TERN(WATCHDOG_DURATION_8S, 10000000, 10000000) // 4 or 8 second timeout
+=======
+  #define WDT_TIMEOUT_US TERN(WATCHDOG_DURATION_8S, 8000000, 4000000) // 4 or 8 second timeout
+>>>>>>> origin/release-2.1.3-beta2
 
   #include <IWatchdog.h>
 

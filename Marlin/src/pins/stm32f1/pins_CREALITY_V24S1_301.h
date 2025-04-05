@@ -22,7 +22,11 @@
 #pragma once
 
 /**
+<<<<<<< HEAD
  * Creality V24S1_301 (STM32F103RE / STM32F103RC) board pin assignments as found on Ender 3 S1.
+=======
+ * Creality V24S1_301 (STM32F103RE / STM32F103RC) board pin assignments as found on Ender-3 S1.
+>>>>>>> origin/release-2.1.3-beta2
  * Also supports the STM32F4 version of the board with identical pin mapping.
  */
 
@@ -30,9 +34,16 @@
 
 #if HAS_MULTI_HOTEND || E_STEPPERS > 1
   #error "Creality v24S1 only supports 1 hotend / E stepper."
+<<<<<<< HEAD
 #endif
 
 #if BOTH(BLTOUCH, Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
+=======
+  #define E_ERROR 1
+#endif
+
+#if ALL(BLTOUCH, Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
+>>>>>>> origin/release-2.1.3-beta2
   #error "Disable Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN when using BLTOUCH with Creality V24S1-301."
 #endif
 
@@ -40,7 +51,11 @@
   #define BOARD_INFO_NAME      "Creality V24S1-301"
 #endif
 #ifndef DEFAULT_MACHINE_NAME
+<<<<<<< HEAD
   #define DEFAULT_MACHINE_NAME "Ender 3 S1"
+=======
+  #define DEFAULT_MACHINE_NAME "Ender-3 S1"
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 //
@@ -60,6 +75,16 @@
 #endif
 
 //
+<<<<<<< HEAD
+=======
+// Probe enable
+//
+#if ENABLED(PROBE_ENABLE_DISABLE) && !defined(PROBE_ENABLE_PIN)
+  #define PROBE_ENABLE_PIN            SERVO0_PIN
+#endif
+
+//
+>>>>>>> origin/release-2.1.3-beta2
 // Filament Runout Sensor
 //
 #ifndef FIL_RUNOUT_PIN
@@ -84,11 +109,19 @@
 #if HAS_CUTTER
   //#define HEATER_0_PIN                    -1
   //#define HEATER_BED_PIN                  -1
+<<<<<<< HEAD
   #define FAN_PIN                           -1
   #define SPINDLE_LASER_ENA_PIN             PC0   // FET 1
   #define SPINDLE_LASER_PWM_PIN             PC0   // Bed FET
   #define SPINDLE_DIR_PIN                   PC0   // FET 4
   #define LASER_SOFT_PWM_PIN                PC0
+=======
+  #define FAN0_PIN                          -1
+  #define SPINDLE_LASER_PWM_PIN             PC0   // Bed FET
+  #define SPINDLE_LASER_ENA_PIN             PC0   // FET 1
+  #define SPINDLE_DIR_PIN                   PC0   // FET 4
+  //#define LASER_SOFT_PWM_PIN              PC0
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 #include "pins_CREALITY_V4.h"

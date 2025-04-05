@@ -27,4 +27,8 @@
 #ifdef USBCON
   USB_DM = PA_11,
   USB_DP = PA_12,
+<<<<<<< HEAD
 #endif
+=======
+#endif
+>>>>>>> origin/release-2.1.3-beta2

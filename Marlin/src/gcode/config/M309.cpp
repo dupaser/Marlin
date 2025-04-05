@@ -36,6 +36,7 @@
  */
 void GcodeSuite::M309() {
   if (!parser.seen("PID")) return M309_report();
+<<<<<<< HEAD
   if (parser.seen('P')) thermalManager.temp_chamber.pid.Kp = parser.value_float();
   if (parser.seen('I')) thermalManager.temp_chamber.pid.Ki = scalePID_i(parser.value_float());
   if (parser.seen('D')) thermalManager.temp_chamber.pid.Kd = scalePID_d(parser.value_float());
@@ -47,6 +48,21 @@ void GcodeSuite::M309_report(const bool forReplay/*=true*/) {
       "  M309 P", thermalManager.temp_chamber.pid.Kp
     , " I", unscalePID_i(thermalManager.temp_chamber.pid.Ki)
     , " D", unscalePID_d(thermalManager.temp_chamber.pid.Kd)
+=======
+  if (parser.seenval('P')) thermalManager.temp_chamber.pid.set_Kp(parser.value_float());
+  if (parser.seenval('I')) thermalManager.temp_chamber.pid.set_Ki(parser.value_float());
+  if (parser.seenval('D')) thermalManager.temp_chamber.pid.set_Kd(parser.value_float());
+}
+
+void GcodeSuite::M309_report(const bool forReplay/*=true*/) {
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+  report_heading_etc(forReplay, F(STR_CHAMBER_PID));
+  SERIAL_ECHOLNPGM("  M309"
+      " P", thermalManager.temp_chamber.pid.p()
+    , " I", thermalManager.temp_chamber.pid.i()
+    , " D", thermalManager.temp_chamber.pid.d()
+>>>>>>> origin/release-2.1.3-beta2
   );
 }
 

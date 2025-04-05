@@ -26,7 +26,13 @@
 //
 // Limit Switches
 //
+<<<<<<< HEAD
 #define X_MAX_PIN                           PA13
+=======
+#define X_MIN_PIN                           PA14
+#define X_MAX_PIN                           PA13
+#define Y_MIN_PIN                           PA15
+>>>>>>> origin/release-2.1.3-beta2
 #define Y_MAX_PIN                           PC5
 
 //
@@ -37,6 +43,7 @@
 //
 // Misc. Functions
 //
+<<<<<<< HEAD
 #define PW_DET                               PC5  // Y+
 #define PW_OFF                              PB12  // Z+
 #define MT_DET_1_PIN                      PW_DET
@@ -46,6 +53,15 @@
 #endif
 #ifndef FIL_RUNOUT2_PIN
   #define FIL_RUNOUT2_PIN           MT_DET_2_PIN
+=======
+#define PW_DET                              PC5   // Y+
+#define PW_OFF                              PB12  // Z+
+#ifndef FIL_RUNOUT_PIN
+  #define FIL_RUNOUT_PIN                    PC5   // Y+
+#endif
+#ifndef FIL_RUNOUT2_PIN
+  #define FIL_RUNOUT2_PIN                   PB12  // Z+
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 #include "pins_MKS_MONSTER8_common.h"

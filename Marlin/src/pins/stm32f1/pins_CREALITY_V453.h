@@ -33,7 +33,11 @@
 
 #define HEATER_0_PIN                        PB14  // HEATER1
 #define HEATER_BED_PIN                      PB13  // HOT BED
+<<<<<<< HEAD
 #define FAN_PIN                             PB15  // FAN
+=======
+#define FAN0_PIN                            PB15  // FAN
+>>>>>>> origin/release-2.1.3-beta2
 
 #if ENABLED(PROBE_ACTIVATION_SWITCH)
   #ifndef PROBE_ACTIVATION_SWITCH_PIN

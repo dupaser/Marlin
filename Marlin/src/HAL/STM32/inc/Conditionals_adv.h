@@ -21,7 +21,11 @@
  */
 #pragma once
 
+<<<<<<< HEAD
 #if BOTH(SDSUPPORT, USBD_USE_CDC_MSC) && DISABLED(NO_SD_HOST_DRIVE)
+=======
+#if ALL(HAS_MEDIA, USBD_USE_CDC_MSC) && DISABLED(NO_SD_HOST_DRIVE)
+>>>>>>> origin/release-2.1.3-beta2
   #define HAS_SD_HOST_DRIVE 1
 #endif
 

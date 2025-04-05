@@ -23,14 +23,23 @@
 
 #include "env_validate.h"
 
+<<<<<<< HEAD
 #define USES_DIAG_JUMPERS
+=======
+#define USES_DIAG_PINS
+>>>>>>> origin/release-2.1.3-beta2
 
 // If you have the BigTreeTech driver expansion module, enable BTT_MOTOR_EXPANSION
 // https://github.com/bigtreetech/BTT-Expansion-module/tree/master/BTT%20EXP-MOT
 //#define BTT_MOTOR_EXPANSION
 
+<<<<<<< HEAD
 #if BOTH(HAS_WIRED_LCD, BTT_MOTOR_EXPANSION)
   #if EITHER(CR10_STOCKDISPLAY, ENDER2_STOCKDISPLAY)
+=======
+#if ALL(HAS_WIRED_LCD, BTT_MOTOR_EXPANSION)
+  #if ANY(CR10_STOCKDISPLAY, ENDER2_STOCKDISPLAY)
+>>>>>>> origin/release-2.1.3-beta2
     #define EXP_MOT_USE_EXP2_ONLY 1
   #else
     #error "You can't use both an LCD and a Motor Expansion Module on EXP1/EXP2 at the same time."
@@ -122,6 +131,13 @@
 #endif
 
 //
+// Probe enable
+//
+#if ENABLED(PROBE_ENABLE_DISABLE) && !defined(PROBE_ENABLE_PIN)
+  #define PROBE_ENABLE_PIN            SERVO0_PIN
+#endif
+
+//
 // Filament Runout Sensor
 //
 #ifndef FIL_RUNOUT_PIN
@@ -191,18 +207,16 @@
 // #endif
 
 //
-// Software SPI pins for TMC2130 stepper drivers
+// SPI pins for TMC2130 stepper drivers
 //
-#if ENABLED(TMC_USE_SW_SPI)
-  #ifndef TMC_SW_MOSI
-    #define TMC_SW_MOSI                     PC12
-  #endif
-  #ifndef TMC_SW_MISO
-    #define TMC_SW_MISO                     PC11
-  #endif
-  #ifndef TMC_SW_SCK
-    #define TMC_SW_SCK                      PC10
-  #endif
+#ifndef TMC_SPI_MOSI
+  #define TMC_SPI_MOSI                      PC12
+#endif
+#ifndef TMC_SPI_MISO
+  #define TMC_SPI_MISO                      PC11
+#endif
+#ifndef TMC_SPI_SCK
+  #define TMC_SPI_SCK                       PC10
 #endif
 
 #if HAS_TMC_UART
@@ -225,6 +239,7 @@
   //#define E4_HARDWARE_SERIAL Serial1
 
   #define X_SERIAL_TX_PIN                   PC13
+<<<<<<< HEAD
   #define X_SERIAL_RX_PIN        X_SERIAL_TX_PIN
 
   #define Y_SERIAL_TX_PIN                   PE3
@@ -241,10 +256,20 @@
 
   #define E2_SERIAL_TX_PIN                  PD6
   #define E2_SERIAL_RX_PIN      E2_SERIAL_TX_PIN
+=======
+  #define Y_SERIAL_TX_PIN                   PE3
+  #define Z_SERIAL_TX_PIN                   PE1
+  #define E0_SERIAL_TX_PIN                  PD4
+  #define E1_SERIAL_TX_PIN                  PD1
+  #define E2_SERIAL_TX_PIN                  PD6
+>>>>>>> origin/release-2.1.3-beta2
 
   // Reduce baud rate to improve software serial reliability
-  #define TMC_BAUD_RATE                    19200
-#endif
+  #ifndef TMC_BAUD_RATE
+    #define TMC_BAUD_RATE                  19200
+  #endif
+
+#endif // HAS_TMC_UART
 
 //
 // Temperature Sensors
@@ -297,6 +322,7 @@
 
 //
 // Heaters
+<<<<<<< HEAD
 //
 #define HEATER_0_PIN                          PB1   // Heater0
 //#define HEATER_1_PIN                        PD14  // Heater1
@@ -326,6 +352,23 @@
 #define CONTROLLER_FAN_PIN                  PE6   //Вентилятор дна
 #define CASE_LIGHT_PIN                      PB0   // Подсветка камеры
 #define CHAMBER_FAN_PIN FAN2_PIN
+=======
+//
+#define HEATER_0_PIN                        PB1   // Heater0
+#define HEATER_1_PIN                        PD14  // Heater1
+#if TEMP_SENSOR_CHAMBER && HOTENDS < 3
+  #define HEATER_CHAMBER_PIN                PB0   // Heater2
+#else
+  #define HEATER_2_PIN                      PB0   // Heater2
+#endif
+#define HEATER_BED_PIN                      PD12  // Hotbed
+
+//
+// Fans
+//
+#define FAN0_PIN                            PC8   // Fan0
+#define FAN1_PIN                            PE5   // Fan1
+>>>>>>> origin/release-2.1.3-beta2
 
 #ifndef E0_AUTO_FAN_PIN
   #define E0_AUTO_FAN_PIN               FAN1_PIN
@@ -334,7 +377,11 @@
 #if !defined(CONTROLLER_FAN_PIN) && ENABLED(USE_CONTROLLER_FAN) && HOTENDS < 2
   #define CONTROLLER_FAN_PIN                PE6   // Fan2
 #else
+<<<<<<< HEAD
   //#define FAN2_PIN                          PE6   // Fan2
+=======
+  #define FAN2_PIN                          PE6   // Fan2
+>>>>>>> origin/release-2.1.3-beta2
 #endif
 
 //
@@ -348,7 +395,11 @@
 /**               ------                                      ------
  * (BEEPER) PG4  | 1  2 | PA8  (BTN_ENC)         (MISO) PB14 | 1  2 | PB13 (SCK)
  * (LCD_EN) PD11 | 3  4 | PD10 (LCD_RS)       (BTN_EN1) PG10 | 3  4 | PB12 (SD_SS)
+<<<<<<< HEAD
  * (LCD_D4) PG2    5  6 | PG3  (LCD_D5)       (BTN_EN2) PF11   5  6 | PB15 (MOSI) 
+=======
+ * (LCD_D4) PG2    5  6 | PG3  (LCD_D5)       (BTN_EN2) PF11   5  6 | PB15 (MOSI)
+>>>>>>> origin/release-2.1.3-beta2
  * (LCD_D6) PG6  | 7  8 | PG7  (LCD_D7)     (SD_DETECT) PF12 | 7  8 | RESET
  *           GND | 9 10 | 5V                             GND | 9 10 | --
  *                ------                                      ------
@@ -420,7 +471,10 @@
     #define E3_CS_PIN                EXP1_06_PIN
     #if HAS_TMC_UART
       #define E3_SERIAL_TX_PIN       EXP1_06_PIN
+<<<<<<< HEAD
       #define E3_SERIAL_RX_PIN       EXP1_06_PIN
+=======
+>>>>>>> origin/release-2.1.3-beta2
     #endif
   #endif
 
@@ -433,7 +487,10 @@
     #define E4_CS_PIN                EXP1_04_PIN
     #if HAS_TMC_UART
       #define E4_SERIAL_TX_PIN       EXP1_04_PIN
+<<<<<<< HEAD
       #define E4_SERIAL_RX_PIN       EXP1_04_PIN
+=======
+>>>>>>> origin/release-2.1.3-beta2
     #endif
   #else
     #define E4_ENABLE_PIN            EXP2_07_PIN
@@ -448,7 +505,10 @@
     #define E5_CS_PIN                EXP1_02_PIN
     #if HAS_TMC_UART
       #define E5_SERIAL_TX_PIN       EXP1_02_PIN
+<<<<<<< HEAD
       #define E5_SERIAL_RX_PIN       EXP1_02_PIN
+=======
+>>>>>>> origin/release-2.1.3-beta2
     #endif
   #else
     #define E5_ENABLE_PIN            EXP2_07_PIN
@@ -457,8 +517,9 @@
 #endif // BTT_MOTOR_EXPANSION
 
 //
-// LCDs and Controllers
+// LCD / Controller
 //
+
 #if IS_TFTGLCD_PANEL
 
   #if ENABLED(TFTGLCD_PANEL_SPI)
@@ -473,12 +534,68 @@
   #if ENABLED(CR10_STOCKDISPLAY)
 
     #define LCD_PINS_RS              EXP1_07_PIN
+<<<<<<< HEAD
+
+    #define BTN_EN1                  EXP1_03_PIN
+    #define BTN_EN2                  EXP1_05_PIN
+=======
 
     #define BTN_EN1                  EXP1_03_PIN
     #define BTN_EN2                  EXP1_05_PIN
 
-    #define LCD_PINS_ENABLE          EXP1_08_PIN
+    #define LCD_PINS_EN              EXP1_08_PIN
     #define LCD_PINS_D4              EXP1_06_PIN
+
+  #elif ENABLED(MKS_MINI_12864)
+
+    #define DOGLCD_A0                EXP1_07_PIN
+    #define DOGLCD_CS                EXP1_06_PIN
+    #define BTN_EN1                  EXP2_03_PIN
+    #define BTN_EN2                  EXP2_05_PIN
+
+  #elif ENABLED(WYH_L12864)
+
+    CONTROLLER_WARNING("BTT_SKR_PRO_common", "WYH_L12864")
+
+    /**
+     * 1. Cut the tab off the LCD connector so it can be plugged into the "EXP1" connector the other way.
+     * 2. Swap the LCD's +5V (Pin2) and GND (Pin1) wires.
+     *
+     * !!! If you are unsure, ask for help! Your motherboard may be damaged in some circumstances !!!
+     *
+     * The WYH_L12864 connector plug:
+     *
+     *                  BEFORE                     AFTER
+     *                  ------                     ------
+     *              -- | 1  2 | MOSI           -- | 1  2 | MOSI
+     *         BTN_ENC | 3  4 | SCK       BTN_ENC | 3  4 | SCK
+     *         BTN_EN1 | 5  6   SID       BTN_EN1 | 5  6   SID
+     *         BTN_EN2 | 7  8 | CS        BTN_EN2 | 7  8 | CS
+     *              5V | 9 10 | GND           GND | 9 10 | 5V
+     *                  ------                     ------
+     *                   LCD                        LCD
+     */
+    #undef BEEPER_PIN
+    #undef BTN_ENC
+    #define BTN_EN1                  EXP1_05_PIN
+    #define BTN_EN2                  EXP1_07_PIN
+    #define BTN_ENC                  EXP1_03_PIN
+    #define DOGLCD_CS                EXP1_08_PIN
+    #define DOGLCD_A0                EXP1_06_PIN
+    #define DOGLCD_SCK               EXP1_04_PIN
+    #define DOGLCD_MOSI              EXP1_02_PIN
+    #define LCD_BACKLIGHT_PIN               -1
+
+  #else
+
+    #define LCD_PINS_RS              EXP1_04_PIN
+
+    #define BTN_EN1                  EXP2_03_PIN
+    #define BTN_EN2                  EXP2_05_PIN
+>>>>>>> origin/release-2.1.3-beta2
+
+    #define LCD_PINS_EN              EXP1_03_PIN
+    #define LCD_PINS_D4              EXP1_05_PIN
 
   #elif ENABLED(MKS_MINI_12864)
 
@@ -537,7 +654,11 @@
       #define DOGLCD_A0              EXP1_04_PIN
       //#define LCD_BACKLIGHT_PIN           -1
       #define LCD_RESET_PIN          EXP1_05_PIN  // Must be high or open for LCD to operate normally.
+<<<<<<< HEAD
       #if EITHER(FYSETC_MINI_12864_1_2, FYSETC_MINI_12864_2_0)
+=======
+      #if ANY(FYSETC_MINI_12864_1_2, FYSETC_MINI_12864_2_0)
+>>>>>>> origin/release-2.1.3-beta2
         #ifndef RGB_LED_R_PIN
           #define RGB_LED_R_PIN      EXP1_06_PIN
         #endif
@@ -580,10 +701,12 @@
   #endif
 #endif
 
-//
-// WIFI
-//
+#if ENABLED(WIFISUPPORT)
+  //
+  // WIFI
+  //
 
+<<<<<<< HEAD
 /**
  *          ------
  *      RX | 8  7 | 3.3V      GPIO0  PF14 ... Leave as unused (ESP3D software configures this with a pullup so OK to leave as floating)
@@ -599,3 +722,21 @@
 #define ESP_WIFI_MODULE_ENABLE_PIN          PG1
 #define ESP_WIFI_MODULE_GPIO0_PIN           PF14
 #define ESP_WIFI_MODULE_GPIO2_PIN           PF15
+=======
+  /**
+   *          ------
+   *      RX | 8  7 | 3.3V      GPIO0  PF14 ... Leave as unused (ESP3D software configures this with a pullup so OK to leave as floating)
+   *   GPIO0 | 6  5 | Reset     GPIO2  PF15 ... must be high (ESP3D software configures this with a pullup so OK to leave as floating)
+   *   GPIO2 | 4  3 | Enable    Reset  PG0  ... active low, probably OK to leave floating
+   *     GND | 2  1 | TX        Enable PG1  ... Must be high for module to run
+   *          ------
+   *            W1
+   */
+  #define ESP_WIFI_MODULE_COM                  6  // Must also set either SERIAL_PORT or SERIAL_PORT_2 to this
+  #define ESP_WIFI_MODULE_BAUDRATE      BAUDRATE  // Must use same BAUDRATE as SERIAL_PORT & SERIAL_PORT_2
+  #define ESP_WIFI_MODULE_RESET_PIN         PG0
+  #define ESP_WIFI_MODULE_ENABLE_PIN        PG1
+  #define ESP_WIFI_MODULE_GPIO0_PIN         PF14
+  #define ESP_WIFI_MODULE_GPIO2_PIN         PF15
+#endif
+>>>>>>> origin/release-2.1.3-beta2

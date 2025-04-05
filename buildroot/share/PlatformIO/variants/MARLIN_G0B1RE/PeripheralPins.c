@@ -15,7 +15,11 @@
  * STM32G0C1R(C-E)IxN.xml, STM32G0C1R(C-E)TxN.xml
  * CubeMX DB release 6.0.30
  */
+<<<<<<< HEAD
 #if !defined(CUSTOM_PERIPHERAL_PINS)
+=======
+#ifndef CUSTOM_PERIPHERAL_PINS
+>>>>>>> origin/release-2.1.3-beta2
 #include "Arduino.h"
 #include "PeripheralPins.h"
 
@@ -218,6 +222,10 @@ WEAK const PinMap PinMap_UART_TX[] = {
   {PC_12,      USART5,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF3_USART5)},
   {PD_3,       USART5,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF3_USART5)},
   {PD_5,       USART2,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF0_USART2)},
+<<<<<<< HEAD
+=======
+  {PD_8,       USART3,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF4_USART3)},
+>>>>>>> origin/release-2.1.3-beta2
   {PF_2,       LPUART2, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF1_LPUART2)},
   {NC,         NP,      0}
 };
@@ -252,6 +260,10 @@ WEAK const PinMap PinMap_UART_RX[] = {
   {PC_11_ALT1, USART4,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF1_USART4)},
   {PD_2,       USART5,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF3_USART5)},
   {PD_6,       USART2,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF0_USART2)},
+<<<<<<< HEAD
+=======
+  {PD_9,       USART3,  STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF4_USART3)},
+>>>>>>> origin/release-2.1.3-beta2
   {NC,         NP,      0}
 };
 #endif

@@ -123,7 +123,7 @@
 //
 // Fans
 //
-#define FAN_PIN                             PE3   // Layer fan
+#define FAN0_PIN                            PE3   // Layer fan
 #define FAN1_PIN                            PE1   // Hotend fan
 
 #ifndef E0_AUTO_FAN_PIN
@@ -133,6 +133,7 @@
 //
 // LCD / Controller
 //
+<<<<<<< HEAD
 #if HAS_SPI_TFT || HAS_FSMC_TFT
   #define TFT_RESET_PIN                     PE6
   #define TFT_CS_PIN                        PD7
@@ -140,6 +141,16 @@
 
   #if HAS_FSMC_TFT
     #define LCD_USE_DMA_FSMC                      // Use DMA transfers to send data to the TFT
+=======
+
+#if HAS_SPI_TFT || HAS_FSMC_TFT
+  #define TFT_RESET_PIN                     PE6
+  #define TFT_CS_PIN                        PD7
+  #define TFT_RS_PIN                        PD13
+
+  #if HAS_FSMC_TFT
+    #define LCD_USE_DMA_FSMC
+>>>>>>> origin/release-2.1.3-beta2
     #define FSMC_CS_PIN               TFT_CS_PIN
     #define FSMC_RS_PIN               TFT_RS_PIN
     #define TFT_INTERFACE_FSMC_8BIT
@@ -195,17 +206,24 @@
 //
 // SD Card
 //
-//#define SDIO_SUPPORT
+//#define ONBOARD_SDIO
 
 #ifndef SDCARD_CONNECTION
   #define SDCARD_CONNECTION         CUSTOM_CABLE
 #endif
 
-#if ENABLED(SDSUPPORT)
+#if HAS_MEDIA
 
+<<<<<<< HEAD
   #if DISABLED(SDIO_SUPPORT)
     #define SOFTWARE_SPI
     #define SDSS                            PC11
+=======
+  #if DISABLED(ONBOARD_SDIO)
+    #define SOFTWARE_SPI
+    #define SDSS                            PC11
+    #define SD_SS_PIN                       SDSS
+>>>>>>> origin/release-2.1.3-beta2
     #define SD_SCK_PIN                      PC12
     #define SD_MISO_PIN                     PC8
     #define SD_MOSI_PIN                     PD2

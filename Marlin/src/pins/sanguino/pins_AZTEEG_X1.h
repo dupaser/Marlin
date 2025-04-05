@@ -23,8 +23,14 @@
 
 /**
  * Azteeg X1 pin assignments
+ * Schematic: https://reprap.org/mediawiki/images/0/07/Azteeg_X1_schematics.pdf
  */
 
 #define BOARD_INFO_NAME "Azteeg X1"
 
+<<<<<<< HEAD
+=======
+#define FAN0_PIN                               4
+
+>>>>>>> origin/release-2.1.3-beta2
 #include "pins_SANGUINOLOLU_12.h" // ... SANGUINOLOLU_11

@@ -1,6 +1,10 @@
 /**
  * Marlin 3D Printer Firmware
+<<<<<<< HEAD
+ * Copyright (c) 2024 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+=======
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+>>>>>>> origin/release-2.1.3-beta2
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -22,6 +26,10 @@
 #pragma once
 
 /**
+<<<<<<< HEAD
+<<<<<<<< HEAD:Marlin/src/module/polargraph.h
+=======
+>>>>>>> origin/release-2.1.3-beta2
  * polargraph.h - Polargraph-specific functions
  */
 
@@ -30,7 +38,29 @@
 
 extern float segments_per_second;
 extern xy_pos_t draw_area_min, draw_area_max;
+<<<<<<< HEAD
 extern xy_float_t draw_area_size;
 extern float polargraph_max_belt_len;
 
 void inverse_kinematics(const xyz_pos_t &raw);
+========
+ * Define SPI Pins: SCK, MISO, MOSI, SS
+ */
+#ifndef SD_SCK_PIN
+  #define SD_SCK_PIN  PIN_SPI_SCK
+#endif
+#ifndef SD_MISO_PIN
+  #define SD_MISO_PIN PIN_SPI_MISO
+#endif
+#ifndef SD_MOSI_PIN
+  #define SD_MOSI_PIN PIN_SPI_MOSI
+#endif
+#ifndef SD_SS_PIN
+  #define SD_SS_PIN   PIN_SPI_SS
+#endif
+>>>>>>>> origin/release-2.1.3-beta2:Marlin/src/HAL/RP2040/spi_pins.h
+=======
+extern float polargraph_max_belt_len;
+
+void inverse_kinematics(const xyz_pos_t &raw);
+>>>>>>> origin/release-2.1.3-beta2

@@ -76,7 +76,10 @@
 #include "../common/dwin_color.h"
 
 #define Color_Bg_Heading  0x3344  // Static Heading
+<<<<<<< HEAD
 
 // Character matrix width x height
 //#define LCD_WIDTH ((DWIN_WIDTH) / 8)
 //#define LCD_HEIGHT ((DWIN_HEIGHT) / 12)
+=======
+>>>>>>> origin/release-2.1.3-beta2

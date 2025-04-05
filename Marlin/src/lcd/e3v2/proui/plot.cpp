@@ -23,6 +23,7 @@
 /**
  * DWIN Single var plot
  * Author: Miguel A. Risco-Castillo
+<<<<<<< HEAD
  * Version: 2.0
  * Date: 2022/01/31
  *
@@ -96,4 +97,62 @@ void PlotClass::Update(const float value) {
 
 #endif // HAS_PIDPLOT
 
+=======
+ * Version: 2.2.3
+ * Date: 2023/01/29
+ */
+
+#include "../../../inc/MarlinConfig.h"
+
+#if ENABLED(DWIN_LCD_PROUI)
+
+#include "dwin_defines.h"
+
+#if PROUI_TUNING_GRAPH
+
+#include "dwin.h"
+#include "../../marlinui.h"
+#include "plot.h"
+
+#define plotBgColor RGB(1, 12, 8)
+
+Plot plot;
+
+Plot::PlotData Plot::data;
+
+void Plot::draw(const frame_rect_t &frame, const_celsius_float_t max, const_celsius_float_t ref/*=0*/) {
+  data.graphframe = frame;
+  data.graphpoints = 0;
+  data.scale = frame.h / max;
+  data.x2 = frame.x + frame.w - 1;
+  data.y2 = frame.y + frame.h - 1;
+  data.r = LROUND((data.y2) - ref * data.scale);
+  DWINUI::drawBox(1, plotBgColor, frame);
+  for (uint8_t i = 1; i < 4; i++) if (i * 60 < frame.w) dwinDrawVLine(COLOR_LINE, i * 60 + frame.x, frame.y, frame.h);
+  DWINUI::drawBox(0, COLOR_WHITE, DWINUI::extendFrame(frame, 1));
+  dwinDrawHLine(COLOR_RED, frame.x, data.r, frame.w);
+}
+
+void Plot::update(const_celsius_float_t value) {
+  if (!data.scale) return;
+  const uint16_t y = LROUND((data.y2) - value * data.scale);
+  if (data.graphpoints < data.graphframe.w) {
+    if (data.graphpoints < 1)
+      dwinDrawPoint(COLOR_YELLOW, 1, 1, data.graphframe.x, y);
+    else
+      dwinDrawLine(COLOR_YELLOW, data.graphpoints + data.graphframe.x - 1, data.yP, data.graphpoints + data.graphframe.x, y);
+  }
+  else {
+    dwinFrameAreaMove(1, 0, 1, plotBgColor, data.graphframe.x, data.graphframe.y, data.x2, data.y2);
+    if ((data.graphpoints % 60) == 0) dwinDrawVLine(COLOR_LINE, data.x2 - 1, data.graphframe.y + 1, data.graphframe.h - 2);
+    dwinDrawPoint(COLOR_RED, 1, 1, data.x2 - 1, data.r);
+    dwinDrawLine(COLOR_YELLOW, data.x2 - 2, data.yP, data.x2 - 1, y);
+  }
+  data.yP = y;
+  data.graphpoints++;
+  TERN_(HAS_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout());
+}
+
+#endif // PROUI_TUNING_GRAPH
+>>>>>>> origin/release-2.1.3-beta2
 #endif // DWIN_LCD_PROUI

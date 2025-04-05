@@ -22,7 +22,7 @@
 
 #include "../../inc/MarlinConfig.h"
 
-#if HAS_M206_COMMAND
+#if HAS_HOME_OFFSET
 
 #include "../gcode.h"
 #include "../../module/motion.h"
@@ -33,9 +33,7 @@
 /**
  * M206: Set Additional Homing Offset (X Y Z). SCARA aliases T=X, P=Y
  *
- * *** @thinkyhead: I recommend deprecating M206 for SCARA in favor of M665.
- * ***              M206 for SCARA will remain enabled in 1.1.x for compatibility.
- * ***              In the 2.0 release, it will simply be disabled by default.
+ * *** TODO: Deprecate M206 for SCARA in favor of M665.
  */
 void GcodeSuite::M206() {
   if (!parser.seen_any()) return M206_report();
@@ -50,6 +48,11 @@ void GcodeSuite::M206() {
 }
 
 void GcodeSuite::M206_report(const bool forReplay/*=true*/) {
+<<<<<<< HEAD
+=======
+  TERN_(MARLIN_SMALL_BUILD, return);
+
+>>>>>>> origin/release-2.1.3-beta2
   report_heading_etc(forReplay, F(STR_HOME_OFFSET));
   SERIAL_ECHOLNPGM_P(
     #if IS_CARTESIAN
@@ -57,9 +60,18 @@ void GcodeSuite::M206_report(const bool forReplay/*=true*/) {
         PSTR("  M206 X"), LINEAR_UNIT(home_offset.x),
         SP_Y_STR, LINEAR_UNIT(home_offset.y),
         SP_Z_STR, LINEAR_UNIT(home_offset.z),
+<<<<<<< HEAD
         SP_I_STR, LINEAR_UNIT(home_offset.i),
         SP_J_STR, LINEAR_UNIT(home_offset.j),
         SP_K_STR, LINEAR_UNIT(home_offset.k)
+=======
+        SP_I_STR, I_AXIS_UNIT(home_offset.i),
+        SP_J_STR, J_AXIS_UNIT(home_offset.j),
+        SP_K_STR, K_AXIS_UNIT(home_offset.k),
+        SP_U_STR, U_AXIS_UNIT(home_offset.u),
+        SP_V_STR, V_AXIS_UNIT(home_offset.v),
+        SP_W_STR, W_AXIS_UNIT(home_offset.w)
+>>>>>>> origin/release-2.1.3-beta2
       )
     #else
       PSTR("  M206 Z"), LINEAR_UNIT(home_offset.z)
@@ -88,7 +100,11 @@ void GcodeSuite::M428() {
       diff[i] = -current_position[i];
     if (!WITHIN(diff[i], -20, 20)) {
       SERIAL_ERROR_MSG(STR_ERR_M428_TOO_FAR);
+<<<<<<< HEAD
       LCD_ALERTMESSAGE_F("Err: Too far!");
+=======
+      LCD_ALERTMESSAGE(MSG_ERR_M428_TOO_FAR);
+>>>>>>> origin/release-2.1.3-beta2
       ERR_BUZZ();
       return;
     }
@@ -100,4 +116,4 @@ void GcodeSuite::M428() {
   OKAY_BUZZ();
 }
 
-#endif // HAS_M206_COMMAND
+#endif // HAS_HOME_OFFSET

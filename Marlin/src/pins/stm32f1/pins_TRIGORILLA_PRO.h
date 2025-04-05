@@ -117,7 +117,7 @@
 // Fans
 //
 #define CONTROLLER_FAN_PIN                  PD6   // FAN
-#define FAN_PIN                             PG13  // FAN
+#define FAN0_PIN                            PG13  // FAN
 #define FAN1_PIN                            PG14  // FAN
 
 //
@@ -135,17 +135,26 @@
   /**
    * Note: MKS Robin TFT screens use various TFT controllers
    * Supported screens are based on the ILI9341, ST7789V and ILI9328 (320x240)
+<<<<<<< HEAD
    * ILI9488 is not supported.
+=======
+   * ILI9488 is not supported
+>>>>>>> origin/release-2.1.3-beta2
    * Define init sequences for other screens in u8g_dev_tft_320x240_upscale_from_128x64.cpp
    *
    * If the screen stays white, disable 'LCD_RESET_PIN' to let the bootloader init the screen.
    *
+<<<<<<< HEAD
    * Setting an 'LCD_RESET_PIN' may cause a flicker when entering the LCD menu
+=======
+   * Setting an 'LCD_RESET_PIN' may cause a flicker when switching menus
+>>>>>>> origin/release-2.1.3-beta2
    * because Marlin uses the reset as a failsafe to revive a glitchy LCD.
    */
   #define TFT_RESET_PIN                     PF11
   #define TFT_BACKLIGHT_PIN                 PD13
 
+<<<<<<< HEAD
   #define FSMC_CS_PIN                       PD7   // NE4
   #define FSMC_RS_PIN                       PD11  // A0
 
@@ -157,6 +166,13 @@
   #define FSMC_DMA_CHANNEL               DMA_CH5
 
   #define ANYCUBIC_TFT35
+=======
+  #define LCD_USE_DMA_FSMC
+  #define FSMC_CS_PIN                       PD7   // NE4
+  #define FSMC_RS_PIN                       PD11  // A0
+  #define TFT_CS_PIN                 FSMC_CS_PIN
+  #define TFT_RS_PIN                 FSMC_RS_PIN
+>>>>>>> origin/release-2.1.3-beta2
 #else
   #define LCD_RESET_PIN                     PF11
   #define LCD_BACKLIGHT_PIN                 PD13
@@ -186,9 +202,15 @@
 #endif
 
 // SPI1(PA7) & SPI3(PB5) not available
-#define SPI_DEVICE                             2
+#define SPI_DEVICE                             2  // Maple
 
-#if ENABLED(SDIO_SUPPORT)
+//
+// SD Card
+//
+#ifndef ONBOARD_SDIO
+  #define ONBOARD_SDIO
+#endif
+#if ENABLED(ONBOARD_SDIO)
   #define SD_SCK_PIN                        PB13  // SPI2 ok
   #define SD_MISO_PIN                       PB14  // SPI2 ok
   #define SD_MOSI_PIN                       PB15  // SPI2 ok
