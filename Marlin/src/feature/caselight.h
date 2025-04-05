@@ -54,4 +54,5 @@ public:
   #endif
 };
 
+
 extern CaseLight caselight;

@@ -1787,7 +1787,9 @@ float Planner::get_axis_position_mm(const AxisEnum axis) {
 /**
  * Block until the planner is finished processing
  */
-void Planner::synchronize() { while (busy()) idle(); }
+void Planner::synchronize() { 
+  while (busy()) idle(); 
+  }
 
 /**
  * @brief Add a new linear movement to the planner queue (in terms of steps).
@@ -2112,7 +2114,7 @@ bool Planner::_populate_block(
   if (true NUM_AXIS_GANG(
       && block->steps.a < MIN_STEPS_PER_SEGMENT,
       && block->steps.b < MIN_STEPS_PER_SEGMENT,
-      && block->steps.c < MIN_STEPS_PER_SEGMENT,
+      && block->steps.c < MIN_STEPS_PER_SEGMENT, // Свое TODO что то сделать норальноеЫ
       && block->steps.i < MIN_STEPS_PER_SEGMENT,
       && block->steps.j < MIN_STEPS_PER_SEGMENT,
       && block->steps.k < MIN_STEPS_PER_SEGMENT

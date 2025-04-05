@@ -1147,6 +1147,10 @@ bool SdBaseFile::openNext(SdBaseFile *dirFile, uint8_t oflag) {
         lname[startOffset + i] = (utf16_ch > 0xFF) ? '_' : (utf16_ch & 0xFF);
       #endif
     }
+    int i = 0;
+    std::string str = lname;
+    i++;
+    // printf("%d", i);
   }
 
   /**
@@ -1460,6 +1464,7 @@ int8_t SdBaseFile::readDir(dir_t *dir, char *longFilename) {
         // Sanity-check the VFAT entry. The first cluster is always set to zero. And the sequence number should be higher than 0
         if (VFAT->firstClusterLow == 0) {
           const uint8_t seq = VFAT->sequenceNumber & 0x1F;
+          const uint8_t l = VFAT->sequenceNumber & 0xE0;
           if (WITHIN(seq, 1, MAX_VFAT_ENTRIES)) {
             if (seq == 1) {
               checksum = VFAT->checksum;

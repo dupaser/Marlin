@@ -26,6 +26,11 @@
 #include "DGUSDisplayDef.h"
 
 #include "../../../inc/MarlinConfig.h"
+#include "../../../feature/babystep.h"
+
+#if HAS_BED_PROBE
+ #include "../../../module/probe.h" // =свое для Zoffset
+#endif
 
 enum DGUSLCD_Screens : uint8_t;
 
@@ -69,6 +74,12 @@ public:
 
   // Hook for manual move.
   static void HandleManualMove(DGUS_VP_Variable &var, void *val_ptr);
+  static void HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_ptr);
+
+  static void HandleFanSpeedChange(DGUS_VP_Variable &var, void *val_ptr); // Свое
+  static void HandlePidTempChange(DGUS_VP_Variable &var, void *val_ptr); // Свое
+  static void HandleBedCalibrationTempChange(DGUS_VP_Variable &var, void *val_ptr); // Свое
+  static void HandleSettingsPrintChange(DGUS_VP_Variable &var, void *val_ptr); // Свое 
   // Hook for manual extrude.
   static void HandleManualExtrude(DGUS_VP_Variable &var, void *val_ptr);
   // Hook for motor lock and unlook
@@ -79,29 +90,39 @@ public:
   #endif
   // Hook for settings
   static void HandleSettings(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr);
 
   #if HAS_PID_HEATING
     // Hook for "Change this temperature PID para"
-    static void HandleTemperaturePIDChanged(DGUS_VP_Variable &var, void *val_ptr);
+    // static void HandleTemperaturePIDChanged(DGUS_VP_Variable &var, void *val_ptr);
     // Hook for PID autotune
     static void HandlePIDAutotune(DGUS_VP_Variable &var, void *val_ptr);
+    static void HandlePIDAbort(DGUS_VP_Variable &var, void *val_ptr);    
   #endif
   #if HAS_BED_PROBE
     // Hook for "Change probe offset z"
     static void HandleProbeOffsetZChanged(DGUS_VP_Variable &var, void *val_ptr);
+    static void HandleLiveZoffset(DGUS_VP_Variable &var, void *val_ptr); //свое
+    static void Zoffset_Start(DGUS_VP_Variable &var, void *val_ptr); //свое
+    static void RewriteBedGrid(float grid_step); // Свое
+    static void HandleAutoCalibrationStartStop(DGUS_VP_Variable &var, void *val_ptr);
   #endif
+
   #if ENABLED(BABYSTEPPING)
     // Hook for live z adjust action
-    static void HandleLiveAdjustZ(DGUS_VP_Variable &var, void *val_ptr);
+    static void HandleLiveBabyStep(DGUS_VP_Variable &var, void *val_ptr);
   #endif
+  
+
+  static void HandleKFactorSet(DGUS_VP_Variable &var, void *val_ptr); //Свое
+
   #if HAS_FAN
     // Hook for fan control
     static void HandleFanControl(DGUS_VP_Variable &var, void *val_ptr);
   #endif
   // Hook for heater control
-  static void HandleHeaterControl(DGUS_VP_Variable &var, void *val_ptr);
+  //static void HandleHeaterControl(DGUS_VP_Variable &var, void *val_ptr); //
   #if ENABLED(DGUS_PREHEAT_UI)
     // Hook for preheat
     static void HandlePreheat(DGUS_VP_Variable &var, void *val_ptr);
@@ -115,7 +136,7 @@ public:
 
   #if ENABLED(SDSUPPORT)
     // Callback for VP "Display wants to change screen when there is a SD card"
-    static void ScreenChangeHookIfSD(DGUS_VP_Variable &var, void *val_ptr);
+    //static void ScreenChangeHookIfSD(DGUS_VP_Variable &var, void *val_ptr);
     // Scroll buttons on the file listing screen.
     static void DGUSLCD_SD_ScrollFilelist(DGUS_VP_Variable &var, void *val_ptr);
     // File touched.
@@ -124,10 +145,13 @@ public:
     static void DGUSLCD_SD_StartPrint(DGUS_VP_Variable &var, void *val_ptr);
     // User hit the pause, resume or abort button.
     static void DGUSLCD_SD_ResumePauseAbort(DGUS_VP_Variable &var, void *val_ptr);
+
+    static void HeaterPrintingTimeout();         //Свое
+
     // User confirmed the abort action
     static void DGUSLCD_SD_ReallyAbort(DGUS_VP_Variable &var, void *val_ptr);
     // User hit the tune button
-    static void DGUSLCD_SD_PrintTune(DGUS_VP_Variable &var, void *val_ptr);
+    //static void DGUSLCD_SD_PrintTune(DGUS_VP_Variable &var, void *val_ptr);
     // Send a single filename to the display.
     static void DGUSLCD_SD_SendFilename(DGUS_VP_Variable &var);
     // Marlin informed us that a new SD has been inserted.
@@ -137,6 +161,13 @@ public:
     // Marlin informed us about a bad SD Card.
     static void SDCardError();
   #endif
+
+///свое
+  static void SendErrorMessage(DGUS_VP_Variable &var);
+  static void GoToFilamentChangeScreen(DGUS_VP_Variable &var, void *val_ptr);
+  static void GoFromFilamentChangeScreen(DGUS_VP_Variable &var, void *val_ptr);
+  static void GoFromPrintSettingsScreen(DGUS_VP_Variable &var, void *val_ptr);
+  static void SendTemperatureStatus(DGUS_VP_Variable &var);
 
   // OK Button on the Confirm screen.
   static void ScreenConfirmedOK(DGUS_VP_Variable &var, void *val_ptr);
@@ -149,6 +180,10 @@ public:
   // Recall the remembered screen.
   static void PopToOldScreen();
 
+
+
+
+
   // Make the display show the screen and update all VPs in it.
   static void GotoScreen(DGUSLCD_Screens screen, bool ispopup = false);
 
@@ -158,7 +193,7 @@ public:
   static void DGUSLCD_SendWordValueToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendStringToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var);
-  static void DGUSLCD_SendTemperaturePID(DGUS_VP_Variable &var);
+  // static void DGUSLCD_SendTemperaturePID(DGUS_VP_Variable &var);
   static void DGUSLCD_SendPercentageToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendPrintProgressToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendPrintTimeToDisplay(DGUS_VP_Variable &var);
@@ -171,6 +206,12 @@ public:
     static void DGUSLCD_SendFanStatusToDisplay(DGUS_VP_Variable &var);
   #endif
   static void DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variable &var);
+  static void DGUSLCD_SendFlashIconStatus(DGUS_VP_Variable &var);
+  static void DGUSLCD_SendFilamentChangeStatus(DGUS_VP_Variable &var);
+  static void DGUSLCD_SendAlarmTemperature(DGUS_VP_Variable &var);
+  static void DGUSLCD_SendFilamentRunoutStatus(DGUS_VP_Variable &var);
+  static void DGUSLCD_FIlamentSensorUpdate(DGUS_VP_Variable &var, void *val_ptr);
+  static void DGUSLCD_FIlamentSensorUpdateIcon(DGUS_VP_Variable &var);
   #if ENABLED(DGUS_UI_WAITING)
     static void DGUSLCD_SendWaitingStatusToDisplay(DGUS_VP_Variable &var);
   #endif
@@ -195,9 +236,35 @@ public:
     if (var.memadr) {
       float f = *(float *)var.memadr;
       f *= cpow(10, decimals);
+      f = round(f);
       dgusdisplay.WriteVariable(var.VP, (long)f);
     }
   }
+
+  template<unsigned int decimals>
+  static void DGUSLCD_SendBabyStep(DGUS_VP_Variable &var) {
+    if (var.memadr) {
+      float f = *(float *)var.memadr;
+      f = Babystep::accum;
+      f *= cpow(10, decimals);
+      dgusdisplay.WriteVariable(var.VP, (long)f);
+    }
+  }
+
+
+  //свое Zoffset
+  #if HAS_BED_PROBE
+    template<unsigned int decimals>
+    static void DGUSLCD_SendZoffset(DGUS_VP_Variable &var) { //свое 
+      if (var.memadr) {
+        float f = *(float *)var.memadr;
+        f = probe.offset.z; 
+        f *= cpow(10, decimals);
+        f = round(f);
+        dgusdisplay.WriteVariable(var.VP, (long)f);
+      }
+    }
+  #endif
 
   // Send a float value to the display.
   // Display will get a 2-byte integer scaled to the number of digits:
@@ -208,6 +275,7 @@ public:
       float f = *(float *)var.memadr;
       DEBUG_ECHOLNPAIR_F(" >> ", f, 6);
       f *= cpow(10, decimals);
+      f = round(f);
       dgusdisplay.WriteVariable(var.VP, (int16_t)f);
     }
   }
@@ -221,8 +289,10 @@ public:
 
   static void SetupConfirmAction( void (*f)()) { confirm_action_cb = f; }
 
-protected:
+
   static DGUSLCD_Screens current_screen;  //< currently on screen
+  static float c1;
+  protected:
   static constexpr uint8_t NUM_PAST_SCREENS = 4;
   static DGUSLCD_Screens past_screens[NUM_PAST_SCREENS]; //< LIFO with past screens for the "back" button.
 

@@ -37,6 +37,9 @@ GCodeQueue queue;
 #include "../MarlinCore.h"
 #include "../core/bug_on.h"
 
+#include "../lcd/extui/dgus/mks/DGUSDisplayDef.h" // Свое
+#include "../lcd/extui/dgus/mks/DGUSScreenHandler.h" // Свое
+
 #if ENABLED(PRINTER_EVENT_LEDS)
   #include "../feature/leds/printer_event_leds.h"
 #endif
@@ -97,7 +100,7 @@ PGM_P GCodeQueue::injected_commands_P; // = nullptr
 /**
  * Injected SRAM Commands
  */
-char GCodeQueue::injected_commands[64]; // = { 0 }
+char GCodeQueue::injected_commands[100]; // = { 0 }
 
 void GCodeQueue::RingBuffer::commit_command(bool skip_ok
   OPTARG(HAS_MULTI_SERIAL, serial_index_t serial_ind/*=-1*/)
@@ -616,20 +619,38 @@ void GCodeQueue::get_available_commands() {
  * Run the entire queue in-place. Blocks SD completion/abort until complete.
  */
 void GCodeQueue::exhaust() {
-  while (ring_buffer.occupied()) advance();
+  // int i = 2;
+  // advance();
+  while (ring_buffer.occupied()) {advance();}
+  // while (i-- > 0) advance();
+  // DGUSScreenHandler::ForceCompleteUpdate();
+
   planner.synchronize();
+  // DGUSScreenHandler::ForceCompleteUpdate();
 }
 
 /**
  * Get the next command in the queue, optionally log it to SD, then dispatch it
  */
 void GCodeQueue::advance() {
-
+  // DGUSScreenHandler::ForceCompleteUpdate();
   // Process immediate commands
+  #if HAS_BED_PROBE
+    if(GcodeSuite::should_stop){  // TODO: задача с отменой команд
+      queue.get_available_commands();
+      queue.clear();
+      planner.clear_block_buffer();
+      GCodeQueue::injected_commands_P = nullptr;
+      GCodeQueue::injected_commands[0] = 0;
+      GcodeSuite::should_stop = false;
+    }
+  #endif
+  
   if (process_injected_command_P() || process_injected_command()) return;
 
+bool a = true;
   // Return if the G-code buffer is empty
-  if (ring_buffer.empty()) {
+  if (ring_buffer.empty() && a) {
     #if ENABLED(BUFFER_MONITORING)
       if (!command_buffer_empty) {
         command_buffer_empty = true;
@@ -639,7 +660,7 @@ void GCodeQueue::advance() {
     #endif
     return;
   }
-
+  // DGUSScreenHandler::ForceCompleteUpdate();
   #if ENABLED(BUFFER_MONITORING)
     if (command_buffer_empty) {
       command_buffer_empty = false;
@@ -647,6 +668,7 @@ void GCodeQueue::advance() {
       NOLESS(max_command_buffer_empty_duration, command_buffer_empty_duration);
     }
   #endif
+
 
   #if ENABLED(SDSUPPORT)
 
@@ -679,12 +701,13 @@ void GCodeQueue::advance() {
     }
     else
       gcode.process_next_command();
-
+ 
   #else
 
     gcode.process_next_command();
 
   #endif // SDSUPPORT
+  // DGUSScreenHandler::ForceCompleteUpdate();
 
   // The queue may be reset by a command handler or by code invoked by idle() within a handler
   ring_buffer.advance_pos(ring_buffer.index_r, -1);

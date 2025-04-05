@@ -72,6 +72,12 @@ bool FilamentMonitorBase::enabled = true,
   #include "../lcd/e3v2/proui/dwin.h"
 #endif
 
+#if ENABLED(DGUS_LCD_UI_MKS) 
+#include "../lcd/extui/dgus/mks/DGUSDisplayDef.h" //Свое чтобы было как будто нажатие паузы с кнопки дисплея
+//#include "../lcd/extui/dgus/DGUSDisplay.h"
+#endif
+
+
 void event_filament_runout(const uint8_t extruder) {
 
   if (did_pause_print) return;  // Action already in progress. Purge triggered repeated runout.
@@ -126,7 +132,7 @@ void event_filament_runout(const uint8_t extruder) {
     SERIAL_EOL();
   #endif // HOST_ACTION_COMMANDS
 
-  if (run_runout_script) {
+  if (run_runout_script)  {
     #if MULTI_FILAMENT_SENSOR
       char script[strlen(FILAMENT_RUNOUT_SCRIPT) + 1];
       sprintf_P(script, PSTR(FILAMENT_RUNOUT_SCRIPT), tool);
@@ -139,7 +145,14 @@ void event_filament_runout(const uint8_t extruder) {
         SERIAL_ECHOPGM("Runout Command: ");
         SERIAL_ECHOLNPGM(FILAMENT_RUNOUT_SCRIPT);
       #endif
-      queue.inject(F(FILAMENT_RUNOUT_SCRIPT));
+
+      #if ENABLED(DGUS_LCD_UI_MKS)  //Свое
+      if (ExtUI::isPrintingFromMedia())
+      #endif
+      {
+        nozzle_park_mks.print_pause_start_flag = 1; //свое 
+        queue.inject(F(FILAMENT_RUNOUT_SCRIPT));
+      }
     #endif
   }
 }

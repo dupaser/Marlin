@@ -384,7 +384,7 @@ void startOrResumeJob() {
     if (queue.enqueue_one(F("M1001"))) {  // Keep trying until it gets queued
       marlin_state = MF_RUNNING;          // Signal to stop trying
       TERN_(PASSWORD_AFTER_SD_PRINT_END, password.lock_machine());
-      TERN_(DGUS_LCD_UI_MKS, ScreenHandler.SDPrintingFinished());
+      //TERN_(DGUS_LCD_UI_MKS, ScreenHandler.SDPrintingFinished());
     }
   }
 
@@ -432,7 +432,11 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
 
       static bool already_shutdown_steppers; // = false
 
-      if (!has_blocks && !do_reset_timeout && gcode.stepper_inactive_timeout()) {
+      #if ENABLED(DGUS_LCD_UI_MKS) 
+        if (!has_blocks && !do_reset_timeout && gcode.stepper_inactive_timeout() && !ExtUI::isPrintingFromMedia()) { //   && !ExtUI::isPrintingFromMedia()  Свое добавил проверку на печать
+      #else
+        if (!has_blocks && !do_reset_timeout && gcode.stepper_inactive_timeout()) {
+      #endif
         if (!already_shutdown_steppers) {
           already_shutdown_steppers = true;  // L6470 SPI will consume 99% of free time without this
 
@@ -447,7 +451,7 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
 
           TERN_(AUTO_BED_LEVELING_UBL, bedlevel.steppers_were_disabled());
         }
-      }
+      } 
       else
         already_shutdown_steppers = false;
     }
@@ -1276,6 +1280,21 @@ void setup() {
   SERIAL_ECHO_MSG(" Compiled: " __DATE__);
   SERIAL_ECHO_MSG(STR_FREE_MEMORY, hal.freeMemory(), STR_PLANNER_BUFFER_BYTES, sizeof(block_t) * (BLOCK_BUFFER_SIZE));
 
+  uint32_t csr_value = RCC->CSR;
+  // #define SOME_REGISTER (*(volatile uint32_t*)0x40023874) // Пример регистра
+  // uint32_t a = RCC->CSR;
+  // SERIAL_ECHO_MSG("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ", a);
+  // SERIAL_ECHO_MSG("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ", SOME_REGISTER);
+  SERIAL_ECHO_MSG(csr_value, csr_value + 1, csr_value + 2, csr_value + 3);
+  if (csr_value & RCC_CSR_LPWRRSTF) {
+    SERIAL_ECHO_MSG("Low-power reset occurred.\n");
+}
+if (csr_value & RCC_CSR_WWDGRSTF) {
+  SERIAL_ECHO_MSG("Window Watchdog reset occurred.\n");
+}
+if (csr_value & RCC_CSR_IWDGRSTF) {
+  SERIAL_ECHO_MSG("Independent Watchdog reset occurred.\n");}
+  
   // Some HAL need precise delay adjustment
   calibrate_delay_loop();
 
@@ -1653,7 +1672,7 @@ void loop() {
       if (card.flag.abort_sd_printing) abortSDPrinting();
       if (marlin_state == MF_SD_COMPLETE) finishSDPrinting();
     #endif
-
+    
     queue.advance();
 
     #if EITHER(POWER_OFF_TIMER, POWER_OFF_WAIT_FOR_COOLDOWN)
@@ -1662,7 +1681,7 @@ void loop() {
 
     endstops.event_handler();
 
-    TERN_(HAS_TFT_LVGL_UI, printer_state_polling());
+    TERN_(HAS_TFT_LVGL_UI, printer_state_polling());    
 
   } while (ENABLED(__AVR__)); // Loop forever on slower (AVR) boards
 }

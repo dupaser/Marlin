@@ -22,18 +22,42 @@
 #pragma once
 
 #include "../../../inc/MarlinConfigPre.h"
+#include "../bedlevel.h" // Свое
 
+#if HAS_BED_PROBE
 class LevelingBilinear {
 public:
-  static bed_mesh_t z_values;
+  enum Mesh {
+    ORIGINAL = 0,
+    FIRST = 1,
+    SECOND = 2
+  };
+
+  static bed_mesh_new_t z_values, new_z_values_1, new_z_values_2;
   static xy_pos_t grid_spacing, grid_start;
 
 private:
+  enum MeshType {
+    DEFAULT_MESH = 0,
+    DOUBLE = 1
+  };
+
+  static bed_mesh_new_t* mesh_in_use;
+  static Mesh mesh_type_in_use;
+  static uint16_t temp_mesh;
+  static uint16_t temp_new_mesh_1;
+  static uint16_t temp_new_mesh_2;
+
   static xy_float_t grid_factor;
   static xy_pos_t cached_rel;
   static xy_int8_t cached_g;
+  static inline MeshType mesh_type = MeshType::DEFAULT_MESH; // TODO надо использовать, этот enum дает понимание, что типо мешей два, а не три
+
+  static float z_home_pos_shift;
 
   static void extrapolate_one_point(const uint8_t x, const uint8_t y, const int8_t xdir, const int8_t ydir);
+  static bool are_new_meshes_filled();
+  static bed_mesh_new_t& get_mesh_from_type(Mesh mesh_type);
 
   #if ENABLED(ABL_BILINEAR_SUBDIVISION)
     #define ABL_GRID_POINTS_VIRT_X (GRID_MAX_CELLS_X * (BILINEAR_SUBDIVISIONS) + 1)
@@ -50,10 +74,25 @@ private:
   #endif
 
 public:
+  static void set_mesh_in_use(Mesh mesh);
+  static Mesh get_mesh_type_in_use();
+
+  static Mesh get_mesh_type_from_number(uint8_t number);
+  static float get_mesh_average(Mesh mesh_type);
+  static void set_temp_for_new_map(Mesh mesh_number, uint16_t temp);
+  static uint16_t& get_mesh_temp(Mesh mesh_type);
+  static void set_mesh_value(uint8_t x, uint8_t y, float value);
+  static float get_mesh_value(uint8_t x, uint8_t y);
+  static bed_mesh_new_t get_mesh();
+  static void copy_in_mesh(bed_mesh_new_t mesh);
+  static bool set_z_home_pos_shift(float value); //вот сюда добавить проверку на пределы +- Z_HOME_POS_SHIFT_LIMIT у z_home_pos_shift, если предел, то выходить из цикла и выкидывать в ошибку MSG_LCD_Z_SHIFT_FAILED!
+                                                                            //по принципу DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_ERROR_TMC), 0);
+                                                                            //DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_LCD_Z_SHIFT_FAILED), 1); //типо критичная ошибка
+  static float get_z_home_pos_shift(){return z_home_pos_shift;};
   static void reset();
   static void set_grid(const xy_pos_t& _grid_spacing, const xy_pos_t& _grid_start);
   static void extrapolate_unprobed_bed_level();
-  static void print_leveling_grid(const bed_mesh_t* _z_values = NULL);
+  static void print_leveling_grid(const bed_mesh_new_t* _z_values = nullptr);
   static void refresh_bed_level();
   static bool has_mesh() { return !!grid_spacing.x; }
   static bool mesh_is_valid() { return has_mesh(); }
@@ -68,3 +107,4 @@ public:
 };
 
 extern LevelingBilinear bedlevel;
+#endif

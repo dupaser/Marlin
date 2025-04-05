@@ -43,6 +43,8 @@
 #include "../module/settings.h"
 #include "../module/stepper/indirection.h"
 
+#include "../lcd/extui/dgus/DGUSScreenHandler.h" //Свое
+
 #if ENABLED(EMERGENCY_PARSER)
   #include "../feature/e_parser.h"
 #endif
@@ -546,6 +548,9 @@ void CardReader::release() {
  * Enqueues M23 and M24 commands to initiate a media print.
  */
 void CardReader::openAndPrintFile(const char *name) {
+  #if ENABLED(SHOW_REMAINING_TIME)
+  MarlinUI::time_before_g28_sec = 0; // Свое
+  #endif
   char cmd[4 + strlen(name) + 1 + 3 + 1]; // Room for "M23 ", filename, "\n", "M24", and null
   sprintf_P(cmd, M23_STR, name);
   for (char *c = &cmd[4]; *c; c++) *c = tolower(*c);
@@ -652,6 +657,7 @@ void CardReader::openFileRead(const char * const path, const uint8_t subcall_typ
         // Too deep? The firmware has to bail.
         if (file_subcall_ctr > SD_PROCEDURE_DEPTH - 1) {
           SERIAL_ERROR_MSG("Exceeded max SUBROUTINE depth:", SD_PROCEDURE_DEPTH);
+          DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_THERMAL_RUNAWAY), 0); //свое
           kill(GET_TEXT_F(MSG_KILL_SUBCALL_OVERFLOW));
           return;
         }
@@ -1018,8 +1024,9 @@ void CardReader::cd(const char * relpath) {
       workDirParents[workDirDepth++] = workDir;
     TERN_(SDCARD_SORT_ALPHA, presort());
   }
-  else
-    SERIAL_ECHO_MSG(STR_SD_CANT_ENTER_SUBDIR, relpath);
+  //else
+  
+    //SERIAL_ECHO_MSG(STR_SD_CANT_ENTER_SUBDIR, relpath); // TODO раскоментить
 }
 
 int8_t CardReader::cdup() {

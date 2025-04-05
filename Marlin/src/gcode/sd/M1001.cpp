@@ -60,6 +60,9 @@
 #ifndef PE_LEDS_COMPLETED_TIME
   #define PE_LEDS_COMPLETED_TIME (30*60)
 #endif
+ 
+ #include "../../lcd/extui/dgus/mks/DGUSScreenHandler.h"
+
 
 /**
  * M1001: Execute actions for SD print completion
@@ -108,8 +111,12 @@ void GcodeSuite::M1001() {
     process_subcommands_now(F(SD_FINISHED_RELEASECOMMAND));
   #endif
 
+  DGUSScreenHandlerMKS::SDPrintingFinished(); //свое 
+  
   TERN_(EXTENSIBLE_UI, ExtUI::onPrintDone());
   TERN_(DWIN_LCD_PROUI, DWIN_Print_Finished());
+
+
 
   // Re-select the last printed file in the UI
   TERN_(SD_REPRINT_LAST_SELECTED_FILE, ui.reselect_last_file());

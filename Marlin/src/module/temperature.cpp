@@ -36,6 +36,14 @@
 #include "planner.h"
 #include "printcounter.h"
 
+
+
+//#include "../lcd/extui/dgus/DGUSDisplay.h" //свое
+//#include "../lcd/extui/dgus/mks/DGUSDisplayDef.h" //свое
+
+#include "../lcd/extui/dgus/DGUSScreenHandler.h" //Свое
+
+
 #if EITHER(HAS_COOLER, LASER_COOLANT_FLOW_METER)
   #include "../feature/cooler.h"
   #include "../feature/spindle_laser.h"
@@ -594,6 +602,7 @@ volatile bool Temperature::raw_temps_ready = false;
     int cycles = 0;
     bool heating = true;
 
+
     millis_t next_temp_ms = millis(), t1 = next_temp_ms, t2 = next_temp_ms;
     long t_high = 0, t_low = 0;
 
@@ -642,7 +651,11 @@ volatile bool Temperature::raw_temps_ready = false;
 
     TERN_(HAS_FAN_LOGIC, fan_update_ms = next_temp_ms + fan_update_interval_ms);
 
-    TERN_(EXTENSIBLE_UI, ExtUI::onPidTuning(ExtUI::result_t::PID_STARTED));
+    int heater_type = heater_id;
+
+    TERN_(EXTENSIBLE_UI, ExtUI::onPidTuning(ExtUI::result_t::PID_STARTED, heater_type)); //Свое добавил разделение сопло стол
+    
+    TERN_(EXTENSIBLE_UI, ExtUI::onPidTuning(ExtUI::result_t::PID_TUNING_CYCLE, 50 , cycles, ncycles));
     TERN_(DWIN_LCD_PROUI, DWIN_PidTuning(isbed ? PID_BED_START : PID_EXTR_START));
 
     if (target > GHV(CHAMBER_MAX_TARGET, BED_MAX_TARGET, temp_range[heater_id].maxtemp - (HOTEND_OVERSHOOT))) {
@@ -669,7 +682,7 @@ volatile bool Temperature::raw_temps_ready = false;
     #endif
 
     TERN_(NO_FAN_SLOWING_IN_PID_TUNING, adaptive_fan_slowing = false);
-
+      //WriteString(VP_PrintStatus, "НАГРЕВ", 32); //ДОБАВИТЬ
     LCD_MESSAGE(MSG_HEATING);
 
     // PID Tuning loop
@@ -729,7 +742,8 @@ volatile bool Temperature::raw_temps_ready = false;
             }
           }
           SHV((bias + d) >> 1);
-          TERN_(HAS_STATUS_MESSAGE, ui.status_printf(0, F(S_FMT " %i/%i"), GET_TEXT(MSG_PID_CYCLE), cycles, ncycles));
+          TERN_(HAS_STATUS_MESSAGE, ui.status_printf(0, F(S_FMT " %i/%i"), GET_TEXT(MSG_PID_CYCLE), cycles, ncycles)); //TODO добавить вывод цикла
+          TERN_(EXTENSIBLE_UI, ExtUI::onPidTuning(ExtUI::result_t::PID_TUNING_CYCLE, 50 , cycles, ncycles));
           cycles++;
           minT = target;
         }
@@ -766,10 +780,16 @@ volatile bool Temperature::raw_temps_ready = false;
                 if (current_temp > watch_temp_target) heated = true;  // - Flag if target temperature reached
               }
               else if (ELAPSED(ms, temp_change_ms))                   // Watch timer expired
+              {
+                DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_HEATING_FAILED_LCD), 0); //свое
                 _temp_error(heater_id, FPSTR(str_t_heating_failed), GET_TEXT_F(MSG_HEATING_FAILED_LCD));
+              }
             }
             else if (current_temp < target - (MAX_OVERSHOOT_PID_AUTOTUNE)) // Heated, then temperature fell too far?
-              _temp_error(heater_id, FPSTR(str_t_thermal_runaway), GET_TEXT_F(MSG_THERMAL_RUNAWAY));
+            {
+              DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_THERMAL_RUNAWAY), 0); //свое
+              _temp_error(heater_id, FPSTR(str_t_thermal_runaway), GET_TEXT_F(MSG_THERMAL_RUNAWAY)); //Добавить теще такую ошибку? 
+            }
           }
         #endif
       } // every 2 seconds
@@ -833,7 +853,10 @@ volatile bool Temperature::raw_temps_ready = false;
 
         // Use the result? (As with "M303 U1")
         if (set_result)
+        {
           GHV(_set_chamber_pid(tune_pid), _set_bed_pid(tune_pid), _set_hotend_pid(heater_id, tune_pid));
+
+        }
 
         TERN_(PRINTER_EVENT_LEDS, printerEventLEDs.onPidTuningDone(color));
 
@@ -855,8 +878,9 @@ volatile bool Temperature::raw_temps_ready = false;
 
     TERN_(PRINTER_EVENT_LEDS, printerEventLEDs.onPidTuningDone(color));
 
-    TERN_(EXTENSIBLE_UI, ExtUI::onPidTuning(ExtUI::result_t::PID_DONE));
-    TERN_(DWIN_LCD_PROUI, DWIN_PidTuning(PID_DONE));
+    //TERN_(EXTENSIBLE_UI, ExtUI::onPidTuning(ExtUI::result_t::PID_DONE)); //Свое я заменил вывод инфы - коммент
+    //TERN_(DWIN_LCD_PROUI, DWIN_PidTuning(PID_DONE));
+    TERN_(EXTENSIBLE_UI, ExtUI::onPidTuning(ExtUI::result_t::PID_TUNING_ABORT)); //Свое я заменил вывод инфы - коммент
 
     EXIT_M303:
       TERN_(NO_FAN_SLOWING_IN_PID_TUNING, adaptive_fan_slowing = true);
@@ -1154,6 +1178,7 @@ int16_t Temperature::getHeaterPower(const heater_id_t heater_id) {
         SBI(fanState, pgm_read_byte(&fanBit[COOLER_FAN_INDEX]));
     #endif
 
+    // TODO понять, почему при  A = 255 не работает WRITE(P##_AUTO_FAN_PIN, D);
     #define _UPDATE_AUTO_FAN(P,D,A) do{                   \
       if (PWM_PIN(P##_AUTO_FAN_PIN) && A < 255)           \
         hal.set_pwm_duty(pin_t(P##_AUTO_FAN_PIN), D ? A : 0); \
@@ -1211,9 +1236,20 @@ int16_t Temperature::getHeaterPower(const heater_id_t heater_id) {
         #if HAS_AUTO_FAN_7
           _AUTOFAN_CASE(7);
         #endif
-        #if HAS_AUTO_CHAMBER_FAN && !AUTO_CHAMBER_IS_E
-          case CHAMBER_FAN_INDEX: _UPDATE_AUTO_FAN(CHAMBER, fan_on, CHAMBER_AUTO_FAN_SPEED); break;
-        #endif
+        //#if HAS_AUTO_CHAMBER_FAN && !AUTO_CHAMBER_IS_E
+        case CHAMBER_FAN_INDEX: 
+          // _UPDATE_AUTO_FAN(CHAMBER, fan_on, CHAMBER_AUTO_FAN_SPEED); 
+          do{                   
+          if (PWM_PIN(CHAMBER_AUTO_FAN_PIN)){
+            if(thermalManager.temp_chamber.target == 0){ // TODO тут надо поудмать над логикой
+              // hal.set_pwm_duty(pin_t(CHAMBER_AUTO_FAN_PIN), fan_on ? CHAMBER_AUTO_FAN_SPEED : 0); 
+              set_fan_speed(CHAMBER_FAN_INDEX + 1 , fan_on ? CHAMBER_AUTO_FAN_SPEED : 0); //TODO жесткий колхозинг +1 но иначе не работает
+            } 
+          }           
+            
+          } while(0);
+          break;
+        //#endif
       }
       SBI(fanDone, realFan);
     }
@@ -1299,7 +1335,11 @@ void Temperature::_temp_error(const heater_id_t heater_id, FSTR_P const serial_m
   #elif defined(BOGUS_TEMPERATURE_GRACE_PERIOD)
     UNUSED(killed);
   #else
-    if (!killed) { killed = 1; loud_kill(lcd_msg, heater_id); }
+    if (!killed) 
+    { 
+    killed = 1; 
+    loud_kill(lcd_msg, heater_id); 
+    }
   #endif
 }
 
@@ -1307,6 +1347,7 @@ void Temperature::max_temp_error(const heater_id_t heater_id) {
   #if HAS_DWIN_E3V2_BASIC && (HAS_HOTEND || HAS_HEATED_BED)
     DWIN_Popup_Temperature(1);
   #endif
+  DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_ERR_MAXTEMP), 0); //свое
   _temp_error(heater_id, F(STR_T_MAXTEMP), GET_TEXT_F(MSG_ERR_MAXTEMP));
 }
 
@@ -1314,6 +1355,7 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
   #if HAS_DWIN_E3V2_BASIC && (HAS_HOTEND || HAS_HEATED_BED)
     DWIN_Popup_Temperature(0);
   #endif
+  DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_ERR_MINTEMP), 0); //свое
   _temp_error(heater_id, F(STR_T_MINTEMP), GET_TEXT_F(MSG_ERR_MINTEMP));
 }
 
@@ -1549,6 +1591,7 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
             start_watching_hotend(e);               // If temp reached, turn off elapsed check
           else {
             TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(0));
+              DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_HEATING_FAILED_LCD), 0); //свое
             _temp_error((heater_id_t)e, FPSTR(str_t_heating_failed), GET_TEXT_F(MSG_HEATING_FAILED_LCD));
           }
         }
@@ -1574,6 +1617,7 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
           start_watching_bed();                 // If temp reached, turn off elapsed check
         else {
           TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(0));
+          DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_HEATING_FAILED_LCD), 0); //свое
           _temp_error(H_BED, FPSTR(str_t_heating_failed), GET_TEXT_F(MSG_HEATING_FAILED_LCD));
         }
       }
@@ -1681,9 +1725,18 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
               fan_chamber_pwm += (CHAMBER_FAN_FACTOR) * 2;
           #elif CHAMBER_FAN_MODE == 3
             fan_chamber_pwm = CHAMBER_FAN_BASE + _MAX((CHAMBER_FAN_FACTOR) * (temp_chamber.celsius - temp_chamber.target), 0);
+          #elif CHAMBER_FAN_MODE == 4  //Свое сделал свою логику работы
+            if (temp_chamber.celsius > temp_chamber.target) {
+              fan_chamber_pwm = (CHAMBER_FAN_BASE) + (CHAMBER_FAN_FACTOR) * (temp_chamber.celsius - temp_chamber.target); 
+              if (temp_chamber.soft_pwm_amount){
+                fan_chamber_pwm += (CHAMBER_FAN_FACTOR) * 2;
+              }
+            } else {
+              fan_chamber_pwm = 0;
+            }
           #endif
           NOMORE(fan_chamber_pwm, 255);
-          set_fan_speed(CHAMBER_FAN_INDEX, fan_chamber_pwm);
+          set_fan_speed(CHAMBER_FAN_INDEX + 1 , fan_chamber_pwm); //TODO жесткий колхозинг +1 но иначе не работает
         #endif
 
         #if ENABLED(CHAMBER_VENT)
@@ -2854,6 +2907,7 @@ void Temperature::init() {
 
       case TRRunaway:
         TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(0));
+        DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_THERMAL_RUNAWAY), 0); //свое
         _temp_error(heater_id, FPSTR(str_t_thermal_runaway), GET_TEXT_F(MSG_THERMAL_RUNAWAY));
 
       #if ENABLED(THERMAL_PROTECTION_VARIANCE_MONITOR)
@@ -3930,8 +3984,8 @@ void Temperature::isr() {
     #endif
 
     bool Temperature::wait_for_hotend(const uint8_t target_extruder, const bool no_wait_for_cooling/*=true*/
-      OPTARG(G26_CLICK_CAN_CANCEL, const bool click_to_cancel/*=false*/)
-    ) {
+      OPTARG(G26_CLICK_CAN_CANCEL, const bool click_to_cancel/*=false*/)) 
+      {
       #if ENABLED(AUTOTEMP)
         REMEMBER(1, planner.autotemp_enabled, false);
       #endif
@@ -4181,6 +4235,7 @@ void Temperature::isr() {
     void Temperature::wait_for_bed_heating() {
       if (isHeatingBed()) {
         SERIAL_ECHOLNPGM("Wait for bed heating...");
+       //dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_BED_HEATING), VP_SD_FileName_LEN); //ДОБАВИТЬ
         LCD_MESSAGE(MSG_BED_HEATING);
         wait_for_bed();
         ui.reset_status();

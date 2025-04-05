@@ -37,6 +37,12 @@
 #include "../module/planner.h"
 #include "../lcd/marlinui.h"
 
+#include "../lcd/extui/ui_api.h" //свое
+#include "../lcd/extui/dgus/DGUSScreenHandlerBase.h" //свое
+
+
+
+
 extern HotendIdleProtection hotend_idle;
 
 millis_t HotendIdleProtection::next_protect_ms = 0;
@@ -63,29 +69,57 @@ void HotendIdleProtection::check_e_motion(const millis_t &ms) {
 }
 
 void HotendIdleProtection::check() {
+   
+  // if (ExtUI::isPrintingFromMedia())
+
+    //  DGUSScreenHandler::GotoScreen(MKSLCD_SCREEN_PRINT_REHEAT); 
+
   const millis_t ms = millis();                   // Shared millis
 
   check_hotends(ms);                              // Any hotends need protection?
   check_e_motion(ms);                             // Motion will protect them
 
+#if ENABLED(DGUS_LCD_UI_MKS)
+
+
   // Hot and not moving for too long...
   if (next_protect_ms && ELAPSED(ms, next_protect_ms))
-    timed_out();
+  { 
+    if (ExtUI::isPrintingFromMedia() && printingIsPaused() )
+    {
+      DGUSScreenHandler::HeaterPrintingTimeout(); //Свое
+    }
+    else if (!ExtUI::isPrintingFromMedia())
+
+    {
+      timed_out();
+    }
+  }
+#endif
+
 }
+
+
 
 // Lower (but don't raise) hotend / bed temperatures
 void HotendIdleProtection::timed_out() {
   next_protect_ms = 0;
-  SERIAL_ECHOLNPGM("Hotend Idle Timeout");
-  LCD_MESSAGE(MSG_HOTEND_IDLE_TIMEOUT);
-  HOTEND_LOOP() {
-    if ((HOTEND_IDLE_NOZZLE_TARGET) < thermalManager.degTargetHotend(e))
-      thermalManager.setTargetHotend(HOTEND_IDLE_NOZZLE_TARGET, e);
-  }
-  #if HAS_HEATED_BED
-    if ((HOTEND_IDLE_BED_TARGET) < thermalManager.degTargetBed())
-      thermalManager.setTargetBed(HOTEND_IDLE_BED_TARGET);
-  #endif
+    
+    HOTEND_LOOP() {
+      if ((HOTEND_IDLE_NOZZLE_TARGET) < thermalManager.degTargetHotend(e))
+        thermalManager.setTargetHotend(HOTEND_IDLE_NOZZLE_TARGET, e);
+    }
+    #if HAS_HEATED_BED
+      if ((HOTEND_IDLE_BED_TARGET) < thermalManager.degTargetBed())
+        thermalManager.setTargetBed(HOTEND_IDLE_BED_TARGET);
+    #endif
+  
 }
+
+void HotendIdleProtection::reset_timed_out() {
+  const millis_t ms = millis();   
+ next_protect_ms = ms + hp_interval;
+}
+
 
 #endif // HOTEND_IDLE_TIMEOUT

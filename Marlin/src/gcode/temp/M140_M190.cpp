@@ -34,6 +34,9 @@
 #include "../../module/temperature.h"
 #include "../../lcd/marlinui.h"
 
+#include "../../lcd/extui/dgus/DGUSDisplay.h"
+#include "../../lcd/extui/dgus/mks/DGUSDisplayDef.h"
+
 /**
  * M140 - Set Bed Temperature target and return immediately
  * M190 - Set Bed Temperature target and wait
@@ -82,13 +85,21 @@ void GcodeSuite::M140_M190(const bool isM190) {
   if (!got_temp) return;
 
   thermalManager.setTargetBed(temp);
+  
+ 
+  
   thermalManager.isHeatingBed() ? LCD_MESSAGE(MSG_BED_HEATING) : LCD_MESSAGE(MSG_BED_COOLING);
 
   // With PRINTJOB_TIMER_AUTOSTART, M190 can start the timer, and M140 can stop it
   TERN_(PRINTJOB_TIMER_AUTOSTART, thermalManager.auto_job_check_timer(isM190, !isM190));
 
   if (isM190)
+  {
+    #if ENABLED(DGUS_LCD_UI_MKS)
+      dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_BED_HEATING), VP_Status_LEN); //Свое
+    #endif
     thermalManager.wait_for_bed(no_wait_for_cooling);
+  }
   else
     ui.set_status_reset_fn([]{
       const celsius_t c = thermalManager.degTargetBed();

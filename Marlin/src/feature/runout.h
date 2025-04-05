@@ -115,7 +115,7 @@ class TFilamentMonitor : public FilamentMonitorBase {
 
     // Give the response a chance to update its counter.
     static void run() {
-      if (enabled && !filament_ran_out && (printingIsActive() || did_pause_print)) {
+      if (enabled && !filament_ran_out && (printingIsActive() || did_pause_print)) { //&& !filament_ran_out && (printingIsActive() || did_pause_print)
         TERN_(HAS_FILAMENT_RUNOUT_DISTANCE, cli()); // Prevent RunoutResponseDelayed::block_completed from accumulating here
         response.run();
         sensor.run();
@@ -152,7 +152,7 @@ class TFilamentMonitor : public FilamentMonitorBase {
         #endif
 
         if (ran_out) {
-          filament_ran_out = true;
+          filament_ran_out = true; // 
           event_filament_runout(extruder);
           planner.synchronize();
         }
@@ -203,6 +203,16 @@ class FilamentSensorBase {
       #undef _INIT_RUNOUT_PIN
       #undef  INIT_RUNOUT_PIN
     }
+
+
+    ////Свое исключительно для иконки наличия вне печати
+    #define FIL_RUNOUT2_PIN                   PE10 // TODO небольшой колхозинг так использовать пин/ подключена кнопка наличия
+        static uint8_t poll_runout_pin_switch() {
+      return READ(FIL_RUNOUT2_PIN); // Прямое чтение конкретного пина
+    }
+
+
+
 
     // Return a bitmask of runout pin states
     static uint8_t poll_runout_pins() {

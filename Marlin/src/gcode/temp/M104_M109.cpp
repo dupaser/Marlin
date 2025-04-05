@@ -38,6 +38,10 @@
 
 #include "../../MarlinCore.h" // for startOrResumeJob, etc.
 
+#include "../../lcd/extui/dgus/DGUSDisplay.h"
+#include "../../lcd/extui/dgus/mks/DGUSDisplayDef.h"
+
+
 #if ENABLED(PRINTJOB_TIMER_AUTOSTART)
   #include "../../module/printcounter.h"
   #if ENABLED(CANCEL_OBJECTS)
@@ -110,7 +114,7 @@ void GcodeSuite::M104_M109(const bool isM109) {
       if (target_extruder != active_extruder) return;
     #endif
     thermalManager.setTargetHotend(temp, target_extruder);
-
+   
     #if ENABLED(DUAL_X_CARRIAGE)
       if (idex_is_duplicating() && target_extruder == 0)
         thermalManager.setTargetHotend(temp ? temp + duplicate_extruder_temp_offset : 0, 1);
@@ -132,7 +136,12 @@ void GcodeSuite::M104_M109(const bool isM109) {
   TERN_(AUTOTEMP, planner.autotemp_M104_M109());
 
   if (isM109 && got_temp)
+  {
+    #if ENABLED(DGUS_LCD_UI_MKS)
+      dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_NOZZLE_HEATING), VP_Status_LEN); //Свое
+    #endif
     (void)thermalManager.wait_for_hotend(target_extruder, no_wait_for_cooling);
+  }
 }
 
 #endif // EXTRUDERS

@@ -40,6 +40,10 @@
   #include "../../../feature/powerloss.h"
 #endif
 
+#include <locale>
+#include <codecvt>
+#include <cstring>
+
 #include "DGUSDisplay.h"
 #include "DGUSVPVariable.h"
 #include "DGUSDisplayDef.h"
@@ -72,8 +76,14 @@ void DGUSDisplay::InitDisplay() {
   if (TERN1(POWER_LOSS_RECOVERY, !recovery.valid())) {  // If no Power-Loss Recovery is needed...
     TERN_(DGUS_LCD_UI_MKS, delay(LOGO_TIME_DELAY));     // Show the logo for a little while
   }
-
+  //dgusdisplay.WriteVariable(VP_ERROR_STATUS, (uint16_t)0); //Свое 
   RequestScreen(TERN(SHOW_BOOTSCREEN, DGUSLCD_SCREEN_BOOT, DGUSLCD_SCREEN_MAIN));
+}
+
+void DGUSDisplay::SetIcon(uint16_t vp, bool is_on){
+  if(is_on) dgusdisplay.WriteVariable(vp, (uint16_t)1); // свое uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+  else dgusdisplay.WriteVariable(vp, (uint16_t)0); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+
 }
 
 void DGUSDisplay::WriteVariable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr) {
@@ -82,12 +92,67 @@ void DGUSDisplay::WriteVariable(uint16_t adr, const void *values, uint8_t values
   WriteHeader(adr, DGUS_CMD_WRITEVAR, valueslen);
   while (valueslen--) {
     char x;
-    if (!strend) x = *myvalues++;
+    if(!strend) x = *myvalues++;
     if ((isstr && !x) || strend) {
       strend = true;
       x = ' ';
     }
     LCD_SERIAL.write(x);
+  }
+}
+
+void DGUSDisplay::WriteString(uint16_t adr, FSTR_P values, uint8_t valueslen) {
+      const char * const pstr = FTOP(values);
+      WriteString(adr, pstr, valueslen);
+}
+
+void DGUSDisplay::WriteString(uint16_t adr, const char *values, uint8_t valueslen) {
+      char destination[valueslen] = ""; 
+      memset(destination, 0, valueslen);
+      strcpy(destination, values);
+      // Преобразование из UTF-8 в UTF-16
+      std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+      std::u16string utf16_string = converter.from_bytes(values);
+      // Копирование данных UTF-16 в char массив
+      int i = 0;
+      // TODO: Сравнить размер utf16_string и tmpFilename.
+      for (char16_t ch : utf16_string) {
+          if(i >= VP_SD_FileName_LEN) break; 
+          // Выводим каждый байт символа UTF-16
+          uint8_t high_byte = (ch >> 8) & 0xFF; // Высокий байт
+          uint8_t low_byte = ch & 0xFF; // Низкий байт
+          destination[i++] = high_byte;
+          destination[i++] = low_byte;
+      }
+
+      dgusdisplay.WriteUtf16String(adr, destination, valueslen);
+}
+
+// Свое метод отправки сиволов в формате UTF-16
+void DGUSDisplay::WriteUtf16String(uint16_t adr, const char *values, uint8_t valueslen) {
+  std::string str = values;
+  bool strend = !values + !(values + 1);
+  WriteHeader(adr, DGUS_CMD_WRITEVAR, valueslen);
+  uint8_t low_byte = 0;
+  uint8_t high_byte = 0;
+  bool space_print_inversion = false;
+  while (valueslen--) {
+    char x;
+    if(!strend) {
+      low_byte = *values;
+      x = *values++;
+      high_byte = *values;
+    }
+    if ((!low_byte && !high_byte) || strend) {
+      strend = true;
+      if(space_print_inversion) x = ' ';
+      else x = 0x00;
+      space_print_inversion = !space_print_inversion;
+    }
+    LCD_SERIAL.write(x);
+    // if(x == 0x00){
+    //   LCD_SERIAL.write(' ');
+    // }
   }
 }
 

@@ -33,6 +33,10 @@
 #include "DGUSDisplayDef.h"
 #include "DGUSScreenHandler.h"
 
+#include "../../../module/settings.h" //свое для пида
+
+#include "../../../module/temperature.h" //свое для выключения нагрева при килл
+
 namespace ExtUI {
 
   void onStartup() {
@@ -43,9 +47,13 @@ namespace ExtUI {
   void onIdle() { ScreenHandler.loop(); }
 
   void onPrinterKilled(FSTR_P const error, FSTR_P const) {
-    ScreenHandler.sendinfoscreen(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET), true, true, true, true);
-    ScreenHandler.GotoScreen(DGUSLCD_SCREEN_KILL);
-    while (!ScreenHandler.loop());  // Wait while anything is left to be sent
+   Temperature::disable_all_heaters(); //свое
+    DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_PLEASE_RESET), 1); //свое
+
+   // dgusdisplay.WriteVariable(VP_ERROR_STATUS, (uint16_t)1); //Свое 
+    //ScreenHandler.sendinfoscreen(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET), true, true, true, true);
+    //ScreenHandler.GotoScreen(DGUSLCD_SCREEN_KILL);
+   // while (!ScreenHandler.loop());  // Wait while anything is left to be sent
   }
 
   void onMediaInserted() { TERN_(SDSUPPORT, ScreenHandler.SDCardInserted()); }
@@ -133,29 +141,57 @@ namespace ExtUI {
   #endif
 
   #if HAS_PID_HEATING
-    void onPidTuning(const result_t rst) {
+    void onPidTuning(const result_t rst, int heater_type, int cycles , int ncycles ) {
       // Called for temperature PID tuning result
+      const char* statusMessage = nullptr;
+      char buf[20];  
+      bool screen = 0;
       switch (rst) {
-        case PID_STARTED:
-          ScreenHandler.setstatusmessagePGM(GET_TEXT(MSG_PID_AUTOTUNE));
+        case PID_TUNING_CYCLE: 
+          sprintf_P(buf, PSTR("%s %d / %d"), GET_TEXT(MSG_PID_CYCLE), cycles, ncycles);
+          dgusdisplay.WriteString(VP_PID_AUTOTUNE_CYCLES, buf, 20);
+          screen = 1;
           break;
-        case PID_BAD_EXTRUDER_NUM:
-          ScreenHandler.setstatusmessagePGM(GET_TEXT(MSG_PID_BAD_EXTRUDER_NUM));
-          break;
-        case PID_TEMP_TOO_HIGH:
-          ScreenHandler.setstatusmessagePGM(GET_TEXT(MSG_PID_TEMP_TOO_HIGH));
-          break;
-        case PID_TUNING_TIMEOUT:
-          ScreenHandler.setstatusmessagePGM(GET_TEXT(MSG_PID_TIMEOUT));
-          break;
-        case PID_DONE:
-          ScreenHandler.setstatusmessagePGM(GET_TEXT(MSG_PID_AUTOTUNE_DONE));
-          break;
-      }
-      ScreenHandler.GotoScreen(DGUSLCD_SCREEN_MAIN);
-    }
-  #endif
 
+        case PID_STARTED:
+           if (heater_type == 0 || heater_type == 1)
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_E);
+            else if (heater_type == -1 )
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_BED);
+            else 
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE);
+            screen = 1;
+            break;
+        case PID_BAD_EXTRUDER_NUM:
+            statusMessage = GET_TEXT(MSG_PID_BAD_EXTRUDER_NUM);
+            break;
+        case PID_TEMP_TOO_HIGH:
+            statusMessage = GET_TEXT(MSG_PID_TEMP_TOO_HIGH);
+            break;
+        case PID_TUNING_TIMEOUT:
+            statusMessage = GET_TEXT(MSG_PID_TIMEOUT);
+            break;
+        case PID_DONE:
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_DONE);
+            settings.save();
+            break;
+        case PID_TUNING_ABORT:
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_ABORTED);
+            break;
+      }
+      if (statusMessage) 
+        dgusdisplay.WriteString(VP_PID_AUTOTUNE_STATUS, statusMessage, VP_SD_FileName_LEN);
+      if (screen)
+        ScreenHandler.GotoScreen(MKSLCD_PID_PROCESS);
+      else
+        ScreenHandler.GotoScreen(MKSLCD_PID_COMPLETE);
+   
+    
+    
+
+    }    
+  #endif
+    
   void onSteppersDisabled() {}
   void onSteppersEnabled()  {}
 }

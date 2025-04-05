@@ -311,15 +311,21 @@ public:
       static void progress_reset() { if (progress_override & (PROGRESS_MASK + 1U)) set_progress(0); }
     #endif
     #if ENABLED(SHOW_REMAINING_TIME)
+      static uint32_t time_before_g28_sec;
       static uint32_t _calculated_remaining_time() {
-        const duration_t elapsed = print_job_timer.duration();
-        const progress_t progress = _get_progress();
+        const duration_t elapsed = time_before_g28_sec ? print_job_timer.duration() - time_before_g28_sec : 0;
+        const progress_t progress =_get_progress(); 
         return progress ? elapsed.value * (100 * (PROGRESS_SCALE) - progress) / progress : 0;
       }
       #if ENABLED(USE_M73_REMAINING_TIME)
-        static uint32_t remaining_time;
-        FORCE_INLINE static void set_remaining_time(const uint32_t r) { remaining_time = r; }
-        FORCE_INLINE static uint32_t get_remaining_time() { return remaining_time ?: _calculated_remaining_time(); }
+        static int32_t remaining_time_sec;
+        static int32_t m73_last_read_time_ms;
+        FORCE_INLINE static void set_remaining_time(const uint32_t r) { remaining_time_sec = r; m73_last_read_time_ms = millis(); }
+        FORCE_INLINE static uint32_t get_remaining_time() { 
+          int32_t rem_time = (remaining_time_sec - MS_TO_SEC(millis() - m73_last_read_time_ms)) * 100 / feedrate_percentage;
+          NOLESS(rem_time, (int32_t)0);
+
+          return remaining_time_sec ? rem_time : _calculated_remaining_time(); }
         FORCE_INLINE static void reset_remaining_time() { set_remaining_time(0); }
       #else
         FORCE_INLINE static uint32_t get_remaining_time() { return _calculated_remaining_time(); }

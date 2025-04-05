@@ -86,7 +86,7 @@ public:
   // Native BLTouch commands ("Underscore"...), used in lcd menus and internally
   static void _reset()              { command(BLTOUCH_RESET, BLTOUCH_RESET_DELAY); }
 
-  static void _selftest()           { command(BLTOUCH_SELFTEST, BLTOUCH_DELAY); }
+  static void _selftest()           { command(BLTOUCH_SELFTEST, BLTOUCH_DELAY); } // TODO HOT проверить, что возвращает результат теста и добавить обруботку ошибки
 
   static void _set_SW_mode()        { command(BLTOUCH_SW_MODE, BLTOUCH_DELAY); }
   static void _reset_SW_mode()      { if (triggered()) _stow(); else _deploy(); }

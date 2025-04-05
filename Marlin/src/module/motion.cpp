@@ -69,6 +69,8 @@
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../core/debug_out.h"
 
+#include "../lcd/extui/dgus/DGUSScreenHandler.h" //Свое
+
 // Relative Mode. Enable with G91, disable with G90.
 bool relative_mode; // = false;
 
@@ -1120,6 +1122,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
    */
   inline bool line_to_destination_cartesian() {
     const float scaled_fr_mm_s = MMS_SCALED(feedrate_mm_s);
+
     #if HAS_MESH
       if (planner.leveling_active && planner.leveling_active_at_z(destination.z)) {
         #if ENABLED(AUTO_BED_LEVELING_UBL)
@@ -1884,7 +1887,13 @@ void prepare_line_to_destination() {
             case K_AXIS: es = K_ENDSTOP; break;
           #endif
         }
-        if (TEST(endstops.state(), es)) {
+        es = Z_ENDSTOP;
+        auto a = endstops.state();
+        int b = 100;
+        printf("%i\n", b);
+        
+        if (TEST(a, es)) {
+          DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_KILL_HOMING_FAILED), 0); //свое
           SERIAL_ECHO_MSG("Bad ", AS_CHAR(AXIS_CHAR(axis)), " Endstop?");
           kill(GET_TEXT_F(MSG_KILL_HOMING_FAILED));
         }
@@ -2082,7 +2091,13 @@ void prepare_line_to_destination() {
     #endif
 
     #if DISABLED(DELTA) && defined(HOMING_BACKOFF_POST_MM)
-      const xyz_float_t endstop_backoff = HOMING_BACKOFF_POST_MM;
+      #if HAS_BED_PROBE
+        xyz_float_t endstop_backoff = HOMING_BACKOFF_POST_MM;
+        endstop_backoff.z +=  bedlevel.get_z_home_pos_shift();
+      #else
+        const xyz_float_t endstop_backoff = HOMING_BACKOFF_POST_MM;
+      #endif
+      
       if (endstop_backoff[axis]) {
         current_position[axis] -= ABS(endstop_backoff[axis]) * axis_home_dir;
         line_to_current_position(
@@ -2151,6 +2166,10 @@ void set_axis_is_at_home(const AxisEnum axis) {
     current_position[axis] = (axis == Z_AXIS) ? DIFF_TERN(HAS_BED_PROBE, delta_height, probe.offset.z) : base_home_pos(axis);
   #else
     current_position[axis] = base_home_pos(axis);
+    #if HAS_BED_PROBE
+      if(axis == AxisEnum::Z_AXIS)
+        current_position[AxisEnum::Z_AXIS] = base_home_pos(AxisEnum::Z_AXIS) + bedlevel.get_z_home_pos_shift(); // Свое
+    #endif 
   #endif
 
   /**

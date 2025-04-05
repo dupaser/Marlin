@@ -32,6 +32,8 @@
 #include "../libs/duration_t.h"
 #include "../gcode/gcode.h"
 
+#include "../lcd/extui/dgus/DGUSScreenHandler.h" //Свое
+
 #if ENABLED(TMC_DEBUG)
   #include "../libs/hex_print.h"
   #if ENABLED(MONITOR_DRIVER_STATUS)
@@ -1178,6 +1180,22 @@ static bool test_connection(TMC &st) {
   SERIAL_ECHOPGM("Testing ");
   st.printLabel();
   SERIAL_ECHOPGM(" connection... ");
+  uint32_t csr_value = RCC->CSR;
+  // #define SOME_REGISTER (*(volatile uint32_t*)0x40023874) // Пример регистра
+  // uint32_t a = RCC->CSR;
+  // SERIAL_ECHO_MSG("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ", a);
+  // SERIAL_ECHO_MSG("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ", SOME_REGISTER);
+  SERIAL_ECHO_MSG("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", csr_value);
+  if (csr_value & RCC_CSR_LPWRRSTF) {
+    SERIAL_ECHO_MSG("Low-power reset occurred.\n");
+}
+if (csr_value & RCC_CSR_WWDGRSTF) {
+  SERIAL_ECHO_MSG("Window Watchdog reset occurred.\n");
+}
+if (csr_value & RCC_CSR_IWDGRSTF) {
+  SERIAL_ECHO_MSG("Independent Watchdog reset occurred.\n");}
+
+  
   const uint8_t test_result = st.test_connection();
 
   if (test_result > 0) SERIAL_ECHOPGM("Error: All ");
@@ -1196,6 +1214,14 @@ static bool test_connection(TMC &st) {
 
 void test_tmc_connection(LOGICAL_AXIS_ARGS(const bool)) {
   uint8_t axis_connection = 0;
+  uint32_t csr_value = RCC->CSR;
+  // #define SOME_REGISTER (*(volatile uint32_t*)0x40023874) // Пример регистра
+  // uint32_t a = RCC->CSR;
+  // SERIAL_ECHO_MSG("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ", a);
+  // SERIAL_ECHO_MSG("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ", SOME_REGISTER);
+  SERIAL_ECHO_MSG("Проверка связи", csr_value); //ААААААААААААААААААА
+
+  
 
   if (x) {
     #if AXIS_IS_TMC(X)
@@ -1267,7 +1293,10 @@ void test_tmc_connection(LOGICAL_AXIS_ARGS(const bool)) {
     #endif
   }
 
-  if (axis_connection) LCD_MESSAGE(MSG_ERROR_TMC);
+  if (axis_connection) {
+  LCD_MESSAGE(MSG_ERROR_TMC);
+  DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_ERROR_TMC), 0);
+  }
 }
 
 #endif // HAS_TRINAMIC_CONFIG

@@ -28,6 +28,10 @@
 
 #include "../../inc/MarlinConfig.h"
 
+
+#include "../../lcd/extui/dgus/DGUSDisplay.h"
+#include "../../lcd/extui/dgus/mks/DGUSDisplayDef.h"
+
 #if HAS_HEATED_CHAMBER
 
 #include "../gcode.h"
@@ -69,6 +73,11 @@ void GcodeSuite::M191() {
 
   const bool is_heating = thermalManager.isHeatingChamber();
   if (is_heating || !no_wait_for_cooling) {
+
+    #if ENABLED(DGUS_LCD_UI_MKS)
+    dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_CHAMBER_HEATING), VP_Status_LEN); //Свое
+    #endif
+    
     ui.set_status(is_heating ? GET_TEXT_F(MSG_CHAMBER_HEATING) : GET_TEXT_F(MSG_CHAMBER_COOLING));
     thermalManager.wait_for_chamber(false);
   }

@@ -32,6 +32,11 @@
 #include "../../../module/printcounter.h"
 #include "../../../sd/cardreader.h"
 
+
+#if ENABLED(DGUS_LCD_UI_MKS)
+  #include "../../../lcd/extui/dgus/DGUSDisplayDef.h"
+#endif
+
 #if ENABLED(POWER_LOSS_RECOVERY)
   #include "../../../feature/powerloss.h"
 #endif
@@ -91,8 +96,9 @@ void GcodeSuite::M125() {
 
   if (pause_print(retract, park_point, show_lcd, 0)) {
     if (ENABLED(EXTENSIBLE_UI) || BOTH(EMERGENCY_PARSER, HOST_PROMPT_SUPPORT) || !sd_printing || show_lcd) {
-      wait_for_confirmation(false, 0);
-      resume_print(0, 0, -retract, 0);
+      MKS_pause_print_move(); //Свое TODO
+      //wait_for_confirmation(false, 0);
+      //resume_print(0, 0, -retract, 0);
     }
   }
 }

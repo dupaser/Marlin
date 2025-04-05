@@ -166,21 +166,24 @@ public:
   static void endFilePrintNow(TERN_(SD_RESORT, const bool re_sort=false));
   static void abortFilePrintNow(TERN_(SD_RESORT, const bool re_sort=false));
   static void fileHasFinished();
-  static void abortFilePrintSoon() { flag.abort_sd_printing = isFileOpen(); }
+  static void abortFilePrintSoon() { flag.abort_sd_printing = true; } // TODO было isFileOpen(), проверить, не сломало ли это что то
   static void pauseSDPrint()       { flag.sdprinting = false; }
   static bool isPrinting()         { return flag.sdprinting; }
   static bool isPaused()           { return isFileOpen() && !isPrinting(); }
   #if HAS_PRINT_PROGRESS_PERMYRIAD
     static uint16_t permyriadDone() {
       if (flag.sdprintdone) return 10000;
-      if (isFileOpen() && filesize) return sdpos / ((filesize + 9999) / 10000);
-      return 0;
+
+      if (flag.sdprinting == false && sdpos != 0 && filesize/sdpos == 1) return 10000; //свое чтобы не обнулялся процент печати после окончания
+      if (isFileOpen() && filesize ) return sdpos / ((filesize +9999) / 10000); // если убрать 9999 то процент будет больше 100 видимо из за буфера
+        //return 0;
+      
     }
   #endif
   static uint8_t percentDone() {
-    if (flag.sdprintdone) return 100;
-    if (isFileOpen() && filesize) return sdpos / ((filesize + 99) / 100);
-    return 0;
+    // if (flag.sdprintdone) return 100;
+    // if (isFileOpen() && filesize) return sdpos / ((filesize + 99) / 100);
+    // return 0;
   }
 
   /**

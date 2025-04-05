@@ -35,6 +35,11 @@
 #include "../../../module/planner.h"
 #include "../../../module/printcounter.h"
 #include "../../../sd/cardreader.h"
+#include "../../../feature/runout.h"
+
+
+#include "../../../feature/hotend_idle.h" //Свое для ресета таймаута
+
 
 #if ENABLED(POWER_LOSS_RECOVERY)
   #include "../../../feature/powerloss.h"
@@ -43,7 +48,6 @@
 DGUSScreenHandlerClass ScreenHandler;
 
 uint16_t DGUSScreenHandler::ConfirmVP;
-
 DGUSLCD_Screens DGUSScreenHandler::current_screen;
 DGUSLCD_Screens DGUSScreenHandler::past_screens[NUM_PAST_SCREENS];
 uint8_t DGUSScreenHandler::update_ptr;
@@ -172,43 +176,43 @@ void DGUSScreenHandler::DGUSLCD_SendStringToDisplay(DGUS_VP_Variable &var) {
 // overwrite the remainings with spaces.// var.size has the display buffer size!
 void DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var) {
   char *tmp = (char*) var.memadr;
-  dgusdisplay.WriteVariablePGM(var.VP, tmp, var.size, true);
+  dgusdisplay.WriteString(var.VP, tmp, var.size);
 }
 
-#if HAS_PID_HEATING
-  void DGUSScreenHandler::DGUSLCD_SendTemperaturePID(DGUS_VP_Variable &var) {
-    float value = *(float *)var.memadr;
-    value /= 10;
-    float valuesend = 0;
-    switch (var.VP) {
-      default: return;
-      #if HAS_HOTEND
-        case VP_E0_PID_P: valuesend = value; break;
-        case VP_E0_PID_I: valuesend = unscalePID_i(value); break;
-        case VP_E0_PID_D: valuesend = unscalePID_d(value); break;
-      #endif
-      #if HAS_MULTI_HOTEND
-        case VP_E1_PID_P: valuesend = value; break;
-        case VP_E1_PID_I: valuesend = unscalePID_i(value); break;
-        case VP_E1_PID_D: valuesend = unscalePID_d(value); break;
-      #endif
-      #if HAS_HEATED_BED
-        case VP_BED_PID_P: valuesend = value; break;
-        case VP_BED_PID_I: valuesend = unscalePID_i(value); break;
-        case VP_BED_PID_D: valuesend = unscalePID_d(value); break;
-      #endif
-    }
+// #if HAS_PID_HEATING //ЗАКОМЕНТИЛ
+//   void DGUSScreenHandler::DGUSLCD_SendTemperaturePID(DGUS_VP_Variable &var) {
+//     float value = *(float *)var.memadr;
+//     value /= 10;
+//     float valuesend = 0;
+//     switch (var.VP) {
+//       default: return;
+//       #if HAS_HOTEND
+//         case VP_E0_PID_P: valuesend = value; break;
+//         case VP_E0_PID_I: valuesend = unscalePID_i(value); break;
+//         case VP_E0_PID_D: valuesend = unscalePID_d(value); break;
+//       #endif
+//       #if HAS_MULTI_HOTEND
+//         case VP_E1_PID_P: valuesend = value; break;
+//         case VP_E1_PID_I: valuesend = unscalePID_i(value); break;
+//         case VP_E1_PID_D: valuesend = unscalePID_d(value); break;
+//       #endif
+//       #if HAS_HEATED_BED
+//         case VP_BED_PID_P: valuesend = value; break;
+//         case VP_BED_PID_I: valuesend = unscalePID_i(value); break;
+//         case VP_BED_PID_D: valuesend = unscalePID_d(value); break;
+//       #endif
+//     }
 
-    valuesend *= cpow(10, 1);
-    union { int16_t i; char lb[2]; } endian;
+//     valuesend *= cpow(10, 1);
+//     union { int16_t i; char lb[2]; } endian;
 
-    char tmp[2];
-    endian.i = valuesend;
-    tmp[0] = endian.lb[1];
-    tmp[1] = endian.lb[0];
-    dgusdisplay.WriteVariable(var.VP, tmp, 2);
-  }
-#endif
+//     char tmp[2];
+//     endian.i = valuesend;
+//     tmp[0] = endian.lb[1];
+//     tmp[1] = endian.lb[0];
+//     dgusdisplay.WriteVariable(var.VP, tmp, 2);
+//   }
+// #endif
 
 #if ENABLED(PRINTCOUNTER)
 
@@ -257,6 +261,95 @@ void DGUSScreenHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variable &var)
   }
 }
 
+// Свое обновление иконки "примонтирована ли флешка".
+void DGUSScreenHandler::DGUSLCD_SendFlashIconStatus(DGUS_VP_Variable &var) {
+  if(DiskIODriver_USBFlash::isInserted()){
+    dgusdisplay.WriteVariable(var.VP, (uint16_t)1);
+  } else {
+    dgusdisplay.WriteVariable(var.VP, (uint16_t)0);
+  }
+}
+
+
+void DGUSScreenHandler::DGUSLCD_SendFilamentChangeStatus(DGUS_VP_Variable &var) {
+   uint8_t hotend_too_cold = 0;
+  if (thermalManager.tooColdToExtrude(0))
+          hotend_too_cold = 1;
+        
+      
+  if (hotend_too_cold) //thermalManager.targetTooColdToExtrude(hotend_too_cold - 1
+  dgusdisplay.WriteString(VP_FILAMENT_CHANGE_STATUS, GET_TEXT_F(MSG_HOTEND_TOO_COLD), VP_Status_LEN);
+  else
+  dgusdisplay.WriteString(VP_FILAMENT_CHANGE_STATUS, "", VP_Status_LEN);
+}
+
+
+// Свое обновление иконки "высокая температура".
+void DGUSScreenHandler::DGUSLCD_SendAlarmTemperature(DGUS_VP_Variable &var) {
+  if(thermalManager.temp_hotend[0].celsius > ALARM_TEMPERATURE_ICON ||
+     thermalManager.temp_bed.celsius > ALARM_TEMPERATURE_ICON ||
+     thermalManager.temp_chamber.celsius > ALARM_TEMPERATURE_ICON  ) {
+    dgusdisplay.WriteVariable(var.VP, (uint16_t)1);
+  } else {
+    dgusdisplay.WriteVariable(var.VP, (uint16_t)0);
+  }
+}
+
+// Свое обновление иконки сработал ли датчик филамента 
+void DGUSScreenHandler::DGUSLCD_SendFilamentRunoutStatus(DGUS_VP_Variable &var) {
+
+//uint8_t filament_status = FilamentSensorBase::poll_runout_states();
+//bool mem3 = FilamentSensorBase::poll_runout_pin_switch();
+ 
+ if (ExtUI::isPrintingFromMedia())
+ {
+  if(!runout.filament_ran_out) { 
+      dgusdisplay.WriteVariable(var.VP, (uint16_t)1);
+    } else {
+      dgusdisplay.WriteVariable(var.VP, (uint16_t)0);
+    }
+ }
+ else {
+    if(FilamentSensorBase::poll_runout_pin_switch()) { //!runout.filament_ran_out
+      dgusdisplay.WriteVariable(var.VP, (uint16_t)1);
+    } else {
+      dgusdisplay.WriteVariable(var.VP, (uint16_t)0);
+    }
+ }
+}
+
+
+//Иконка индикатор состояния датчика движения филамента
+void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdateIcon(DGUS_VP_Variable &var) {
+  if(runout.enabled){ //
+    dgusdisplay.WriteVariable(var.VP, (uint16_t)1);
+  } else {
+    dgusdisplay.WriteVariable(var.VP, (uint16_t)0);
+  }
+}
+
+
+
+
+// Свое вкл/выкл сенсора филамента.
+void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdate(DGUS_VP_Variable &var, void *val_ptr) {
+  
+  runout.enabled = !runout.enabled;
+
+  // if(runout.enabled) {
+  //   runout.enabled = false;
+  // } else {
+  //   runout.enabled = true;
+  // }
+  //EEPROM_WRITE(e_factors);
+   if (!ExtUI::isPrintingFromMedia())
+ {
+  settings.save(); //не было раньше добавил
+ }
+
+  ForceCompleteUpdate(); 
+}
+
 #if ENABLED(DGUS_UI_WAITING)
 
   void DGUSScreenHandler::DGUSLCD_SendWaitingStatusToDisplay(DGUS_VP_Variable &var) {
@@ -277,47 +370,62 @@ void DGUSScreenHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variable &var)
 
 #if ENABLED(SDSUPPORT)
 
-  void DGUSScreenHandler::ScreenChangeHookIfSD(DGUS_VP_Variable &var, void *val_ptr) {
-    // default action executed when there is a SD card, but not printing
-    if (ExtUI::isMediaInserted() && !ExtUI::isPrintingFromMedia()) {
-      ScreenChangeHook(var, val_ptr);
-      dgusdisplay.RequestScreen(current_screen);
-      return;
-    }
+  // void DGUSScreenHandler::ScreenChangeHookIfSD(DGUS_VP_Variable &var, void *val_ptr) {  //ЗАКОМЕНТИЛ
+  //   // default action executed when there is a SD card, but not printing
+  //   if (ExtUI::isMediaInserted() && !ExtUI::isPrintingFromMedia()) {
+  //     ScreenChangeHook(var, val_ptr);
+  //     dgusdisplay.RequestScreen(current_screen);
+  //     return;
+  //   }
 
-    // if we are printing, we jump to two screens after the requested one.
-    // This should host e.g a print pause / print abort / print resume dialog.
-    // This concept allows to recycle this hook for other file
-    if (ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing) {
-      GotoScreen(DGUSLCD_SCREEN_SDPRINTMANIPULATION);
-      return;
-    }
+  //   // if we are printing, we jump to two screens after the requested one.
+  //   // This should host e.g a print pause / print abort / print resume dialog.
+  //   // This concept allows to recycle this hook for other file
+  //   if (ExtUI::isPrintingFromMedia() && !card.flag.abort_sd_printing) {
+  //     GotoScreen(DGUSLCD_SCREEN_SDPRINTMANIPULATION);
+  //     return;
+  //   }
 
-    // Don't let the user in the dark why there is no reaction.
-    if (!ExtUI::isMediaInserted()) {
-      setstatusmessagePGM(GET_TEXT(MSG_NO_MEDIA));
-      return;
-    }
-    if (card.flag.abort_sd_printing) {
-      setstatusmessagePGM(GET_TEXT(MSG_MEDIA_ABORTING));
-      return;
-    }
-  }
+  //   // Don't let the user in the dark why there is no reaction.
+  //   if (!ExtUI::isMediaInserted()) {
+  //     setstatusmessagePGM(GET_TEXT(MSG_NO_MEDIA));
+  //     return;
+  //   }
+  //   if (card.flag.abort_sd_printing) {
+  //     setstatusmessagePGM(GET_TEXT(MSG_MEDIA_ABORTING));
+  //     return;
+  //   }
+  // }
 
   void DGUSScreenHandler::DGUSLCD_SD_ScrollFilelist(DGUS_VP_Variable& var, void *val_ptr) {
     auto old_top = top_file;
-    const int16_t scroll = (int16_t)swap16(*(uint16_t*)val_ptr);
+    const int16_t scroll = (int16_t)swap16(*(uint16_t*)val_ptr); // TODO: использоать swap16 в выводе utf-16 строк
     if (scroll) {
-      top_file += scroll;
+      switch (scroll)
+      {
+      case 1:
+        top_file += DGUS_SD_FILESPERSCREEN;
+        break;
+      case 2: 
+        top_file -= DGUS_SD_FILESPERSCREEN;
+        break;
+      case 3: //добавил чтобы выходить из папки назад
+        filelist.upDir();
+        break;
+      default:        
+        break;
+      }        
+      
       DEBUG_ECHOPGM("new topfile calculated:", top_file);
       if (top_file < 0) {
         top_file = 0;
         DEBUG_ECHOLNPGM("Top of filelist reached");
       }
       else {
-        int16_t max_top = filelist.count() -  DGUS_SD_FILESPERSCREEN;
+        int16_t max_top = filelist.count();
         NOLESS(max_top, 0);
-        NOMORE(top_file, max_top);
+        // NOMORE(top_file, max_top);
+        if (max_top < top_file) top_file = old_top;
       }
       DEBUG_ECHOPGM("new topfile adjusted:", top_file);
     }
@@ -328,23 +436,48 @@ void DGUSScreenHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variable &var)
     }
 
     if (old_top != top_file) ForceCompleteUpdate();
+
+    if (filelist.isAtRootDir()){
+      if (top_file == 0)
+      {
+        GotoScreen(MKSLCD_SCREEN_CHOOSE_FILE_1);
+      } else if(filelist.count() - top_file <= DGUS_SD_FILESPERSCREEN){
+        GotoScreen(MKSLCD_SCREEN_CHOOSE_FILE_2);
+      } else {
+        GotoScreen(MKSLCD_SCREEN_CHOOSE_FILE_3);
+      }
+    } else {
+      if (top_file == 0)
+      {
+        GotoScreen(MKSLCD_SCREEN_CHOOSE_FILE_FOLDER_1);
+      }
+      else if (filelist.count() - top_file <= DGUS_SD_FILESPERSCREEN)
+      {
+        GotoScreen(MKSLCD_SCREEN_CHOOSE_FILE_FOLDER_2);
+      }
+      else
+      {
+        GotoScreen(MKSLCD_SCREEN_CHOOSE_FILE_FOLDER_3);
+      }
+    }
   }
 
   void DGUSScreenHandler::DGUSLCD_SD_ReallyAbort(DGUS_VP_Variable &var, void *val_ptr) {
+   
     ExtUI::stopPrint();
-    GotoScreen(DGUSLCD_SCREEN_MAIN);
+    GotoScreen(MKSLCD_SCREEN_PrintDone);
   }
 
-  void DGUSScreenHandler::DGUSLCD_SD_PrintTune(DGUS_VP_Variable &var, void *val_ptr) {
-    if (!ExtUI::isPrintingFromMedia()) return; // avoid race condition when user stays in this menu and printer finishes.
-    GotoScreen(DGUSLCD_SCREEN_SDPRINTTUNE);
-  }
+  // void DGUSScreenHandler::DGUSLCD_SD_PrintTune(DGUS_VP_Variable &var, void *val_ptr) { //ЗАКОМЕНТИЛ
+  //   if (!ExtUI::isPrintingFromMedia()) return; // avoid race condition when user stays in this menu and printer finishes.
+  //   GotoScreen(DGUSLCD_SCREEN_SDPRINTTUNE);
+  // }
 
   void DGUSScreenHandler::SDCardError() {
     DGUSScreenHandler::SDCardRemoved();
-    sendinfoscreen(F("NOTICE"), nullptr, F("SD card error"), nullptr, true, true, true, true);
-    SetupConfirmAction(nullptr);
-    GotoScreen(DGUSLCD_SCREEN_POPUP);
+    // sendinfoscreen(F("NOTICE"), nullptr, F("SD card error"), nullptr, true, true, true, true);
+    // SetupConfirmAction(nullptr);
+    // GotoScreen(DGUSLCD_SCREEN_POPUP);
   }
 
 #endif // SDSUPPORT
@@ -385,14 +518,44 @@ void DGUSScreenHandler::ScreenChangeHookIfIdle(DGUS_VP_Variable &var, void *val_
   }
 }
 
-void DGUSScreenHandler::HandleAllHeatersOff(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::HandleAllHeatersOff(DGUS_VP_Variable &var, void *val_ptr) {  ////есть своя аналогия VP_Cool_Down
   thermalManager.disable_all_heaters();
   ForceCompleteUpdate(); // hint to send all data.
 }
 
+void DGUSScreenHandler::SendTemperatureStatus(DGUS_VP_Variable &var) {
+  //manualMoveStep = thermalManager.temp_hotend[0].target;
+  switch (var.VP)
+  {
+  case VP_T_E0_ON:
+    if(thermalManager.temp_hotend[0].target)
+      dgusdisplay.WriteVariable(VP_T_E0_ON, (uint16_t)1); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+    else 
+      dgusdisplay.WriteVariable(VP_T_E0_ON, (uint16_t)0); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+    break;
+  case VP_T_Bed_ON:
+    if(thermalManager.temp_bed.target)
+      dgusdisplay.WriteVariable(VP_T_Bed_ON, (uint16_t)1); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+    else 
+      dgusdisplay.WriteVariable(VP_T_Bed_ON, (uint16_t)0); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+    break;
+  case VP_T_Chamber_ON:
+    if(thermalManager.temp_chamber.target)
+      dgusdisplay.WriteVariable(VP_T_Chamber_ON, (uint16_t)1); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+    else 
+      dgusdisplay.WriteVariable(VP_T_Chamber_ON, (uint16_t)0); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+    break;
+  default:
+    break;
+  }
+}
+
 void DGUSScreenHandler::HandleTemperatureChanged(DGUS_VP_Variable &var, void *val_ptr) {
+  //if(!val_ptr) return; // Проверка своя.
   celsius_t newvalue = swap16(*(uint16_t*)val_ptr);
   celsius_t acceptedvalue;
+
+  hotend_idle.reset_timed_out(); //типо если включил то сбросил таймер
 
   switch (var.VP) {
     default: return;
@@ -416,12 +579,77 @@ void DGUSScreenHandler::HandleTemperatureChanged(DGUS_VP_Variable &var, void *va
         thermalManager.setTargetBed(newvalue);
         acceptedvalue = thermalManager.degTargetBed();
         break;
+    #endif    
+    #if HAS_HEATED_CHAMBER
+      case VP_T_Chamber_Set:
+        NOMORE(newvalue, CHAMBER_MAXTEMP);
+        thermalManager.setTargetChamber(newvalue);
+        acceptedvalue = thermalManager.degTargetChamber();
+        break;
     #endif
+
+
+  case VP_T_E0_ON:
+        // Choose Tempreture  //Данные с вкладки Configuration
+    if (nozzlePreset.temperature == 0x00) nozzlePreset.temperature =      PREHEAT_1_TEMP_HOTEND; //PLA
+    else if (nozzlePreset.temperature == 0x01) nozzlePreset.temperature = PREHEAT_2_TEMP_HOTEND; //PETG
+    else if (nozzlePreset.temperature == 0x02) nozzlePreset.temperature = PREHEAT_3_TEMP_HOTEND; //ABS
+    else if (nozzlePreset.temperature == 0x03) nozzlePreset.temperature = PREHEAT_4_TEMP_HOTEND; //NYLON
+    else if (nozzlePreset.temperature == 0x04) nozzlePreset.temperature = PREHEAT_5_TEMP_HOTEND; //MAX
+    nozzlePreset.isOn = newvalue;
+    NOMORE(nozzlePreset.temperature, HEATER_0_MAXTEMP);
+    if(nozzlePreset.isOn){
+      thermalManager.setTargetHotend(nozzlePreset.temperature, 0);
+    } else {
+      thermalManager.setTargetHotend(0, 0);
+    }
+    acceptedvalue = thermalManager.degTargetHotend(0);
+    newvalue = nozzlePreset.temperature;
+  break;
+
+  case VP_T_Bed_ON:
+          // Choose Tempreture  //Данные с вкладки Configuration
+    if (bedPreset.temperature == 0x00) bedPreset.temperature =      PREHEAT_1_TEMP_BED; //PLA
+    else if (bedPreset.temperature == 0x01) bedPreset.temperature = PREHEAT_2_TEMP_BED; //PETG
+    else if (bedPreset.temperature == 0x02) bedPreset.temperature = PREHEAT_3_TEMP_BED; //ABS
+    else if (bedPreset.temperature == 0x03) bedPreset.temperature = PREHEAT_4_TEMP_BED; //NYLON
+    else if (bedPreset.temperature == 0x04) bedPreset.temperature = PREHEAT_5_TEMP_BED; //MAX
+
+    bedPreset.isOn = newvalue;
+    NOMORE(bedPreset.temperature, BED_MAXTEMP);
+    if(bedPreset.isOn){
+    thermalManager.setTargetBed(bedPreset.temperature);
+    } else {
+    thermalManager.setTargetBed(0);
+    }
+    acceptedvalue = thermalManager.degTargetBed();
+    newvalue = bedPreset.temperature;
+  break;
+
+  case VP_T_Chamber_ON:
+        // Choose Tempreture  //Данные с вкладки Configuration
+    if (chamberPreset.temperature == 0x00) chamberPreset.temperature =      PREHEAT_1_TEMP_CHAMBER; //PLA
+    else if (chamberPreset.temperature == 0x01) chamberPreset.temperature = PREHEAT_2_TEMP_CHAMBER; //PETG
+    else if (chamberPreset.temperature == 0x02) chamberPreset.temperature = PREHEAT_3_TEMP_CHAMBER; //ABS
+    else if (chamberPreset.temperature == 0x03) chamberPreset.temperature = PREHEAT_4_TEMP_CHAMBER; //NYLON
+    else if (chamberPreset.temperature == 0x04) chamberPreset.temperature = PREHEAT_5_TEMP_CHAMBER; //MAX
+
+    chamberPreset.isOn = newvalue;
+    NOMORE(chamberPreset.temperature, CHAMBER_MAXTEMP);
+    if(chamberPreset.isOn){
+    thermalManager.setTargetChamber(chamberPreset.temperature);
+    } else {
+    thermalManager.setTargetChamber(0);
+    }
+    acceptedvalue = thermalManager.degTargetChamber();
+    newvalue = chamberPreset.temperature;
+  break;      
   }
 
   // reply to display the new value to update the view if the new value was rejected by the Thermal Manager.
   if (newvalue != acceptedvalue && var.send_to_display_handler) var.send_to_display_handler(var);
   skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
+  ForceCompleteUpdate(); 
 }
 
 void DGUSScreenHandler::HandleFlowRateChanged(DGUS_VP_Variable &var, void *val_ptr) {
@@ -447,6 +675,26 @@ void DGUSScreenHandler::HandleManualExtrude(DGUS_VP_Variable &var, void *val_ptr
   DEBUG_ECHOLNPGM("HandleManualExtrude");
 
   int16_t movevalue = swap16(*(uint16_t*)val_ptr);
+
+  // Choose Move distance
+       if (manualMoveStep == 0x01) manualMoveStep = 10; 
+  else if (manualMoveStep == 0x02) manualMoveStep = 100; 
+  else if (manualMoveStep == 0x03) manualMoveStep = 500; 
+  else if (manualMoveStep == 0x04) manualMoveStep = 1000;
+  else if (manualMoveStep == 0x05) manualMoveStep = 5000;
+  else if (manualMoveStep == 0x06) manualMoveStep = 10000;
+
+    if (!print_job_timer.isPaused() && !queue.ring_buffer.empty())
+  return;
+
+
+  switch (movevalue) {
+        case 0x0001: movevalue =  manualMoveStep; break;
+        case 0x0002: movevalue = -manualMoveStep; break;
+        default:     movevalue = 0; break;
+      }
+
+ // int16_t movevalue = swap16(*(uint16_t*)val_ptr);
   float target = movevalue * 0.01f;
   ExtUI::extruder_t target_extruder;
 
@@ -493,86 +741,110 @@ void DGUSScreenHandler::HandleSettings(DGUS_VP_Variable &var, void *val_ptr) {
   }
 }
 
-void DGUSScreenHandler::HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleStepPerMMChanged");
+// void DGUSScreenHandler::HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr) { //ЗАКОМЕНТИЛ
+//   DEBUG_ECHOLNPGM("HandleStepPerMMChanged");
 
-  uint16_t value_raw = swap16(*(uint16_t*)val_ptr);
-  DEBUG_ECHOLNPGM("value_raw:", value_raw);
-  float value = (float)value_raw / 10;
-  ExtUI::axis_t axis;
+//   uint16_t value_raw = swap16(*(uint16_t*)val_ptr);
+//   DEBUG_ECHOLNPGM("value_raw:", value_raw);
+//   float value = (float)value_raw / 10;
+//   ExtUI::axis_t axis;
+//   switch (var.VP) {
+//     case VP_X_STEP_PER_MM: axis = ExtUI::axis_t::X; break;
+//     case VP_Y_STEP_PER_MM: axis = ExtUI::axis_t::Y; break;
+//     case VP_Z_STEP_PER_MM: axis = ExtUI::axis_t::Z; break;
+//     default: return;
+//   }
+//   DEBUG_ECHOLNPGM("value:", value);
+//   ExtUI::setAxisSteps_per_mm(value, axis);
+//   DEBUG_ECHOLNPGM("value_set:", ExtUI::getAxisSteps_per_mm(axis));
+//   skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
+//   return;
+// }
+
+
+// void DGUSScreenHandler::HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr) { //ЗАКОМЕНТИЛ
+//   DEBUG_ECHOLNPGM("HandleStepPerMMExtruderChanged");
+
+//   uint16_t value_raw = swap16(*(uint16_t*)val_ptr);
+//   DEBUG_ECHOLNPGM("value_raw:", value_raw);
+//   float value = (float)value_raw / 10;
+//   ExtUI::extruder_t extruder;
+//   switch (var.VP) {
+//     default: return;
+//       #if HAS_EXTRUDERS
+//         case VP_E0_STEP_PER_MM: extruder = ExtUI::extruder_t::E0; break;
+//         #if HAS_MULTI_EXTRUDER
+//           case VP_E1_STEP_PER_MM: extruder = ExtUI::extruder_t::E1; break;
+//         #endif
+//       #endif
+//   }
+//   DEBUG_ECHOLNPGM("value:", value);
+//   ExtUI::setAxisSteps_per_mm(value, extruder);
+//   DEBUG_ECHOLNPGM("value_set:", ExtUI::getAxisSteps_per_mm(extruder));
+//   skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
+// }
+
+
+//Свое частично 
+void DGUSScreenHandler::HandlePIDAutotune(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("HandlePIDAutotune");
+
+  char buf[32] = {0};
+  char buf1[32] = {0};
+  char buf2[32] = {0};
+
   switch (var.VP) {
-    case VP_X_STEP_PER_MM: axis = ExtUI::axis_t::X; break;
-    case VP_Y_STEP_PER_MM: axis = ExtUI::axis_t::Y; break;
-    case VP_Z_STEP_PER_MM: axis = ExtUI::axis_t::Z; break;
-    default: return;
-  }
-  DEBUG_ECHOLNPGM("value:", value);
-  ExtUI::setAxisSteps_per_mm(value, axis);
-  DEBUG_ECHOLNPGM("value_set:", ExtUI::getAxisSteps_per_mm(axis));
-  skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
-  return;
-}
-
-void DGUSScreenHandler::HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleStepPerMMExtruderChanged");
-
-  uint16_t value_raw = swap16(*(uint16_t*)val_ptr);
-  DEBUG_ECHOLNPGM("value_raw:", value_raw);
-  float value = (float)value_raw / 10;
-  ExtUI::extruder_t extruder;
-  switch (var.VP) {
-    default: return;
-      #if HAS_EXTRUDERS
-        case VP_E0_STEP_PER_MM: extruder = ExtUI::extruder_t::E0; break;
-        #if HAS_MULTI_EXTRUDER
-          case VP_E1_STEP_PER_MM: extruder = ExtUI::extruder_t::E1; break;
-        #endif
-      #endif
-  }
-  DEBUG_ECHOLNPGM("value:", value);
-  ExtUI::setAxisSteps_per_mm(value, extruder);
-  DEBUG_ECHOLNPGM("value_set:", ExtUI::getAxisSteps_per_mm(extruder));
-  skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
-}
-
-#if HAS_PID_HEATING
-  void DGUSScreenHandler::HandlePIDAutotune(DGUS_VP_Variable &var, void *val_ptr) {
-    DEBUG_ECHOLNPGM("HandlePIDAutotune");
-
-    char buf[32] = {0};
-
-    switch (var.VP) {
-      default: break;
-        #if ENABLED(PIDTEMP)
-          #if HAS_HOTEND
-            case VP_PID_AUTOTUNE_E0: // Autotune Extruder 0
-              sprintf_P(buf, PSTR("M303 E%d C5 S210 U1"), ExtUI::extruder_t::E0);
-              queue.enqueue_one_now(buf);
-              break;
-          #endif
-          #if HAS_MULTI_HOTEND
-            case VP_PID_AUTOTUNE_E1:
-              sprintf_P(buf, PSTR("M303 E%d C5 S210 U1"), ExtUI::extruder_t::E1);
-              queue.enqueue_one_now(buf);
-              break;
-          #endif
-        #endif
-        #if ENABLED(PIDTEMPBED)
-          case VP_PID_AUTOTUNE_BED:
-            queue.enqueue_one_now(F("M303 E-1 C5 S70 U1"));
+    default: break;
+      #if ENABLED(PIDTEMP)
+        #if HAS_HOTEND
+          case VP_PID_AUTOTUNE_E0: // Autotune Extruder 0
+            thermalManager.fan_speed[0] = 70; //врубаем вентилятор
+            queue.inject(F("G4 S1")); //команда ожидания выполнения след команды, без нее происходит игнор вентилятора
+            sprintf_P(buf, PSTR("M303 E%d C8 S%d U1"), ExtUI::extruder_t::E0, Pid_Autotune_E0_Temp); 
+            sprintf_P(buf1, PSTR("M106 S0")); //M106 S100
+            queue.enqueue_one_now(buf);
+            queue.enqueue_one_now(buf1);
             break;
         #endif
-    }
-
-    #if ENABLED(DGUS_UI_WAITING)
-      sendinfoscreen(F("PID is autotuning"), F("please wait"), NUL_STR, NUL_STR, true, true, true, true);
-      GotoScreen(DGUSLCD_SCREEN_WAITING);
-    #endif
+        #if HAS_MULTI_HOTEND
+          case VP_PID_AUTOTUNE_E1:
+            sprintf_P(buf, PSTR("M303 E%d C5 S210 U1"), ExtUI::extruder_t::E1);
+            queue.enqueue_one_now(buf);
+            break;
+        #endif
+      #endif
+      #if ENABLED(PIDTEMPBED)
+        case VP_PID_AUTOTUNE_BED:
+          sprintf_P(buf1, PSTR("M303 E-1 C8 S%d U1"),Pid_Autotune_Bed_Temp);
+          queue.enqueue_one_now(buf1);
+          break;
+      #endif
+          case VP_PID_AUTOTUNE_ALL: // Autotune Extruder + bed свое
+          thermalManager.fan_speed[0] = 100; //врубаем вентилятор
+          queue.inject(F("G4 S1")); //команда ожидания выполнения след команды, без нее происходит игнор вентилятора
+          sprintf_P(buf, PSTR("M303 E%d C8 S%d U1"), ExtUI::extruder_t::E0, Pid_Autotune_E0_Temp);
+          sprintf_P(buf1, PSTR("M106 S0")); //M106 S100
+          sprintf_P(buf2, PSTR("M303 E-1 C8 S%d U1"),Pid_Autotune_Bed_Temp);
+          queue.enqueue_one_now(buf);
+          queue.enqueue_one_now(buf1);
+          queue.enqueue_one_now(buf2);
+          break;
   }
-#endif // HAS_PID_HEATING
+  //#if ENABLED(DGUS_UI_WAITING)
+    //sendinfoscreen(F("PID is autotuning"), F("please wait"), NUL_STR, NUL_STR, true, true, true, true);
+    //GotoScreen(MKSLCD_PID_PROCESS); //свое - изменил экран куда переход
+  //#endif
+}
 
+//Свое
+void DGUSScreenHandler::HandlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("HandlePIDAbort");
+  wait_for_heatup = false;
+}
+
+//Свое
 #if HAS_BED_PROBE
-  void DGUSScreenHandler::HandleProbeOffsetZChanged(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::HandleProbeOffsetZChanged(DGUS_VP_Variable &var, void *val_ptr) { //есть на других дисплеях, но не на нашем
     DEBUG_ECHOLNPGM("HandleProbeOffsetZChanged");
 
     const float offset = float(int16_t(swap16(*(uint16_t*)val_ptr))) / 100.0f;
@@ -580,41 +852,138 @@ void DGUSScreenHandler::HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, vo
     skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
     return;
   }
+
+  void DGUSScreenHandler::HandleAutoCalibrationStartStop(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("HandleAutoCalibrationStartStop");
+    int16_t movevalue = swap16(*(uint16_t*)val_ptr);
+
+    thermalManager.zero_fan_speeds(); //вырубаем вентиляторы
+
+    // char buf1[32] = {0};
+    // char buf2[32] = {0};
+    // char buf3[32] = {0};
+    // char buf4[32] = {0};
+
+
+    uint16_t vp_step = VP_Level_Point_2 - VP_Level_Point_1;
+    char buf[52] = {0};
+    char buf1[100] = {0};
+
+    switch (movevalue) {
+    case 0x0001: // Калибровка стандартная на 1 температуру
+      thermalManager.setTargetHotend(EXTRUDE_MINTEMP, 0);
+      GcodeSuite::should_stop = false;
+      dgusdisplay.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_PREPARATION), VP_Status_LEN); //TODO переделать с нагрева стола на ИДЕТ НАГРЕВ
+
+      for (uint8_t pt_index = 0; pt_index < GRID_MAX_POINTS; pt_index++)
+      {
+        dgusdisplay.WriteVariable(VP_Level_Point_1 + vp_step * pt_index, static_cast<uint16_t>(0));
+      }
+
+      sprintf_P(buf, PSTR("M190 S%d\nG4 S20\nG28\nG29\nM140 S0\nM104 S0"), Auto_Leveling_Temp_1);
+      queue.inject(buf);
+      GotoScreen(MKSLCD_AUTO_LEVEL);
+    break;
+
+    case 0x0002: //Калибровка своя для двух температур TODO
+      thermalManager.setTargetHotend(EXTRUDE_MINTEMP, 0);
+      GcodeSuite::should_stop = false;
+      dgusdisplay.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_PREPARATION), VP_Status_LEN);
+      
+      for (uint8_t pt_index = 0; pt_index < GRID_MAX_POINTS; pt_index++)
+      {
+        dgusdisplay.WriteVariable(VP_Level_Point_1 + vp_step * pt_index, static_cast<uint16_t>(0));
+      }
+
+      sprintf_P(buf1, PSTR("M190 S%d\nG4 S20\nG28\nG29 M1\nM190 S%d\nG4 S20\nG29 M2\nM140 S0\nM104 S0"), Auto_Leveling_Temp_1, Auto_Leveling_Temp_2); //больше 8 команд нельзя почему то М104 уже не работает
+      queue.inject(buf1);
+      GotoScreen(MKSLCD_AUTO_LEVEL);
+    break;
+
+    case 0x0003: //отмена
+    {
+      dgusdisplay.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_LEVEL_BED_ABORTED), VP_Status_LEN); // выводить отмену калибровки
+
+       thermalManager.setTargetBed(0);
+       thermalManager.setTargetHotend(0, 0);
+       sprintf_P(buf, PSTR("M140 S0"));
+       queue.enqueue_one_now(buf);
+
+      // IF_DISABLED(NO_SD_AUTOSTART, card.autofile_cancel());
+      // card.abortFilePrintNow(TERN_(SD_RESORT, true));
+      for (size_t i = 0; i < BUFSIZE-1; i++)  // TODO: задача с отменой команд
+      {
+        queue.get_available_commands();
+        queue.clear();
+        planner.clear_block_buffer();
+        GCodeQueue::injected_commands_P = nullptr;
+        GCodeQueue::injected_commands[0] = 0;
+      }
+
+      //   xyze_pos_t position_before_1 = current_position;
+      //   destination.set(position_before_1.x, position_before_1.y, position_before_1.z); //два последних чтобы стол и экструдер не ехали
+      // prepare_internal_move_to_destination(50);
+      // quickstop_stepper();
+      //   planner.quick_stop();
+      // planner.synchronize();
+
+      // print_job_timer.abort();
+      GcodeSuite::should_stop = true; 
+      // queue.enqueue_one_now(buf);
+      thermalManager.setTargetBed(0);
+      GotoScreen(MKSLCD_AUTO_LEVEL_DONE);}
+    break;    
+    
+    case 0x0004: //готово и возврат назад
+      sprintf_P(buf, PSTR("M140 S0\nM104 S0")); // не проверял 
+      queue.enqueue_one_now(buf);
+      GotoScreen(MKSLCD_SCREEN_LEVEL);
+      settings.save();
+      //надо сделать сохранение сетки в епром
+    break;    
+    default: break;
+    }
+    
+  }
 #endif
+
+
 
 #if HAS_FAN
   void DGUSScreenHandler::HandleFanControl(DGUS_VP_Variable &var, void *val_ptr) {
     DEBUG_ECHOLNPGM("HandleFanControl");
     *(uint8_t*)var.memadr = *(uint8_t*)var.memadr > 0 ? 0 : 255;
+    dgusdisplay.WriteVariable(VP_T_Fan0_ON, thermalManager.fan_speed[0] > 0 ? (uint16_t)1 : (uint16_t)0); // Свое, без этого работало, но можно было встретить баг с реверсом иконки
+    ForceCompleteUpdate(); 
   }
 #endif
 
-void DGUSScreenHandler::HandleHeaterControl(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleHeaterControl");
+// void DGUSScreenHandler::HandleHeaterControl(DGUS_VP_Variable &var, void *val_ptr) { //Коммент
+//   DEBUG_ECHOLNPGM("HandleHeaterControl");
 
-  uint8_t preheat_temp = 0;
-  switch (var.VP) {
-    #if HAS_HOTEND
-      case VP_E0_CONTROL:
-      #if HAS_MULTI_HOTEND
-        case VP_E1_CONTROL:
-        #if HOTENDS >= 3
-          case VP_E2_CONTROL:
-        #endif
-      #endif
-      preheat_temp = PREHEAT_1_TEMP_HOTEND;
-      break;
-    #endif
+//   uint8_t preheat_temp = 0;
+//   switch (var.VP) {
+//     #if HAS_HOTEND
+//       case VP_E0_CONTROL:
+//       #if HAS_MULTI_HOTEND
+//         case VP_E1_CONTROL:
+//         #if HOTENDS >= 3
+//           case VP_E2_CONTROL:
+//         #endif
+//       #endif
+//       preheat_temp = PREHEAT_1_TEMP_HOTEND;
+//       break;
+//     #endif
 
-    #if HAS_HEATED_BED
-      case VP_BED_CONTROL:
-        preheat_temp = PREHEAT_1_TEMP_BED;
-        break;
-    #endif
-  }
+//     #if HAS_HEATED_BED
+//       case VP_BED_CONTROL:
+//         preheat_temp = PREHEAT_1_TEMP_BED;
+//         break;
+//     #endif
+//   }
 
-  *(int16_t*)var.memadr = *(int16_t*)var.memadr > 0 ? 0 : preheat_temp;
-}
+//   *(int16_t*)var.memadr = *(int16_t*)var.memadr > 0 ? 0 : preheat_temp;
+// }
 
 #if ENABLED(DGUS_PREHEAT_UI)
 
@@ -657,6 +1026,9 @@ void DGUSScreenHandler::HandleHeaterControl(DGUS_VP_Variable &var, void *val_ptr
   }
 
 #endif
+
+
+
 
 void DGUSScreenHandler::UpdateNewScreen(DGUSLCD_Screens newscreen, bool popup) {
   DEBUG_ECHOLNPGM("SetNewScreen: ", newscreen);
@@ -734,5 +1106,6 @@ void DGUSDisplay::RequestScreen(DGUSLCD_Screens screen) {
   const unsigned char gotoscreen[] = { 0x5A, 0x01, (unsigned char) (screen >> 8U), (unsigned char) (screen & 0xFFU) };
   WriteVariable(0x84, gotoscreen, sizeof(gotoscreen));
 }
+
 
 #endif // HAS_DGUS_LCD_CLASSIC

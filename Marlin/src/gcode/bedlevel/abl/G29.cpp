@@ -34,6 +34,10 @@
 #include "../../../module/planner.h"
 #include "../../../module/probe.h"
 #include "../../queue.h"
+#include "../../../module/temperature.h"
+#include "../../../lcd/extui/dgus/DGUSDisplay.h"
+#include "../../../lcd/extui/dgus/mks/DGUSDisplayDef.h"
+#include "../../../lcd/extui/dgus/DGUSScreenHandlerBase.h"
 
 #if ENABLED(AUTO_BED_LEVELING_LINEAR)
   #include "../../../libs/least_squares_fit.h"
@@ -88,6 +92,9 @@ static void pre_g29_return(const bool retry, const bool did) {
   return TERN_(G29_RETRY_AND_RECOVER, retry); \
 }while(0)
 
+bool GcodeSuite::should_stop = false; // убрать от сюда и пусть по умолчанию тру / пусть автоматически становится фолс только при печати с сд карты
+uint8_t mesh_number = 0;
+
 // For manual probing values persist over multiple G29
 class G29_State {
 public:
@@ -131,7 +138,7 @@ public:
 
     #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
       float Z_offset;
-      bed_mesh_t z_values;
+      bed_mesh_new_t z_values;
     #endif
 
     #if ENABLED(AUTO_BED_LEVELING_LINEAR)
@@ -228,6 +235,9 @@ public:
 G29_TYPE GcodeSuite::G29() {
   DEBUG_SECTION(log_G29, "G29", DEBUGGING(LEVELING));
 
+  bool is_calibration_success = true;
+  LevelingBilinear::Mesh mesh;
+
   // Leveling state is persistent when done manually with multiple G29 commands
   TERN_(PROBE_MANUALLY, static) G29_State abl;
 
@@ -291,8 +301,12 @@ G29_TYPE GcodeSuite::G29() {
     #endif
 
     abl.reenable = planner.leveling_active;
-
+    
     #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
+      mesh_number = parser.intval('M');
+      mesh = LevelingBilinear::get_mesh_type_from_number(mesh_number);
+
+      LevelingBilinear::set_mesh_in_use(mesh);
 
       const bool seen_w = parser.seen_test('W');
       if (seen_w) {
@@ -327,6 +341,7 @@ G29_TYPE GcodeSuite::G29() {
         if (WITHIN(i, 0, (GRID_MAX_POINTS_X) - 1) && WITHIN(j, 0, (GRID_MAX_POINTS_Y) - 1)) {
           set_bed_leveling_enabled(false);
           bedlevel.z_values[i][j] = rz;
+          // bedlevel.set_mesh_value(i, j, rz);
           bedlevel.refresh_bed_level();
           TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(i, j, rz));
           if (abl.reenable) {
@@ -631,15 +646,29 @@ G29_TYPE GcodeSuite::G29() {
   {
     const ProbePtRaise raise_after = parser.boolval('E') ? PROBE_PT_STOW : PROBE_PT_RAISE;
 
+    if (!should_stop) { //если нажал отмена перед началом калибровки чтобы не вывело что она идет
+      FSTR_P text = GET_TEXT_F(MSG_AUTO_CALIBRATE);
+      switch(mesh_number){
+        case LevelingBilinear::Mesh::ORIGINAL: text = GET_TEXT_F(MSG_AUTO_CALIBRATE); break;
+        case LevelingBilinear::Mesh::FIRST: text = GET_TEXT_F(MSG_AUTO_CALIBRATE_FIRST); break;
+        case LevelingBilinear::Mesh::SECOND: text = GET_TEXT_F(MSG_AUTO_CALIBRATE_SECOND); break;
+      }
+      dgusdisplay.WriteString(VP_LEVELING_STATUS, text, VP_Status_LEN);
+    }
+    // else {
+    // dgusdisplay.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_LEVEL_BED_ABORTED), VP_Status_LEN);
+    // }
+
     abl.measured_z = 0;
 
     #if ABL_USES_GRID
 
-      bool zig = PR_OUTER_SIZE & 1;  // Always end at RIGHT and BACK_PROBE_BED_POSITION
+      // bool zig = PR_OUTER_SIZE & 1;  // Always end at RIGHT and BACK_PROBE_BED_POSITION
+      bool zig = true; // Всегда начинает в левом переднем углу
 
       // Outer loop is X with PROBE_Y_FIRST enabled
       // Outer loop is Y with PROBE_Y_FIRST disabled
-      for (PR_OUTER_VAR = 0; PR_OUTER_VAR < PR_OUTER_SIZE && !isnan(abl.measured_z); PR_OUTER_VAR++) {
+      for (PR_OUTER_VAR = 0; PR_OUTER_VAR < PR_OUTER_SIZE && is_calibration_success; PR_OUTER_VAR++) {
 
         int8_t inStart, inStop, inInc;
 
@@ -659,6 +688,8 @@ G29_TYPE GcodeSuite::G29() {
         // An index to print current state
         uint8_t pt_index = (PR_OUTER_VAR) * (PR_INNER_SIZE) + 1;
 
+        uint16_t vp_step = VP_Level_Point_2 - VP_Level_Point_1;
+
         // Inner loop is Y with PROBE_Y_FIRST enabled
         // Inner loop is X with PROBE_Y_FIRST disabled
         for (PR_INNER_VAR = inStart; PR_INNER_VAR != inStop; pt_index++, PR_INNER_VAR += inInc) {
@@ -677,7 +708,16 @@ G29_TYPE GcodeSuite::G29() {
 
           if (isnan(abl.measured_z)) {
             set_bed_leveling_enabled(abl.reenable);
+            is_calibration_success = false;
             break; // Breaks out of both loops
+          }
+
+          dgusdisplay.WriteVariable(VP_Level_Point_1 + vp_step * (pt_index - 1), static_cast<uint16_t>(1));
+
+          if(should_stop){
+            should_stop = false;
+            is_calibration_success = false;
+            break;
           }
 
           #if ENABLED(AUTO_BED_LEVELING_LINEAR)
@@ -761,14 +801,15 @@ G29_TYPE GcodeSuite::G29() {
   #endif
 
   // Calculate leveling, print reports, correct the position
-  if (!isnan(abl.measured_z)) {
+  if (!isnan(abl.measured_z) && is_calibration_success) {
     #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
 
       if (abl.dryrun)
         bedlevel.print_leveling_grid(&abl.z_values);
       else {
         bedlevel.set_grid(abl.gridSpacing, abl.probe_position_lf);
-        COPY(bedlevel.z_values, abl.z_values);
+        bedlevel.copy_in_mesh(abl.z_values); // TODO: исправить на mesh_in_use
+        LevelingBilinear::set_temp_for_new_map(mesh, thermalManager.temp_bed.target);
         TERN_(IS_KINEMATIC, bedlevel.extrapolate_unprobed_bed_level());
         bedlevel.refresh_bed_level();
 
@@ -916,6 +957,43 @@ G29_TYPE GcodeSuite::G29() {
   TERN_(HAS_MULTI_HOTEND, if (abl.tool_index != 0) tool_change(abl.tool_index));
 
   report_current_position();
+
+  if(mesh_number == LevelingBilinear::Mesh::FIRST){
+    if(!is_calibration_success){
+      char buf[52] = {0};
+      dgusdisplay.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_CALIBRATION_FAILED), VP_Status_LEN); // выводить отмену калибровки
+       thermalManager.setTargetBed(0);
+       thermalManager.setTargetHotend(0, 0);
+       sprintf_P(buf, PSTR("M140 S0"));
+       queue.enqueue_one_now(buf);
+
+      for (size_t i = 0; i < BUFSIZE-1; i++)  // TODO: задача с отменой команд
+      {
+        // queue.get_available_commands();
+        queue.clear();
+        planner.clear_block_buffer();
+        GCodeQueue::injected_commands_P = nullptr;
+        GCodeQueue::injected_commands[0] = 0;
+      }
+      GcodeSuite::should_stop = true; 
+      thermalManager.setTargetBed(0);
+      DGUSScreenHandler::GotoScreen(MKSLCD_AUTO_LEVEL_DONE);
+    }else {
+    uint16_t vp_step = VP_Level_Point_2 - VP_Level_Point_1;
+    
+    for (int i = 0; i < GRID_MAX_POINTS_X * GRID_MAX_POINTS_Y; i++)
+    {
+        dgusdisplay.WriteVariable(VP_Level_Point_1 + vp_step * i, static_cast<uint16_t>(0));
+    }
+    }
+
+  } else if (!should_stop && !ExtUI::isPrintingFromMedia()) {
+    if(is_calibration_success){
+      dgusdisplay.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_CALIBRATION_COMPLETED), VP_Status_LEN);
+    }
+    
+    DGUSScreenHandler::GotoScreen(MKSLCD_AUTO_LEVEL_DONE);
+  }
 
   G29_RETURN(isnan(abl.measured_z), true);
 }

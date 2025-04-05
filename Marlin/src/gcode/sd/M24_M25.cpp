@@ -47,6 +47,12 @@
 
 #include "../../MarlinCore.h" // for startOrResumeJob
 
+
+
+#include "../../module/temperature.h" //свое
+#include "../../core/macros.h" //свое
+
+
 /**
  * M24: Start or Resume SD Print
  */
@@ -56,6 +62,8 @@ void GcodeSuite::M24() {
     if ((print_job_timer.isPaused() || print_job_timer.isRunning()) && !parser.seen("ST"))
       MKS_resume_print_move();
   #endif
+
+
 
   #if ENABLED(POWER_LOSS_RECOVERY)
     if (parser.seenval('S')) card.setIndex(parser.value_long());
@@ -112,6 +120,11 @@ void GcodeSuite::M25() {
     print_job_timer.pause();
 
     TERN_(DGUS_LCD_UI_MKS, MKS_pause_print_move());
+
+
+
+              
+    /////
 
     IF_DISABLED(DWIN_CREALITY_LCD, ui.reset_status());
 

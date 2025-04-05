@@ -47,6 +47,8 @@
 #endif
 
 #include "../../lcd/marlinui.h"
+#include "../../lcd/extui/dgus/DGUSDisplay.h"
+#include "../../lcd/extui/dgus/mks/DGUSDisplayDef.h"
 
 #if ENABLED(EXTENSIBLE_UI)
   #include "../../lcd/extui/ui_api.h"
@@ -354,6 +356,10 @@ void GcodeSuite::G28() {
 
   endstops.enable(true); // Enable endstops for next homing move
 
+ #if HAS_BED_PROBE
+    dgusdisplay.WriteString(VP_Zoffset_Status, "", VP_Status_LEN); // Свое очищение строки на экране при выставлении зазора 
+  #endif
+
   #if ENABLED(DELTA)
 
     constexpr bool doZ = true; // for NANODLP_Z_SYNC if your DLP is on a DELTA
@@ -518,7 +524,10 @@ void GcodeSuite::G28() {
   // Move to a height where we can use the full xy-area
   TERN_(DELTA_HOME_TO_SAFE_ZONE, do_blocking_move_to_z(delta_clip_start_height));
 
-  TERN_(CAN_SET_LEVELING_AFTER_G28, if (leveling_restore_state) set_bed_leveling_enabled());
+  // TODO: поменяли строку, чтобы всегда актвиировало сетку
+  // TERN_(CAN_SET_LEVELING_AFTER_G28, if (leveling_restore_state) set_bed_leveling_enabled());
+  TERN_(AUTO_BED_LEVELING_BILINEAR, set_bed_leveling_enabled());
+   //set_bed_leveling_enabled();
 
   restore_feedrate_and_scaling();
 
@@ -569,6 +578,10 @@ void GcodeSuite::G28() {
     SERIAL_ECHOLNPGM(STR_Z_MOVE_COMP);
 
   TERN_(FULL_REPORT_TO_HOST_FEATURE, set_and_report_grblstate(old_grblstate));
+
+  #if ENABLED(SHOW_REMAINING_TIME)
+  MarlinUI::time_before_g28_sec = print_job_timer.duration();
+  #endif
 
   #if HAS_L64XX
     // Set L6470 absolute position registers to counts

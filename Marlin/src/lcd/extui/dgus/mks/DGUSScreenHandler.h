@@ -28,6 +28,7 @@ enum DGUSLCD_Screens : uint8_t;
 class DGUSScreenHandlerMKS : public DGUSScreenHandler {
 public:
   DGUSScreenHandlerMKS() = default;
+  static int c1;
 
   #if 0
   static void sendinfoscreen_ch(const uint16_t *line1, const uint16_t *line2, const uint16_t *line3, const uint16_t *line4);
@@ -35,11 +36,23 @@ public:
   static void sendinfoscreen(const void *line1, const void *line2, const void *line3, const void *line4, uint16_t language);
   #endif
 
+  static void Cool_Down(DGUS_VP_Variable &var, void *val_ptr); //своя для выкл нагревателей
+  static void Case_Light_On(DGUS_VP_Variable &var, void *val_ptr); //своя кнопка включения подсветки VP_CASE_LIGHT_ON
+  static void OpenFileSelectScreen(DGUS_VP_Variable &var, void *val_ptr); // своя
+  static void OpenErrorScreen(DGUS_VP_Variable &var, void *val_ptr); // своя
+  static void FileSelectCancel(DGUS_VP_Variable &var, void *val_ptr); // своя
   static void ScreenBackChange(DGUS_VP_Variable &var, void *val_ptr);
+  static void GetPrintSettingsStep(DGUS_VP_Variable &var, void *val_ptr); //своя каруселька для шага параметров во время печати
+  static void KFactorSave(DGUS_VP_Variable &var, void *val_ptr);
+  static void GetKfactorValue(DGUS_VP_Variable &var, void *val_ptr); //свое
+  static void Error(FSTR_P message, bool is_critical); // свое обработка ошибки
+  static void WriteMsg(uint16_t VP, FSTR_P message, uint16_t data_size = 0); // свое добавление сообщения в VP
+  static void WriteMsg(uint16_t VP, const char* message, uint16_t data_size = 0); // свое добавление сообщения в VP
 
-  static void EEPROM_CTRL(DGUS_VP_Variable &var, void *val_ptr);
+
+  //static void EEPROM_CTRL(DGUS_VP_Variable &var, void *val_ptr);
   static void LanguageChange(DGUS_VP_Variable &var, void *val_ptr);
-  static void GetOffsetValue(DGUS_VP_Variable &var, void *val_ptr);
+  //static void GetOffsetValue(DGUS_VP_Variable &var, void *val_ptr);
   static void Level_Ctrl(DGUS_VP_Variable &var, void *val_ptr);
   static void MeshLevel(DGUS_VP_Variable &var, void *val_ptr);
   static void MeshLevelDistanceConfig(DGUS_VP_Variable &var, void *val_ptr);
@@ -47,14 +60,22 @@ public:
   static void ZoffsetConfirm(DGUS_VP_Variable &var, void *val_ptr);
   static void Z_offset_select(DGUS_VP_Variable &var, void *val_ptr);
   static void GetManualMovestep(DGUS_VP_Variable &var, void *val_ptr);
-  static void GetZoffsetDistance(DGUS_VP_Variable &var, void *val_ptr);
-  static void GetMinExtrudeTemp(DGUS_VP_Variable &var, void *val_ptr);
-  static void GetParkPos(DGUS_VP_Variable &var, void *val_ptr);
-  #if ENABLED(PREVENT_COLD_EXTRUSION)
-    static void HandleGetExMinTemp(DGUS_VP_Variable &var, void *val_ptr);
-  #endif
+  static void GetManualExtruderSpeed(DGUS_VP_Variable &var, void *val_ptr);
+  static void GetManualExtruderDistance(DGUS_VP_Variable &var, void *val_ptr);
+  static void GetFanStep(DGUS_VP_Variable &var, void *val_ptr);
+  static void GetPresetTemperature(DGUS_VP_Variable &var, void *val_ptr);
+
+
+  static void GetZoffset_Step(DGUS_VP_Variable &var, void *val_ptr);
+  static void GetKFactorStep(DGUS_VP_Variable &var, void *val_ptr);//Свое
+
+  // static void GetMinExtrudeTemp(DGUS_VP_Variable &var, void *val_ptr);
+  //static void GetParkPos(DGUS_VP_Variable &var, void *val_ptr);
+  // #if ENABLED(PREVENT_COLD_EXTRUSION)
+  //   static void HandleGetExMinTemp(DGUS_VP_Variable &var, void *val_ptr);
+  // #endif
   static void DGUS_LanguageDisplay(uint8_t var);
-  static void TMC_ChangeConfig(DGUS_VP_Variable &var, void *val_ptr);
+  //static void TMC_ChangeConfig(DGUS_VP_Variable &var, void *val_ptr);
   static void GetTurnOffCtrl(DGUS_VP_Variable &var, void *val_ptr);
   static void LanguagePInit();
   static void DGUS_Runout_Idle();
@@ -63,17 +84,17 @@ public:
   static void LCD_BLK_Adjust(DGUS_VP_Variable &var, void *val_ptr);
   static void SD_FileBack(DGUS_VP_Variable &var, void *val_ptr);
 
-  static void HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleExtruderMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleAccChange(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleMaxAccChange(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleExtruderAccChange(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleChangeLevelPoint(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleTravelAccChange(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleFeedRateMinChange(DGUS_VP_Variable &var, void *val_ptr);
-  static void HandleMin_T_F(DGUS_VP_Variable &var, void *val_ptr);
+  //static void HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleExtruderMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleAccChange(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleMaxAccChange(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleExtruderAccChange(DGUS_VP_Variable &var, void *val_ptr);
+  //static void HandleChangeLevelPoint(DGUS_VP_Variable &var, void *val_ptr); //коммент
+  // static void HandleTravelAccChange(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleFeedRateMinChange(DGUS_VP_Variable &var, void *val_ptr);
+  // static void HandleMin_T_F(DGUS_VP_Variable &var, void *val_ptr);
 
   #if HAS_PID_HEATING
     static void FilamentLoadUnload(DGUS_VP_Variable &var, void *val_ptr, const int filamentDir);
@@ -90,12 +111,16 @@ public:
     static void PrintReturn(DGUS_VP_Variable &var, void *val_ptr);
   #endif
 
+  #if ENABLED(BABYSTEPPING)
+    static void DGUSLCD_SendBabyStepToDisplay(DGUS_VP_Variable &var);
+    static void GetBabyStep_Step(DGUS_VP_Variable &var, void *val_ptr);
+  #endif
+
   static void DGUSLCD_SendPrintTimeToDisplay(DGUS_VP_Variable &var);
-  static void DGUSLCD_SendBabyStepToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendFanToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendGbkToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable &var);
-  static void DGUSLCD_SendTMCStepValue(DGUS_VP_Variable &var);
+  //static void DGUSLCD_SendTMCStepValue(DGUS_VP_Variable &var);
 
   static void DGUSLCD_SetUint8(DGUS_VP_Variable &var, void *val_ptr);
 

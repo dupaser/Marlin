@@ -75,7 +75,14 @@ public:
 
     inline serial_index_t command_port() const { return TERN0(HAS_MULTI_SERIAL, commands[index_r].port); }
 
-    inline void clear() { length = index_r = index_w = 0; }
+    inline void clear() { 
+      for (size_t i = 0; i < BUFSIZE; i++)
+      {
+        for (size_t j = 0; j < MAX_CMD_SIZE; j++)
+        commands[i].buffer[j] = 0;
+      }
+      
+      length = index_r = index_w = 0; }
 
     void advance_pos(uint8_t &p, const int inc) { if (++p >= BUFSIZE) p = 0; length += inc; }
 
@@ -119,7 +126,7 @@ public:
   /**
    * Injected Commands (SRAM)
    */
-  static char injected_commands[64];
+  static char injected_commands[100];
 
   /**
    * Enqueue command(s) to run from PROGMEM. Drained by process_injected_command_P().

@@ -39,8 +39,8 @@
 
 // Use one of these or SDCard-based Emulation will be used
 #if NO_EEPROM_SELECTED
-  //#define SRAM_EEPROM_EMULATION                 // Use BackSRAM-based EEPROM emulation
-  #define FLASH_EEPROM_EMULATION                  // Use Flash-based EEPROM emulation
+  ///#define SRAM_EEPROM_EMULATION                 // Use BackSRAM-based EEPROM emulation //не работает
+  #define FLASH_EEPROM_EMULATION                  // Use Flash-based EEPROM emulation //было по дефолту это
 #endif
 
 #if ENABLED(FLASH_EEPROM_EMULATION)
@@ -55,18 +55,19 @@
 // Servos
 //
 #define SERVO0_PIN                          PA1
-#define SERVO1_PIN                          PC9
+//#define SERVO1_PIN                          PC9
 
 //
 // Trinamic Stallguard pins
 //
-#define X_DIAG_PIN                          PB10  // X-
-#define Y_DIAG_PIN                          PE12  // Y-
-#define Z_DIAG_PIN                          PG8   // Z-
-#define E0_DIAG_PIN                         PE15  // E0
-#define E1_DIAG_PIN                         PE10  // E1
-#define E2_DIAG_PIN                         PG5   // E2
-
+#if PRINTER_MODEL == 1
+  #define X_DIAG_PIN                          PB10  // X-
+  #define Y_DIAG_PIN                          PE12  // Y-
+  #define Z_DIAG_PIN                          PG8   // Z-
+  #define E0_DIAG_PIN                         PE15  // E0
+  #define E1_DIAG_PIN                         PE10  // E1
+  #define E2_DIAG_PIN                         PG5   // E2
+#endif
 //
 // Limit Switches
 //
@@ -78,8 +79,12 @@
     #define X_MIN_PIN                       PE15  // E0
   #endif
 #else
-  #define X_MIN_PIN                         PB10  // X-
-  #define X_MAX_PIN                         PE15  // E0
+
+  #if PRINTER_MODEL == 102
+    #define X_MAX_PIN                       PB10  //PE15  // E0
+  #else
+    #define X_MIN_PIN                         PB10  // X-
+  #endif 
 #endif
 
 #ifdef Y_STALL_SENSITIVITY
@@ -90,8 +95,11 @@
     #define Y_MIN_PIN                       PE10  // E1
   #endif
 #else
-  #define Y_MIN_PIN                         PE12  // Y-
-  #define Y_MAX_PIN                         PE10  // E1
+ #if PRINTER_MODEL == 102
+    #define Y_MAX_PIN                       PE12  //  PE10  // E1
+  #else
+    #define Y_MIN_PIN                       PE12  // Y-
+  #endif     
 #endif
 
 #ifdef Z_STALL_SENSITIVITY
@@ -102,8 +110,8 @@
     #define Z_MIN_PIN                       PG5   // E2
   #endif
 #else
-  #define Z_MIN_PIN                         PG8   // Z-
-  #define Z_MAX_PIN                         PG5   // E2
+  //#define Z_MIN_PIN                         PG8   // Z-
+  #define Z_MAX_PIN                         PG8 //PG8   // E2
 #endif
 
 //
@@ -117,24 +125,34 @@
 // Filament Runout Sensor
 //
 #ifndef FIL_RUNOUT_PIN
-  #define FIL_RUNOUT_PIN                    PE15
+  #define FIL_RUNOUT_PIN                    PE15  //подключен энкодер
 #endif
 #ifndef FIL_RUNOUT2_PIN
-  #define FIL_RUNOUT2_PIN                   PE10
+  #define FIL_RUNOUT2_PIN                   PE10 //подключена кнопка наличия
 #endif
 #ifndef FIL_RUNOUT3_PIN
-  #define FIL_RUNOUT3_PIN                   PG5
+ // #define FIL_RUNOUT3_PIN                   PG5
 #endif
 
 //
 // Steppers
 //
-#define X_STEP_PIN                          PE9
-#define X_DIR_PIN                           PF1
-#define X_ENABLE_PIN                        PF2
-#ifndef X_CS_PIN
-  #define X_CS_PIN                          PA15
+#if PRINTER_MODEL == 31
+  #define X_STEP_PIN                          PD15
+  #define X_DIR_PIN                           PE7
+  #define X_ENABLE_PIN                        PA3
+  #ifndef X_CS_PIN
+    #define X_CS_PIN                          PG15
+  #endif
+#else  //потому что на первой фрозе А3 не работает разъем первого драйвера
+  #define X_STEP_PIN                          PE9
+  #define X_DIR_PIN                           PF1
+  #define X_ENABLE_PIN                        PF2
+  #ifndef X_CS_PIN
+    #define X_CS_PIN                          PA15
+  #endif
 #endif
+
 
 #define Y_STEP_PIN                          PE11
 #define Y_DIR_PIN                           PE8
@@ -157,19 +175,20 @@
   #define E0_CS_PIN                         PB3
 #endif
 
-#define E1_STEP_PIN                         PD15
-#define E1_DIR_PIN                          PE7
-#define E1_ENABLE_PIN                       PA3
-#ifndef E1_CS_PIN
-  #define E1_CS_PIN                         PG15
-#endif
 
-#define E2_STEP_PIN                         PD13
-#define E2_DIR_PIN                          PG9
-#define E2_ENABLE_PIN                       PF0
-#ifndef E2_CS_PIN
-  #define E2_CS_PIN                         PG12
-#endif
+// #define E1_STEP_PIN                         PD15
+// #define E1_DIR_PIN                          PE7
+// #define E1_ENABLE_PIN                       PA3
+// #ifndef E1_CS_PIN
+//   #define E1_CS_PIN                         PG15
+// #endif
+
+// #define E2_STEP_PIN                         PD13
+// #define E2_DIR_PIN                          PG9
+// #define E2_ENABLE_PIN                       PF0
+// #ifndef E2_CS_PIN
+//   #define E2_CS_PIN                         PG12
+// #endif
 
 //
 // Software SPI pins for TMC2130 stepper drivers
@@ -279,20 +298,34 @@
 //
 // Heaters
 //
-#define HEATER_0_PIN                        PB1   // Heater0
-#define HEATER_1_PIN                        PD14  // Heater1
+#define HEATER_0_PIN                          PB1   // Heater0
+//#define HEATER_1_PIN                        PD14  // Heater1
 #if TEMP_SENSOR_CHAMBER && HOTENDS < 3
-  #define HEATER_CHAMBER_PIN                PB0   // Heater2
+  //#define HEATER_CHAMBER_PIN                PB0   // Heater2
 #else
-  #define HEATER_2_PIN                      PB0   // Heater2
+  //#define HEATER_2_PIN                      PB0   // Heater2
 #endif
-#define HEATER_BED_PIN                      PD12  // Hotbed
+
+#if PRINTER_MODEL == 31 
+  #define HEATER_BED_PIN                     PC9  // потому что нагреватель подключен через комутацию другую
+#endif
+
+#define HEATER_CHAMBER_PIN                   PD0  // extension 2
+
+#if !defined(HEATER_BED_PIN)
+ #define HEATER_BED_PIN                       PD12  //такая замута из за первой фрозы А3 где нагреватель стола 24в
+#endif
+
 
 //
 // Fans
 //
 #define FAN_PIN                             PC8   // Fan0
 #define FAN1_PIN                            PE5   // Fan1
+#define FAN2_PIN                            PD14  //Обдув камеры
+#define CONTROLLER_FAN_PIN                  PE6   //Вентилятор дна
+#define CASE_LIGHT_PIN                      PB0   // Подсветка камеры
+#define CHAMBER_FAN_PIN FAN2_PIN
 
 #ifndef E0_AUTO_FAN_PIN
   #define E0_AUTO_FAN_PIN               FAN1_PIN
@@ -301,7 +334,7 @@
 #if !defined(CONTROLLER_FAN_PIN) && ENABLED(USE_CONTROLLER_FAN) && HOTENDS < 2
   #define CONTROLLER_FAN_PIN                PE6   // Fan2
 #else
-  #define FAN2_PIN                          PE6   // Fan2
+  //#define FAN2_PIN                          PE6   // Fan2
 #endif
 
 //
@@ -315,7 +348,7 @@
 /**               ------                                      ------
  * (BEEPER) PG4  | 1  2 | PA8  (BTN_ENC)         (MISO) PB14 | 1  2 | PB13 (SCK)
  * (LCD_EN) PD11 | 3  4 | PD10 (LCD_RS)       (BTN_EN1) PG10 | 3  4 | PB12 (SD_SS)
- * (LCD_D4) PG2    5  6 | PG3  (LCD_D5)       (BTN_EN2) PF11   5  6 | PB15 (MOSI)
+ * (LCD_D4) PG2    5  6 | PG3  (LCD_D5)       (BTN_EN2) PF11   5  6 | PB15 (MOSI) 
  * (LCD_D6) PG6  | 7  8 | PG7  (LCD_D7)     (SD_DETECT) PF12 | 7  8 | RESET
  *           GND | 9 10 | 5V                             GND | 9 10 | --
  *                ------                                      ------
@@ -461,7 +494,7 @@
     #endif
 
     /**
-     * 1. Cut the tab off the LCD connector so it can be plugged into the "EXP1" connector the other way.
+     * 1. Cut the tab off the LCD connector so it can be plugged into the "EXP1" connector the other way. 
      * 2. Swap the LCD's +5V (Pin2) and GND (Pin1) wires.
      *
      * !!! If you are unsure, ask for help! Your motherboard may be damaged in some circumstances !!!

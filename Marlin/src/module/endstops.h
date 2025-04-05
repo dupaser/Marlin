@@ -173,7 +173,7 @@ class Endstops {
         #if ENDSTOP_NOISE_THRESHOLD
           validated_live_state
         #else
-          live_state
+          live_state // при нормальном значении ендстопов это значение ноль, иначе каждый взведенный бит означает ошибку в конкретной оси свое
         #endif
       ;
     }

@@ -21,17 +21,20 @@
  */
 #pragma once
 
+
 /**
  * Release version. Leave the Marlin version or apply a custom scheme.
  */
+//#define SHORT_BUILD_VERSION "1.0.0"
 #ifndef SHORT_BUILD_VERSION
-  #define SHORT_BUILD_VERSION "2.0.9.5"
+  #define SHORT_BUILD_VERSION "9.9.9"
 #endif
 
 /**
  * Verbose version identifier containing a unique identifier, such as the
  * vendor name, download location, GitHub account, etc.
  */
+#define DETAILED_BUILD_VERSION "FrozaFirmware 1.0.0"
 #ifndef DETAILED_BUILD_VERSION
   #define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION
 #endif
@@ -42,8 +45,8 @@
  * version was tagged.
  */
 #ifndef STRING_DISTRIBUTION_DATE
-  #define STRING_DISTRIBUTION_DATE "2022-07-29"
-#endif
+  #define STRING_DISTRIBUTION_DATE "2024-11-11"
+  #endif
 
 /**
  * Minimum Configuration.h and Configuration_adv.h file versions.
@@ -73,7 +76,7 @@
  * Define a generic printer name to be output to the LCD after booting Marlin.
  */
 #ifndef MACHINE_NAME
-  #define MACHINE_NAME "3D Printer"
+  #define MACHINE_NAME "FROZA"
 #endif
 
 /**
@@ -82,7 +85,7 @@
  * providing the source code to your customers.)
  */
 #ifndef SOURCE_CODE_URL
-  #define SOURCE_CODE_URL "github.com/MarlinFirmware/Marlin"
+  #define SOURCE_CODE_URL "froza3d.ru"
 #endif
 
 /**
@@ -97,7 +100,7 @@
    * documentation about a specific Marlin release. Displayed in the Info Menu.
    */
 #ifndef WEBSITE_URL
-  #define WEBSITE_URL "marlinfw.org"
+  #define WEBSITE_URL "froza3d.ru"
 #endif
 
 /**

@@ -526,9 +526,9 @@ void wait_for_confirmation(const bool is_reload/*=false*/, const int8_t max_beep
   #endif
 
   // Wait for filament insert by user and press button
-  KEEPALIVE_STATE(PAUSED_FOR_USER);
-  TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_do(PROMPT_USER_CONTINUE, GET_TEXT_F(MSG_NOZZLE_PARKED), FPSTR(CONTINUE_STR)));
-  TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_NOZZLE_PARKED)));
+  //KEEPALIVE_STATE(PAUSED_FOR_USER);
+  //TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_do(PROMPT_USER_CONTINUE, GET_TEXT_F(MSG_NOZZLE_PARKED), FPSTR(CONTINUE_STR)));
+  //TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_NOZZLE_PARKED)));
   wait_for_user = true;    // LCD click or M108 will clear this
   while (wait_for_user) {
     impatient_beep(max_beep_count);
@@ -553,7 +553,7 @@ void wait_for_confirmation(const bool is_reload/*=false*/, const int8_t max_beep
 
       TERN_(EXTENSIBLE_UI, ExtUI::onStatusChanged(GET_TEXT_F(MSG_REHEATING)));
 
-      TERN_(DWIN_LCD_PROUI, LCD_MESSAGE(MSG_REHEATING));
+      //TERN_(DWIN_LCD_PROUI, LCD_MESSAGE(MSG_REHEATING)); //ЗАКОМЕНТИЛ
 
       // Re-enable the heaters if they timed out
       HOTEND_LOOP() thermalManager.reset_hotend_idle_timer(e);
@@ -571,7 +571,7 @@ void wait_for_confirmation(const bool is_reload/*=false*/, const int8_t max_beep
 
       TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_do(PROMPT_USER_CONTINUE, GET_TEXT_F(MSG_REHEATDONE), FPSTR(CONTINUE_STR)));
       TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_REHEATDONE)));
-      TERN_(DWIN_LCD_PROUI, LCD_MESSAGE(MSG_REHEATDONE));
+      //TERN_(DWIN_LCD_PROUI, LCD_MESSAGE(MSG_REHEATDONE)); //коммент
 
       IF_DISABLED(PAUSE_REHEAT_FAST_RESUME, wait_for_user = true);
 
@@ -622,29 +622,29 @@ void resume_print(const_float_t slow_load_length/*=0*/, const_float_t fast_load_
 
   // Re-enable the heaters if they timed out
   bool nozzle_timed_out = false;
-  HOTEND_LOOP() {
-    nozzle_timed_out |= thermalManager.heater_idle[e].timed_out;
-    thermalManager.reset_hotend_idle_timer(e);
-  }
+  // HOTEND_LOOP() {
+  //   nozzle_timed_out |= thermalManager.heater_idle[e].timed_out;
+  //   thermalManager.reset_hotend_idle_timer(e);
+  // }
 
-  if (targetTemp > thermalManager.degTargetHotend(active_extruder))
-    thermalManager.setTargetHotend(targetTemp, active_extruder);
+   if (targetTemp > thermalManager.degTargetHotend(active_extruder))  
+     thermalManager.setTargetHotend(targetTemp, active_extruder);
 
-  // Load the new filament
-  load_filament(slow_load_length, fast_load_length, purge_length, max_beep_count, true, nozzle_timed_out, PAUSE_MODE_SAME DXC_PASS);
+  // // Load the new filament
+  // load_filament(slow_load_length, fast_load_length, purge_length, max_beep_count, true, nozzle_timed_out, PAUSE_MODE_SAME DXC_PASS);
 
-  if (targetTemp > 0) {
-    thermalManager.setTargetHotend(targetTemp, active_extruder);
-    thermalManager.wait_for_hotend(active_extruder, false);
-  }
+  // if (targetTemp > 0) {  //TODO ЗАКОМЕНТИЛ
+  //   thermalManager.setTargetHotend(targetTemp, active_extruder);
+  //   thermalManager.wait_for_hotend(active_extruder, false);
+  // }
 
   ui.pause_show_message(PAUSE_MESSAGE_RESUME);
 
   // Check Temperature before moving hotend
-  ensure_safe_temperature(DISABLED(BELTPRINTER));
+  //ensure_safe_temperature(DISABLED(BELTPRINTER)); //TODO ЗАКОМЕНТИЛ
 
   // Retract to prevent oozing
-  unscaled_e_move(-(PAUSE_PARK_RETRACT_LENGTH), feedRate_t(PAUSE_PARK_RETRACT_FEEDRATE));
+ // unscaled_e_move(-(PAUSE_PARK_RETRACT_LENGTH), feedRate_t(PAUSE_PARK_RETRACT_FEEDRATE));
 
   if (!axes_should_home()) {
     // Move XY back to saved position
@@ -662,7 +662,7 @@ void resume_print(const_float_t slow_load_length/*=0*/, const_float_t fast_load_
   #endif
 
   // Unretract
-  unscaled_e_move(PAUSE_PARK_RETRACT_LENGTH, feedRate_t(PAUSE_PARK_RETRACT_FEEDRATE));
+ // unscaled_e_move(PAUSE_PARK_RETRACT_LENGTH, feedRate_t(PAUSE_PARK_RETRACT_FEEDRATE));
 
   TERN_(AUTO_BED_LEVELING_UBL, set_bed_leveling_enabled(leveling_was_enabled)); // restore leveling
 

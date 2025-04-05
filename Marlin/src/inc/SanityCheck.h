@@ -999,7 +999,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #elif HAS_PRUSA_MMU2 && NUM_RUNOUT_SENSORS != 1
       #error "NUM_RUNOUT_SENSORS must be 1 with MMU2 / MMU2S."
   #elif NUM_RUNOUT_SENSORS != 1 && NUM_RUNOUT_SENSORS != E_STEPPERS
-    #error "NUM_RUNOUT_SENSORS must be either 1 or number of E steppers."
+    #error "NUM_RUNOUT_SENSORS must be either 1 or number of E steppers." 
   #elif NUM_RUNOUT_SENSORS >= 8 && !PIN_EXISTS(FIL_RUNOUT8)
     #error "FIL_RUNOUT8_PIN is required with NUM_RUNOUT_SENSORS >= 8."
   #elif NUM_RUNOUT_SENSORS >= 7 && !PIN_EXISTS(FIL_RUNOUT7)
@@ -2363,7 +2363,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #error "LASER_COOLANT_FLOW_METER requires FLOWMETER_PIN and LASER_FEATURE."
 #endif
 
-#if ENABLED(CHAMBER_FAN) && !(defined(CHAMBER_FAN_MODE) && WITHIN(CHAMBER_FAN_MODE, 0, 3))
+#if ENABLED(CHAMBER_FAN) && !(defined(CHAMBER_FAN_MODE) && WITHIN(CHAMBER_FAN_MODE, 0, 4)) //Свое переделал 3 на 4
   #error "CHAMBER_FAN_MODE must be between 0 and 3."
 #endif
 

@@ -22,7 +22,7 @@
 #pragma once
 
 /**
- * Russian
+ * Russian //language
  *
  * LCD Menu Messages
  * See also https://marlinfw.org/docs/development/lcd_language.html
@@ -54,7 +54,7 @@ namespace Language_ru {
   #if LCD_WIDTH > 21 || HAS_DWIN_E3V2
     LSTR MSG_KILL_SUBCALL_OVERFLOW          = _UxGT("Переполнение вызова");
   #else
-    LSTR MSG_KILL_SUBCALL_OVERFLOW          = _UxGT("Переполн. вызова");
+    LSTR MSG_KILL_SUBCALL_OVERFLOW          = _UxGT("Переполнение вызова");
   #endif
   LSTR MSG_LCD_SOFT_ENDSTOPS                = _UxGT("Прогр. эндстопы");
   LSTR MSG_LCD_ENDSTOPS                     = _UxGT("Эндстопы"); // Max length 8 characters
@@ -380,11 +380,15 @@ namespace Language_ru {
   LSTR MSG_LCD_OFF                          = _UxGT("Выкл");
 
   LSTR MSG_PID_AUTOTUNE                     = _UxGT("Автоподбор PID");
-  LSTR MSG_PID_AUTOTUNE_E                   = _UxGT("Автоподбор PID *");
+  LSTR MSG_PID_AUTOTUNE_E                   = _UxGT("Автоподбор PID сопла");
+  LSTR MSG_PID_AUTOTUNE_BED                 = _UxGT("Автоподбор PID стола");
   LSTR MSG_PID_AUTOTUNE_DONE                = _UxGT("Подбор PID выполнен");
-  LSTR MSG_PID_BAD_EXTRUDER_NUM             = _UxGT("Сбой автоподбора! Плохой экструдер.");
-  LSTR MSG_PID_TEMP_TOO_HIGH                = _UxGT("Сбой автоподбора! Температура повышена.");
-  LSTR MSG_PID_TIMEOUT                      = _UxGT("Сбой автоподбора! Завершение времени.");
+  LSTR MSG_PID_AUTOTUNE_ABORTED             = _UxGT("Подбор PID отменен");
+  LSTR MSG_PID_CYCLE                        = _UxGT("Цикл");
+
+  LSTR MSG_PID_BAD_EXTRUDER_NUM             = _UxGT("Сбой! Неверный экструдер");
+  LSTR MSG_PID_TEMP_TOO_HIGH                = _UxGT("Сбой! Высокая температура");
+  LSTR MSG_PID_TIMEOUT                      = _UxGT("Сбой! Время вышло");
 
   LSTR MSG_SELECT                           = _UxGT("Выбор");
   LSTR MSG_SELECT_E                         = _UxGT("Выбор *");
@@ -482,8 +486,24 @@ namespace Language_ru {
   LSTR MSG_BUTTON_PROCEED                   = _UxGT("Продолжить");
   LSTR MSG_BUTTON_SKIP                      = _UxGT("Пропустить");
 
-  LSTR MSG_PAUSE_PRINT                      = _UxGT("Пауза печати");
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ #if DISPLAY_TYPE == 1
+    LSTR MSG_PRINT_PAUSED                     = _UxGT("Печать на паузе");
+    LSTR MSG_PRINTING                         = _UxGT("Печать...");
+    LSTR MSG_PRINT_ABORTED                    = _UxGT("Печать отменена");
+    LSTR MSG_PRINT_DONE                       = _UxGT("Печать завершена");
+  #elif DISPLAY_TYPE == 2
+    LSTR MSG_PRINT_PAUSED                     = _UxGT("Пауза");
+    LSTR MSG_PRINTING                         = _UxGT("Печать...");
+    LSTR MSG_PRINT_ABORTED                    = _UxGT("Отменено");
+    LSTR MSG_PRINT_DONE                       = _UxGT("Завершено");
+    LSTR MSG_LEVEL_BED_ABORTED                = _UxGT("Отменено");
+    LSTR MSG_PREPARATION                      = _UxGT("Подготовка");
+#endif
+  
   LSTR MSG_RESUME_PRINT                     = _UxGT("Продолжить печать");
+  LSTR MSG_PAUSE_PRINT                      = _UxGT("Пауза печати");
   LSTR MSG_HOST_START_PRINT                 = _UxGT("Старт с хоста");
   LSTR MSG_STOP_PRINT                       = _UxGT("Остановить печать");
   LSTR MSG_PRINTING_OBJECT                  = _UxGT("Печать объекта");
@@ -494,10 +514,6 @@ namespace Language_ru {
   LSTR MSG_NO_MEDIA                         = _UxGT("Нет SD карты");
   LSTR MSG_DWELL                            = _UxGT("Сон...");
   LSTR MSG_USERWAIT                         = _UxGT("Продолжить...");
-  LSTR MSG_PRINT_PAUSED                     = _UxGT("Печать на паузе");
-  LSTR MSG_PRINTING                         = _UxGT("Печать...");
-  LSTR MSG_PRINT_ABORTED                    = _UxGT("Печать отменена");
-  LSTR MSG_PRINT_DONE                       = _UxGT("Печать завершена");
   LSTR MSG_NO_MOVE                          = _UxGT("Нет движения.");
   LSTR MSG_KILLED                           = _UxGT("УБИТО. ");
   LSTR MSG_STOPPED                          = _UxGT("ОСТАНОВЛЕНО. ");
@@ -598,21 +614,22 @@ namespace Language_ru {
   LSTR MSG_BABYSTEP_N                       = _UxGT("Микрошаг @");
   LSTR MSG_BABYSTEP_TOTAL                   = _UxGT("Сумарно");
   LSTR MSG_ENDSTOP_ABORT                    = _UxGT("Сработал концевик");
-  LSTR MSG_HEATING_FAILED_LCD               = _UxGT("Разогрев не удался");
+  LSTR MSG_HEATING_FAILED_LCD               = _UxGT("РАЗОГРЕВ НЕ УДАЛСЯ");
   LSTR MSG_ERR_REDUNDANT_TEMP               = _UxGT("Ошибка:Избыточная Т");
   LSTR MSG_THERMAL_RUNAWAY                  = _UxGT("УТЕЧКА ТЕПЛА");
   LSTR MSG_THERMAL_RUNAWAY_BED              = _UxGT("УТЕЧКА ТЕПЛА СТОЛА");
   LSTR MSG_THERMAL_RUNAWAY_CHAMBER          = _UxGT("УТЕЧКА ТЕПЛА КАМЕРЫ");
   LSTR MSG_THERMAL_RUNAWAY_COOLER           = _UxGT("УТЕЧКА ОХЛАЖДЕНИЯ");
   LSTR MSG_COOLING_FAILED                   = _UxGT("ОХЛАДИТЬ НЕ УДАЛОСЬ");
-  LSTR MSG_ERR_MAXTEMP                      = _UxGT("Ошибка: Т макс.");
-  LSTR MSG_ERR_MINTEMP                      = _UxGT("Ошибка: Т мин.");
+  LSTR MSG_ERR_MAXTEMP                      = _UxGT("ВЫСОКАЯ ТЕМПЕРАТУРА");
+  LSTR MSG_ERR_MINTEMP                      = _UxGT("НИЗКАЯ ТЕМПЕРАТУРА");
   LSTR MSG_HALTED                           = _UxGT("ПРИНТЕР ОСТАНОВЛЕН");
-  LSTR MSG_PLEASE_RESET                     = _UxGT("Сделайте сброс");
+  LSTR MSG_PLEASE_RESET                     = _UxGT("НУЖНА ПЕРЕЗАГРУЗКА!");
   LSTR MSG_SHORT_DAY                        = _UxGT("д"); // One character only
   LSTR MSG_SHORT_HOUR                       = _UxGT("ч"); // One character only
   LSTR MSG_SHORT_MINUTE                     = _UxGT("м"); // One character only
   LSTR MSG_HEATING                          = _UxGT("Нагрев...");
+  LSTR MSG_NOZZLE_HEATING                   = _UxGT("Нагрев сопла...");
   LSTR MSG_COOLING                          = _UxGT("Охлаждение...");
   LSTR MSG_BED_HEATING                      = _UxGT("Нагрев стола...");
   LSTR MSG_BED_COOLING                      = _UxGT("Охлаждение стола...");
@@ -687,7 +704,7 @@ namespace Language_ru {
   LSTR MSG_INFO_PSU                         = _UxGT("БП");
   LSTR MSG_DRIVE_STRENGTH                   = _UxGT("Сила привода");
   LSTR MSG_DAC_PERCENT_N                    = _UxGT("@ Привод, %");
-  LSTR MSG_ERROR_TMC                        = _UxGT("СБОЙ СВЯЗИ С TMC");
+  LSTR MSG_ERROR_TMC                        = _UxGT("СВЯЗЬ С ДРАЙВЕРОМ");
   LSTR MSG_DAC_EEPROM_WRITE                 = _UxGT("Запись DAC в EEPROM");
   LSTR MSG_FILAMENT_CHANGE_HEADER           = _UxGT("ЗАМЕНА ФИЛАМЕНТА");
   LSTR MSG_FILAMENT_CHANGE_HEADER_PAUSE     = _UxGT("ПЕЧАТЬ НА ПАУЗЕ");
@@ -700,11 +717,12 @@ namespace Language_ru {
   #if LCD_WIDTH > 21 || HAS_DWIN_E3V2
     LSTR MSG_RUNOUT_SENSOR                  = _UxGT("Датчик оконч. филамента");
   #else
-    LSTR MSG_RUNOUT_SENSOR                  = _UxGT("Датчик оконч.филам.");
+    LSTR MSG_RUNOUT_SENSOR                  = _UxGT("Нет филамента");
   #endif
   LSTR MSG_RUNOUT_DISTANCE_MM               = _UxGT("До конца, мм");
-  LSTR MSG_KILL_HOMING_FAILED               = _UxGT("Ошибка парковки");
-  LSTR MSG_LCD_PROBING_FAILED               = _UxGT("Ошибка зондирования");
+  LSTR MSG_KILL_HOMING_FAILED               = _UxGT("ПАРКОВКА НЕ УДАЛАСЬ");
+  LSTR MSG_LCD_PROBING_FAILED               = _UxGT("КАЛИБРОВКА НЕ УДАЛАСЬ");
+  LSTR MSG_LCD_Z_SHIFT_FAILED               = _UxGT("НЕВЕРНЫЙ ЗАЗОР");
 
   LSTR MSG_MMU2_CHOOSE_FILAMENT_HEADER      = _UxGT("ВЫБИРЕТЕ ФИЛАМЕНТ");
   LSTR MSG_MMU2_MENU                        = _UxGT("Настройки MMU");
@@ -842,6 +860,8 @@ namespace Language_ru {
 
   LSTR MSG_LEVEL_X_AXIS                     = _UxGT("Уровень оси X");
   LSTR MSG_AUTO_CALIBRATE                   = _UxGT("Авто калибровка");
+  LSTR MSG_AUTO_CALIBRATE_FIRST             = _UxGT("Калибровка 1");
+  LSTR MSG_AUTO_CALIBRATE_SECOND            = _UxGT("Калибровка 2");
   #if LCD_WIDTH > 21 || HAS_DWIN_E3V2
     LSTR MSG_HEATER_TIMEOUT                 = _UxGT("Время нагревателя вышло");
   #else
@@ -865,8 +885,8 @@ namespace Language_ru {
   LSTR MSG_BOTTOM_LEFT                      = _UxGT("Нижний левый");
   LSTR MSG_TOP_RIGHT                        = _UxGT("Верхний правый");
   LSTR MSG_BOTTOM_RIGHT                     = _UxGT("Нижний правый");
-  LSTR MSG_CALIBRATION_COMPLETED            = _UxGT("Калибровка успешна");
-  LSTR MSG_CALIBRATION_FAILED               = _UxGT("Ошибка калибровки");
+  LSTR MSG_CALIBRATION_COMPLETED            = _UxGT("ЗАВЕРШЕНО");
+  LSTR MSG_CALIBRATION_FAILED               = _UxGT("ОШИБКА");
 
   LSTR MSG_DRIVER_BACKWARD                  = _UxGT(" драйвер назад");
 

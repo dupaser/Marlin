@@ -100,7 +100,7 @@ constexpr uint16_t VP_SD_FileSelectConfirm = 0x2024; // (This is a virtual VP an
 constexpr uint16_t VP_SD_ResumePauseAbort = 0x2026; // Resume(Data=0), Pause(Data=1), Abort(Data=2) SD Card prints
 constexpr uint16_t VP_SD_AbortPrintConfirmed = 0x2028; // Abort print confirmation (virtual, will be injected by the confirm dialog)
 constexpr uint16_t VP_SD_Print_Setting = 0x2040;
-constexpr uint16_t VP_SD_Print_LiveAdjustZ = 0x2050; // Data: 0 down, 1 up
+constexpr uint16_t VP_SD_Print_BabyStep_Set = 0x2050; // Data: 0 down, 1 up
 
 // Controls for movement (we can't use the incremental / decremental feature of the display at this feature works only with 16 bit values
 // (which would limit us to 655.35mm, which is likely not a problem for common setups, but i don't want to rule out hangprinters support)

@@ -61,7 +61,7 @@ namespace ExtUI {
   enum extruder_t : uint8_t { E0, E1, E2, E3, E4, E5, E6, E7 };
   enum heater_t   : uint8_t { H0, H1, H2, H3, H4, H5, BED, CHAMBER, COOLER };
   enum fan_t      : uint8_t { FAN0, FAN1, FAN2, FAN3, FAN4, FAN5, FAN6, FAN7 };
-  enum result_t   : uint8_t { PID_STARTED, PID_BAD_EXTRUDER_NUM, PID_TEMP_TOO_HIGH, PID_TUNING_TIMEOUT, PID_DONE };
+  enum result_t   : uint8_t { PID_STARTED, PID_BAD_EXTRUDER_NUM, PID_TEMP_TOO_HIGH, PID_TUNING_TIMEOUT, PID_DONE, PID_TUNING_ABORT, PID_TUNING_CYCLE }; //Свое добавил штуку PID_TUNING_ABORT + PID_TUNING_CYCLE
 
   constexpr uint8_t extruderCount = EXTRUDERS;
   constexpr uint8_t hotendCount   = HOTENDS;
@@ -426,7 +426,8 @@ namespace ExtUI {
     void onPowerLossResume();
   #endif
   #if HAS_PID_HEATING
-    void onPidTuning(const result_t rst);
+    //void onPidTuning(const result_t rst);
+    void onPidTuning(const result_t rst, int heater_type = 50, int cycles = 0, int ncycles = 0 ); //Свое - добавил int / 50 если не передали номер нагревателя
   #endif
 };
 

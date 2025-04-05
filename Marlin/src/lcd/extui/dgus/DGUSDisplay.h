@@ -60,6 +60,8 @@ public:
 
   static void InitDisplay();
 
+  static void SetIcon(uint16_t vp, bool is_on); // Свое
+
   // Variable access.
   static void WriteVariable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr=false);
   static void WriteVariablePGM(uint16_t adr, const void *values, uint8_t valueslen, bool isstr=false);
@@ -68,6 +70,8 @@ public:
   static void WriteVariable(uint16_t adr, uint8_t value);
   static void WriteVariable(uint16_t adr, int8_t value);
   static void WriteVariable(uint16_t adr, long value);
+  static void WriteString(uint16_t adr, const char *values, uint8_t valueslen);
+  static void WriteString(uint16_t adr, FSTR_P values, uint8_t valueslen);
 
   // Utility functions for bridging ui_api and dbus
   template<typename T, float(*Getter)(const T), T selector, typename WireType=uint16_t>
@@ -99,9 +103,10 @@ public:
   // Checks two things: Can we confirm the presence of the display and has we initialized it.
   // (both boils down that the display answered to our chatting)
   static bool isInitialized() { return Initialized; }
+  static void WriteHeader(uint16_t adr, uint8_t cmd, uint8_t payloadlen); // TODO: убрать в private
 
 private:
-  static void WriteHeader(uint16_t adr, uint8_t cmd, uint8_t payloadlen);
+  static void WriteUtf16String(uint16_t adr, const char *values, uint8_t valueslen); // свое
   static void WritePGM(const char str[], uint8_t len);
   static void ProcessRx();
 

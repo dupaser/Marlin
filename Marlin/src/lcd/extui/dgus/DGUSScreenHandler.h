@@ -46,13 +46,14 @@
   #include "origin/DGUSScreenHandler.h"
 #elif ENABLED(DGUS_LCD_UI_MKS)
   #include "mks/DGUSScreenHandler.h"
+  extern DGUSScreenHandlerClass ScreenHandler; //вроде свое
 #elif ENABLED(DGUS_LCD_UI_FYSETC)
   #include "fysetc/DGUSScreenHandler.h"
 #elif ENABLED(DGUS_LCD_UI_HIPRECY)
   #include "hiprecy/DGUSScreenHandler.h"
 #endif
 
-extern DGUSScreenHandlerClass ScreenHandler;
+
 
 // Helper to define a DGUS_VP_Variable for common use-cases.
 #define VPHELPER(VPADR, VPADRVAR, RXFPTR, TXFPTR) { \

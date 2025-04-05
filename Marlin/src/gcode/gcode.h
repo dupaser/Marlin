@@ -353,6 +353,8 @@ public:
 
   static axis_bits_t axis_relative;
 
+  static bool should_stop;
+
   static bool axis_is_relative(const AxisEnum a) {
     #if HAS_EXTRUDERS
       if (a == E_AXIS) {
@@ -837,6 +839,7 @@ private:
   static void M204_report(const bool forReplay=true);
   static void M205();
   static void M205_report(const bool forReplay=true);
+
 
   #if HAS_M206_COMMAND
     static void M206();

@@ -44,6 +44,8 @@
   #include "../feature/bedlevel/bedlevel.h"
 #endif
 
+#include "../lcd/extui/dgus/mks/DGUSScreenHandler.h"
+
 #if ENABLED(DELTA)
   #include "delta.h"
 #endif
@@ -792,7 +794,7 @@ float Probe::run_z_probe(const bool sanity_check/*=true*/) {
  */
 float Probe::probe_at_point(const_float_t rx, const_float_t ry, const ProbePtRaise raise_after/*=PROBE_PT_NONE*/, const uint8_t verbose_level/*=0*/, const bool probe_relative/*=true*/, const bool sanity_check/*=true*/) {
   DEBUG_SECTION(log_probe, "Probe::probe_at_point", DEBUGGING(LEVELING));
-
+  
   if (DEBUGGING(LEVELING)) {
     DEBUG_ECHOLNPGM(
       "...(", LOGICAL_X_POSITION(rx), ", ", LOGICAL_Y_POSITION(ry),
@@ -802,7 +804,7 @@ float Probe::probe_at_point(const_float_t rx, const_float_t ry, const ProbePtRai
     );
     DEBUG_POS("", current_position);
   }
-
+  
   #if ENABLED(BLTOUCH)
     if (bltouch.high_speed_mode && bltouch.triggered())
       bltouch._reset();
@@ -815,6 +817,7 @@ float Probe::probe_at_point(const_float_t rx, const_float_t ry, const ProbePtRai
   );
   if (!can_reach(npos, probe_relative)) {
     if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Position Not Reachable");
+    DGUSScreenHandlerMKS::WriteMsg(VP_LEVELING_STATUS, GET_TEXT_F(MSG_LCD_PROBING_FAILED));
     return NAN;
   }
   if (probe_relative) npos -= offset_xy;  // Get the nozzle position
@@ -822,12 +825,17 @@ float Probe::probe_at_point(const_float_t rx, const_float_t ry, const ProbePtRai
   // Move the probe to the starting XYZ
   do_blocking_move_to(npos, feedRate_t(XY_PROBE_FEEDRATE_MM_S));
 
+  if(GcodeSuite::should_stop){ // Свое, нужно, чтобы после отмены калибровки не измерялась новая точка
+    return 0.0f;
+  }
+
   float measured_z = NAN;
   if (!deploy()) {
     measured_z = run_z_probe(sanity_check) + offset.z;
     TERN_(HAS_PTC, ptc.apply_compensation(measured_z));
     TERN_(X_AXIS_TWIST_COMPENSATION, measured_z += xatc.compensation(npos + offset_xy));
   }
+
   if (!isnan(measured_z)) {
     const bool big_raise = raise_after == PROBE_PT_BIG_RAISE;
     if (big_raise || raise_after == PROBE_PT_RAISE)
@@ -845,6 +853,7 @@ float Probe::probe_at_point(const_float_t rx, const_float_t ry, const ProbePtRai
     #if DISABLED(G29_RETRY_AND_RECOVER)
       SERIAL_ERROR_MSG(STR_ERR_PROBING_FAILED);
     #endif
+    DGUSScreenHandlerMKS::WriteMsg(VP_LEVELING_STATUS, GET_TEXT_F(MSG_LCD_PROBING_FAILED));
   }
   DEBUG_ECHOLNPGM("measured_z: ", measured_z);
   return measured_z;

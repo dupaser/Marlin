@@ -45,6 +45,13 @@ MarlinUI ui;
   #include "fontutils.h"
 #endif
 
+
+
+#include "extui/dgus/DGUSDisplay.h" //Свое
+#include "extui/dgus/mks/DGUSDisplayDef.h"
+#include "../feature/runout.h"
+
+
 #if ENABLED(DWIN_CREALITY_LCD)
   #include "e3v2/creality/dwin.h"
 #elif ENABLED(DWIN_LCD_PROUI)
@@ -81,8 +88,12 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
 #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
   MarlinUI::progress_t MarlinUI::progress_override; // = 0
-  #if ENABLED(USE_M73_REMAINING_TIME)
-    uint32_t MarlinUI::remaining_time;
+  #if ENABLED(SHOW_REMAINING_TIME)
+  uint32_t MarlinUI::time_before_g28_sec;
+    #if ENABLED(USE_M73_REMAINING_TIME)
+      int32_t MarlinUI::remaining_time_sec;
+      int32_t MarlinUI::m73_last_read_time_ms;
+    #endif
   #endif
 #endif
 
@@ -1445,14 +1456,28 @@ void MarlinUI::init() {
     #endif
 
     FSTR_P msg;
-    if (printingIsPaused())
+    if (printingIsPaused()) 
+    {
       msg = GET_TEXT_F(MSG_PRINT_PAUSED);
+
+      if (runout.filament_ran_out)
+      {
+        dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_RUNOUT_SENSOR), VP_Status_LEN); //Свое
+      }
+      else{
+        dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINT_PAUSED), VP_Status_LEN);
+      }
+    }
     #if ENABLED(SDSUPPORT)
-      else if (IS_SD_PRINTING())
+      else if (IS_SD_PRINTING()) {
+       dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINTING), VP_Status_LEN); //Свое 
         return set_status(card.longest_filename(), true);
+      }
     #endif
-    else if (print_job_timer.isRunning())
+    else if (print_job_timer.isRunning()){
+//      dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINTING), VP_Status_LEN); //Свое
       msg = GET_TEXT_F(MSG_PRINTING);
+    }
 
     #if SERVICE_INTERVAL_1 > 0
       else if (print_job_timer.needsService(1)) msg = FPSTR(service1);
@@ -1623,6 +1648,7 @@ void MarlinUI::init() {
     IF_DISABLED(SDSUPPORT, print_job_timer.stop());
     TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_open(PROMPT_INFO, F("UI Aborted"), FPSTR(DISMISS_STR)));
     LCD_MESSAGE(MSG_PRINT_ABORTED);
+    dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINT_ABORTED), VP_Status_LEN); //Свое
     TERN_(HAS_MARLINUI_MENU, return_to_status());
   }
 
@@ -1642,18 +1668,20 @@ void MarlinUI::init() {
   }
 
   void MarlinUI::pause_print() {
+
     #if HAS_MARLINUI_MENU
       synchronize(GET_TEXT_F(MSG_PAUSING));
       defer_status_screen();
     #endif
 
-    TERN_(HAS_TOUCH_SLEEP, wakeup_screen());
-    TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_open(PROMPT_PAUSE_RESUME, F("UI Pause"), F("Resume")));
+    //TERN_(HAS_TOUCH_SLEEP, wakeup_screen());
+    //TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_open(PROMPT_PAUSE_RESUME, F("UI Pause"), F("Resume")));
 
     LCD_MESSAGE(MSG_PRINT_PAUSED);
 
     #if ENABLED(PARK_HEAD_ON_PAUSE)
       pause_show_message(PAUSE_MESSAGE_PARKING, PAUSE_MODE_PAUSE_PRINT); // Show message immediately to let user know about pause in progress
+      // queue.inject(F("M25"));  
       queue.inject(F("M25 P\nM24"));
     #elif ENABLED(SDSUPPORT)
       queue.inject(F("M25"));

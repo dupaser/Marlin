@@ -26,6 +26,8 @@
  */
 
 #include "thermistor/thermistors.h"
+// #include "../lcd/extui/dgus/DGUSDisplay.h" // TODO подумать, может лучше добавить метод в DgusDisplay, где убдем устанавливать статус иконки значений температур, например, VP_T_E0_ON
+// #include "../lcd/extui/dgus/mks/DGUSDisplayDef.h"
 
 #include "../inc/MarlinConfig.h"
 
@@ -463,7 +465,7 @@ class Temperature {
       static void singlenozzle_change(const uint8_t old_tool, const uint8_t new_tool);
     #endif
 
-    #if HEATER_IDLE_HANDLER
+    #if HEATER_IDLE_HANDLER 
 
       // Heater idle handling. Marlin creates one per hotend and one for the heated bed.
       typedef struct {
@@ -496,7 +498,7 @@ class Temperature {
 
       static heater_idle_t heater_idle[NR_HEATER_IDLE];
 
-    #endif // HEATER_IDLE_TIMER
+    #endif 
 
     #if HAS_ADC_BUTTONS
       static uint32_t current_ADCKey_raw;
@@ -772,6 +774,7 @@ class Temperature {
         TERN_(AUTO_POWER_CONTROL, if (celsius) powerManager.power_on());
         temp_hotend[ee].target = _MIN(celsius, hotend_max_target(ee));
         start_watching_hotend(ee);
+        // DGUSDisplay::SetIcon(VP_T_E0_ON, celsius); // Свое AAAAAA
       }
 
       static bool isHeatingHotend(const uint8_t E_NAME) {

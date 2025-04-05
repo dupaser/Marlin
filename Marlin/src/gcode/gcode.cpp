@@ -406,7 +406,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #endif
 
       #if HAS_BED_PROBE
-        case 30: G30(); break;                                    // G30: Single Z probe
+        case 30: G30(); break;                                    // G30: Single Z probe  //Можно убрать
         #if ENABLED(Z_PROBE_SLED)
           case 31: G31(); break;                                  // G31: dock the sled
           case 32: G32(); break;                                  // G32: undock the sled
@@ -433,7 +433,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #endif
 
       #if HAS_MESH
-        case 42: G42(); break;                                    // G42: Coordinated move to a mesh point
+        case 42: G42(); break;                                    // G42: Coordinated move to a mesh point 
       #endif
 
       #if ENABLED(CNC_COORDINATE_SYSTEMS)
@@ -664,8 +664,8 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #endif
       case 18: case 84: M18_M84(); break;                         // M18/M84: Disable Steppers / Set Timeout
       case 85: M85(); break;                                      // M85: Set inactivity stepper shutdown timeout
-      case 92: M92(); break;                                      // M92: Set the steps-per-unit for one or more axes
-      case 114: M114(); break;                                    // M114: Report current position
+      case 92: M92(); break;                                      // M92: Set the steps-per-unit for one or more axes //Можно убрать
+      case 114: M114(); break;                                    // M114: Report current position  //Можно убрать
       case 115: M115(); break;                                    // M115: Report capabilities
 
       case 117: TERN_(HAS_STATUS_MESSAGE, M117()); break;         // M117: Set LCD message text, if possible
@@ -726,7 +726,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         #endif
       #endif
 
-      #if HAS_SOFTWARE_ENDSTOPS
+      #if HAS_SOFTWARE_ENDSTOPS //Можно убрать
         case 211: M211(); break;                                  // M211: Enable, Disable, and/or Report software endstops
       #endif
 

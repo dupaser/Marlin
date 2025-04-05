@@ -60,6 +60,7 @@ class TemporaryBedLevelingState {
 #if HAS_MESH
 
   typedef float bed_mesh_t[GRID_MAX_POINTS_X][GRID_MAX_POINTS_Y];
+  using bed_mesh_new_t = std::array<std::array<float, GRID_MAX_POINTS_Y>, GRID_MAX_POINTS_X>;
 
   #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
     #include "abl/bbl.h"

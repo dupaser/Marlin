@@ -354,9 +354,11 @@ namespace Language_en {
   LSTR MSG_LCD_OFF                        = _UxGT("Off");
   LSTR MSG_PID_AUTOTUNE                   = _UxGT("PID Autotune");
   LSTR MSG_PID_AUTOTUNE_E                 = _UxGT("PID Autotune *");
+  LSTR MSG_PID_AUTOTUNE_BED               = _UxGT("PID Autotune *");
   LSTR MSG_PID_CYCLE                      = _UxGT("PID Cycles");
   LSTR MSG_PID_AUTOTUNE_DONE              = _UxGT("PID tuning done");
   LSTR MSG_PID_AUTOTUNE_FAILED            = _UxGT("PID Autotune failed!");
+  LSTR MSG_PID_AUTOTUNE_ABORTED            = _UxGT("PID Autotune aborted!"); //Свое
   LSTR MSG_BAD_EXTRUDER_NUM               = _UxGT("Bad extruder.");
   LSTR MSG_TEMP_TOO_HIGH                  = _UxGT("Temperature too high.");
   LSTR MSG_TIMEOUT                        = _UxGT("Timeout.");
@@ -586,6 +588,7 @@ namespace Language_en {
   LSTR MSG_PLEASE_RESET                   = _UxGT("Please Reset");
   LSTR MSG_PREHEATING                     = _UxGT("Preheating...");
   LSTR MSG_HEATING                        = _UxGT("Heating...");
+  LSTR MSG_NOZZLE_HEATING                 = _UxGT("Nozzle Heating..."); //Свое
   LSTR MSG_COOLING                        = _UxGT("Cooling...");
   LSTR MSG_BED_HEATING                    = _UxGT("Bed Heating...");
   LSTR MSG_BED_COOLING                    = _UxGT("Bed Cooling...");

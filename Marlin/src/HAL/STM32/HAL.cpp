@@ -146,7 +146,7 @@ void MarlinHAL::clear_reset_source() { __HAL_RCC_CLEAR_RESET_FLAGS(); }
 
 #if ENABLED(USE_WATCHDOG)
 
-  #define WDT_TIMEOUT_US TERN(WATCHDOG_DURATION_8S, 8000000, 4000000) // 4 or 8 second timeout
+  #define WDT_TIMEOUT_US TERN(WATCHDOG_DURATION_8S, 10000000, 10000000) // 4 or 8 second timeout
 
   #include <IWatchdog.h>
 

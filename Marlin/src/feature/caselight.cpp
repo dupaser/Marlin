@@ -21,12 +21,15 @@
  */
 
 #include "../inc/MarlinConfig.h"
+#include "../lcd/extui/dgus/DGUSDisplay.h"
+#include "../lcd/extui/dgus/mks/DGUSDisplayDef.h"
 
 #if ENABLED(CASE_LIGHT_ENABLE)
 
 #include "caselight.h"
 
 CaseLight caselight;
+
 
 #if CASELIGHT_USES_BRIGHTNESS && !defined(CASE_LIGHT_DEFAULT_BRIGHTNESS)
   #define CASE_LIGHT_DEFAULT_BRIGHTNESS 0 // For use on PWM pin as non-PWM just sets a default
@@ -59,6 +62,14 @@ void CaseLight::update(const bool sflag) {
     if (sflag && on)
       brightness = brightness_sav;  // Restore last brightness for M355 S1
 
+      #if ENABLED(DGUS_LCD_UI_MKS) //свое чтобы можно было тестить без дисплея
+            if(on){
+          dgusdisplay.WriteVariable(VP_CASE_LIGHT_STATUS, (uint16_t)1); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+          } else {
+          dgusdisplay.WriteVariable(VP_CASE_LIGHT_STATUS, (uint16_t)0); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+          }
+      #endif
+       
     const uint8_t i = on ? brightness : 0, n10ct = ENABLED(INVERT_CASE_LIGHT) ? 255 - i : i;
     UNUSED(n10ct);
   #endif
