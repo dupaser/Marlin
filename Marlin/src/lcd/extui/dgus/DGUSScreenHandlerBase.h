@@ -62,14 +62,14 @@ public:
   static void ScreenChangeHook(DGUS_VP_Variable &var, void *val_ptr);
 
   // Callback for VP "All Heaters Off"
-  static void HandleAllHeatersOff(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleAllHeatersOff(DGUS_VP_Variable &var, void *val_ptr);
   // Hook for "Change this temperature"
-  static void HandleTemperatureChanged(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleTemperatureChanged(DGUS_VP_Variable &var, void *val_ptr);
   // Hook for "Change Flowrate"
   static void HandleFlowRateChanged(DGUS_VP_Variable &var, void *val_ptr);
   #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
     // Hook for manual move option
-    static void HandleManualMoveOption(DGUS_VP_Variable &var, void *val_ptr);
+    static void handleManualMoveOption(DGUS_VP_Variable &var, void *val_ptr);
   #endif
 
   // Hook for manual move.
@@ -81,9 +81,9 @@ public:
   static void HandleBedCalibrationTempChange(DGUS_VP_Variable &var, void *val_ptr); // Свое
   static void HandleSettingsPrintChange(DGUS_VP_Variable &var, void *val_ptr); // Свое 
   // Hook for manual extrude.
-  static void HandleManualExtrude(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleManualExtrude(DGUS_VP_Variable &var, void *val_ptr);
   // Hook for motor lock and unlook
-  static void HandleMotorLockUnlock(DGUS_VP_Variable &var, void *val_ptr);
+  static void handleMotorLockUnlock(DGUS_VP_Variable &var, void *val_ptr);
   #if ENABLED(POWER_LOSS_RECOVERY)
     // Hook for power loss recovery.
     static void HandlePowerLossRecovery(DGUS_VP_Variable &var, void *val_ptr);

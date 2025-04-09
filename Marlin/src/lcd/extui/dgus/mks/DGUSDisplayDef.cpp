@@ -523,7 +523,7 @@ const char Printer_Name[] PROGMEM = CUSTOM_MACHINE_NAME;
 
   // Back Button 
   VPHELPER(VP_BACK_PAGE, nullptr, screen.ScreenBackChange, nullptr),
-  VPHELPER(VP_TEMP_ALL_OFF, nullptr, screen.HandleAllHeatersOff, nullptr),
+  VPHELPER(VP_TEMP_ALL_OFF, nullptr, screen.handleAllHeatersOff, nullptr),
 
   VPHELPER(VP_MOVE_X, nullptr, screen.HandleManualMove, nullptr),
   VPHELPER(VP_MOVE_Y, nullptr, screen.HandleManualMove, nullptr),
@@ -553,9 +553,9 @@ const char Printer_Name[] PROGMEM = CUSTOM_MACHINE_NAME;
   VPHELPER(VP_FLOW_SET, nullptr, screen.HandleSettingsPrintChange, nullptr),
   VPHELPER(VP_FAN0_SET, nullptr, screen.HandleSettingsPrintChange, nullptr),
 
-  VPHELPER(VP_T_E0_ON, nullptr, screen.HandleTemperatureChanged, screen.SendTemperatureStatus),
-  VPHELPER(VP_T_Bed_ON, nullptr, screen.HandleTemperatureChanged, screen.SendTemperatureStatus),
-  VPHELPER(VP_T_Chamber_ON, nullptr, screen.HandleTemperatureChanged, screen.SendTemperatureStatus),
+  VPHELPER(VP_T_E0_ON, nullptr, screen.handleTemperatureChanged, screen.SendTemperatureStatus),
+  VPHELPER(VP_T_Bed_ON, nullptr, screen.handleTemperatureChanged, screen.SendTemperatureStatus),
+  VPHELPER(VP_T_Chamber_ON, nullptr, screen.handleTemperatureChanged, screen.SendTemperatureStatus),
 
   VPHELPER(VP_SD_Filament_Change, nullptr, screen.GoToFilamentChangeScreen, nullptr),
   VPHELPER(VP_SD_Filament_Change_Back, nullptr, screen.GoFromFilamentChangeScreen, nullptr),
@@ -647,10 +647,10 @@ const char Printer_Name[] PROGMEM = CUSTOM_MACHINE_NAME;
   // Temperature Data
   #if HAS_HOTEND
     VPHELPER(VP_T_E0_Is, &thermalManager.temp_hotend[0].celsius, nullptr, screen.DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-    VPHELPER(VP_T_E0_Set, &thermalManager.temp_hotend[0].target, screen.HandleTemperatureChanged, screen.DGUSLCD_SendWordValueToDisplay),
+    VPHELPER(VP_T_E0_Set, &thermalManager.temp_hotend[0].target, screen.handleTemperatureChanged, screen.DGUSLCD_SendWordValueToDisplay),
     VPHELPER(VP_Flowrate_E0, &planner.flow_percentage[ExtUI::extruder_t::E0], screen.HandleFlowRateChanged, screen.DGUSLCD_SendWordValueToDisplay),
     VPHELPER(VP_EPos, &destination.e, nullptr, screen.DGUSLCD_SendFloatAsLongValueToDisplay<2>),
-    VPHELPER(VP_MOVE_E0, nullptr, screen.HandleManualExtrude, nullptr),
+    VPHELPER(VP_MOVE_E0, nullptr, screen.handleManualExtrude, nullptr),
     //VPHELPER(VP_E0_CONTROL, &thermalManager.temp_hotend[0].target, screen.HandleHeaterControl, nullptr),
     VPHELPER(VP_E0_STATUS, &thermalManager.temp_hotend[0].target, nullptr, screen.DGUSLCD_SendHeaterStatusToDisplay),
     #if ENABLED(DGUS_PREHEAT_UI)
@@ -677,9 +677,9 @@ const char Printer_Name[] PROGMEM = CUSTOM_MACHINE_NAME;
 
   #if HAS_MULTI_HOTEND
     VPHELPER(VP_T_E1_Is, &thermalManager.temp_hotend[1].celsius, nullptr, screen.DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-    VPHELPER(VP_T_E1_Set, &thermalManager.temp_hotend[1].target, screen.HandleTemperatureChanged, screen.DGUSLCD_SendWordValueToDisplay),
+    VPHELPER(VP_T_E1_Set, &thermalManager.temp_hotend[1].target, screen.handleTemperatureChanged, screen.DGUSLCD_SendWordValueToDisplay),
     VPHELPER(VP_Flowrate_E1, &planner.flow_percentage[ExtUI::extruder_t::E1], screen.HandleFlowRateChanged, screen.DGUSLCD_SendWordValueToDisplay),
-    VPHELPER(VP_MOVE_E1, nullptr, screen.HandleManualExtrude, nullptr),
+    VPHELPER(VP_MOVE_E1, nullptr, screen.handleManualExtrude, nullptr),
     //VPHELPER(VP_E1_CONTROL, &thermalManager.temp_hotend[1].target, screen.HandleHeaterControl, nullptr),
     VPHELPER(VP_E1_STATUS, &thermalManager.temp_hotend[1].target, nullptr, screen.DGUSLCD_SendHeaterStatusToDisplay),
 
@@ -697,7 +697,7 @@ const char Printer_Name[] PROGMEM = CUSTOM_MACHINE_NAME;
 
   #if HAS_HEATED_BED  
     VPHELPER(VP_T_Bed_Is, &thermalManager.temp_bed.celsius, nullptr, screen.DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-    VPHELPER(VP_T_Bed_Set, &thermalManager.temp_bed.target, screen.HandleTemperatureChanged, screen.DGUSLCD_SendWordValueToDisplay),
+    VPHELPER(VP_T_Bed_Set, &thermalManager.temp_bed.target, screen.handleTemperatureChanged, screen.DGUSLCD_SendWordValueToDisplay),
     //VPHELPER(VP_BED_CONTROL, &thermalManager.temp_bed.target, screen.HandleHeaterControl, nullptr),
     //VPHELPER(VP_TEST_PAGE, &manualMoveStep, nullptr, screen.DGUSLCD_SendFloatAsLongValueToDisplay<0>),
     VPHELPER(VP_BED_STATUS, &thermalManager.temp_bed.target, nullptr, screen.DGUSLCD_SendHeaterStatusToDisplay),
@@ -711,7 +711,7 @@ const char Printer_Name[] PROGMEM = CUSTOM_MACHINE_NAME;
 
   //свое
   VPHELPER(VP_T_Chamber_Is, &thermalManager.temp_chamber.celsius, nullptr, screen.DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-  VPHELPER(VP_T_Chamber_Set,  &thermalManager.temp_chamber.target, screen.HandleTemperatureChanged, screen.DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(VP_T_Chamber_Set,  &thermalManager.temp_chamber.target, screen.handleTemperatureChanged, screen.DGUSLCD_SendWordValueToDisplay),
 
   // Fan Data
   #if HAS_FAN

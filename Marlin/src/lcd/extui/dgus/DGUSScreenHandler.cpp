@@ -518,7 +518,7 @@ void DGUSScreenHandler::ScreenChangeHookIfIdle(DGUS_VP_Variable &var, void *val_
   }
 }
 
-void DGUSScreenHandler::HandleAllHeatersOff(DGUS_VP_Variable &var, void *val_ptr) {  ////есть своя аналогия VP_Cool_Down
+void DGUSScreenHandler::handleAllHeatersOff(DGUS_VP_Variable &var, void *val_ptr) {  ////есть своя аналогия VP_Cool_Down
   thermalManager.disable_all_heaters();
   forceCompleteUpdate(); // hint to send all data.
 }
@@ -550,7 +550,7 @@ void DGUSScreenHandler::SendTemperatureStatus(DGUS_VP_Variable &var) {
   }
 }
 
-void DGUSScreenHandler::HandleTemperatureChanged(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::handleTemperatureChanged(DGUS_VP_Variable &var, void *val_ptr) {
   //if(!val_ptr) return; // Проверка своя.
   celsius_t newvalue = swap16(*(uint16_t*)val_ptr);
   celsius_t acceptedvalue;
@@ -671,8 +671,8 @@ void DGUSScreenHandler::HandleFlowRateChanged(DGUS_VP_Variable &var, void *val_p
   #endif
 }
 
-void DGUSScreenHandler::HandleManualExtrude(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleManualExtrude");
+void DGUSScreenHandler::handleManualExtrude(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("handleManualExtrude");
 
   int16_t movevalue = swap16(*(uint16_t*)val_ptr);
 
@@ -714,14 +714,14 @@ void DGUSScreenHandler::HandleManualExtrude(DGUS_VP_Variable &var, void *val_ptr
 }
 
 #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
-  void DGUSScreenHandler::HandleManualMoveOption(DGUS_VP_Variable &var, void *val_ptr) {
-    DEBUG_ECHOLNPGM("HandleManualMoveOption");
+  void DGUSScreenHandler::handleManualMoveOption(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("handleManualMoveOption");
     *(uint16_t*)var.memadr = swap16(*(uint16_t*)val_ptr);
   }
 #endif
 
-void DGUSScreenHandler::HandleMotorLockUnlock(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleMotorLockUnlock");
+void DGUSScreenHandler::handleMotorLockUnlock(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("handleMotorLockUnlock");
   const int16_t lock = swap16(*(uint16_t*)val_ptr);
   queue.enqueue_one_now(lock ? F("M18") : F("M17"));
 }
