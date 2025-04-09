@@ -40,25 +40,25 @@
 namespace ExtUI {
 
   void onStartup() {
-    dgusdisplay.InitDisplay();
-    ScreenHandler.UpdateScreenVPData();
+    dgus.initDisplay();
+    screen.updateScreenVPData();
   }
 
-  void onIdle() { ScreenHandler.loop(); }
+  void onIdle() { screen.loop(); }
 
   void onPrinterKilled(FSTR_P const error, FSTR_P const) {
    Temperature::disable_all_heaters(); //свое
     DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_PLEASE_RESET), 1); //свое
 
-   // dgusdisplay.WriteVariable(VP_ERROR_STATUS, (uint16_t)1); //Свое 
-    //ScreenHandler.sendinfoscreen(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET), true, true, true, true);
-    //ScreenHandler.GotoScreen(DGUSLCD_SCREEN_KILL);
-   // while (!ScreenHandler.loop());  // Wait while anything is left to be sent
+   // dgusdisplay.writeVariable(VP_ERROR_STATUS, (uint16_t)1); //Свое 
+    //screen.sendinfoscreen(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET), true, true, true, true);
+    //screen.gotoScreen(DGUSLCD_SCREEN_KILL);
+   // while (!screen.loop());  // Wait while anything is left to be sent
   }
 
-  void onMediaInserted() { TERN_(SDSUPPORT, ScreenHandler.SDCardInserted()); }
-  void onMediaError()    { TERN_(SDSUPPORT, ScreenHandler.SDCardError()); }
-  void onMediaRemoved()  { TERN_(SDSUPPORT, ScreenHandler.SDCardRemoved()); }
+  void onMediaInserted() { TERN_(SDSUPPORT, screen.sDCardInserted()); }
+  void onMediaError()    { TERN_(SDSUPPORT, screen.SDCardError()); }
+  void onMediaRemoved()  { TERN_(SDSUPPORT, screen.SDCardRemoved()); }
 
   void onPlayTone(const uint16_t frequency, const uint16_t duration) {}
   void onPrintTimerStarted() {}
@@ -68,17 +68,17 @@ namespace ExtUI {
 
   void onUserConfirmRequired(const char * const msg) {
     if (msg) {
-      ScreenHandler.sendinfoscreen(F("Please confirm."), nullptr, msg, nullptr, true, true, false, true);
-      ScreenHandler.SetupConfirmAction(setUserConfirmed);
-      ScreenHandler.GotoScreen(DGUSLCD_SCREEN_POPUP);
+      screen.sendinfoscreen(F("Please confirm."), nullptr, msg, nullptr, true, true, false, true);
+      screen.SetupConfirmAction(setUserConfirmed);
+      screen.gotoScreen(DGUSLCD_SCREEN_POPUP);
     }
-    else if (ScreenHandler.getCurrentScreen() == DGUSLCD_SCREEN_POPUP) {
-      ScreenHandler.SetupConfirmAction(nullptr);
-      ScreenHandler.PopToOldScreen();
+    else if (screen.getCurrentScreen() == DGUSLCD_SCREEN_POPUP) {
+      screen.SetupConfirmAction(nullptr);
+      screen.PopToOldScreen();
     }
   }
 
-  void onStatusChanged(const char * const msg) { ScreenHandler.setstatusmessage(msg); }
+  void onStatusChanged(const char * const msg) { screen.setstatusmessage(msg); }
 
   void onHomingStart() {}
   void onHomingDone() {}
@@ -136,7 +136,7 @@ namespace ExtUI {
   #if ENABLED(POWER_LOSS_RECOVERY)
     void onPowerLossResume() {
       // Called on resume from power-loss
-      IF_DISABLED(DGUS_LCD_UI_MKS, ScreenHandler.GotoScreen(DGUSLCD_SCREEN_POWER_LOSS));
+      IF_DISABLED(DGUS_LCD_UI_MKS, screen.gotoScreen(DGUSLCD_SCREEN_POWER_LOSS));
     }
   #endif
 
@@ -149,7 +149,7 @@ namespace ExtUI {
       switch (rst) {
         case PID_TUNING_CYCLE: 
           sprintf_P(buf, PSTR("%s %d / %d"), GET_TEXT(MSG_PID_CYCLE), cycles, ncycles);
-          dgusdisplay.WriteString(VP_PID_AUTOTUNE_CYCLES, buf, 20);
+          dgus.WriteString(VP_PID_AUTOTUNE_CYCLES, buf, 20);
           screen = 1;
           break;
 
@@ -180,11 +180,11 @@ namespace ExtUI {
             break;
       }
       if (statusMessage) 
-        dgusdisplay.WriteString(VP_PID_AUTOTUNE_STATUS, statusMessage, VP_SD_FileName_LEN);
+        dgus.WriteString(VP_PID_AUTOTUNE_STATUS, statusMessage, VP_SD_FileName_LEN);
       if (screen)
-        ScreenHandler.GotoScreen(MKSLCD_PID_PROCESS);
+        screen.gotoScreen(MKSLCD_PID_PROCESS);
       else
-        ScreenHandler.GotoScreen(MKSLCD_PID_COMPLETE);
+        screen.gotoScreen(MKSLCD_PID_COMPLETE);
    
     
     

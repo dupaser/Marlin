@@ -54,7 +54,7 @@ public:
 
   #if ENABLED(SDSUPPORT)
     /// Marlin informed us that a new SD has been inserted.
-    static void SDCardInserted();
+    static void sDCardInserted();
     /// Marlin informed us that the SD Card has been removed().
     static void SDCardRemoved();
     /// Marlin informed us about a bad SD Card.

@@ -50,7 +50,7 @@ namespace ExtUI {
     dgus_screen_handler.PrinterKilled(error, component);
   }
 
-  void onMediaInserted() { TERN_(SDSUPPORT, dgus_screen_handler.SDCardInserted()); }
+  void onMediaInserted() { TERN_(SDSUPPORT, dgus_screen_handler.sDCardInserted()); }
   void onMediaError()    { TERN_(SDSUPPORT, dgus_screen_handler.SDCardError()); }
   void onMediaRemoved()  { TERN_(SDSUPPORT, dgus_screen_handler.SDCardRemoved()); }
 

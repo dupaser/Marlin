@@ -138,7 +138,7 @@ void GcodeSuite::M104_M109(const bool isM109) {
   if (isM109 && got_temp)
   {
     #if ENABLED(DGUS_LCD_UI_MKS)
-      dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_NOZZLE_HEATING), VP_Status_LEN); //Свое
+      dgus.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_NOZZLE_HEATING), VP_Status_LEN); //Свое
     #endif
     (void)thermalManager.wait_for_hotend(target_extruder, no_wait_for_cooling);
   }

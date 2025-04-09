@@ -52,13 +52,13 @@
     if (filelist.isDir()) {
       filelist.changeDir(filelist.filename());
       top_file = 0;
-      ForceCompleteUpdate();
+      forceCompleteUpdate();
       return;
     }
 
     #if ENABLED(DGUS_PRINT_FILENAME)
       // Send print filename
-      dgusdisplay.WriteVariable(VP_SD_Print_Filename, filelist.filename(), VP_SD_FileName_LEN, true);
+      dgus.writeVariable(VP_SD_Print_Filename, filelist.filename(), VP_SD_FileName_LEN, true);
     #endif
 
     // Setup Confirmation screen
@@ -67,10 +67,10 @@
     HandleUserConfirmationPopUp(VP_SD_FileSelectConfirm, nullptr, PSTR("Print file"), filelist.filename(), PSTR("from SD Card?"), true, true, false, true);
   }
 
-  void DGUSScreenHandler::DGUSLCD_SD_StartPrint(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::sdStartPrint(DGUS_VP_Variable &var, void *val_ptr) {
     if (!filelist.seek(file_to_print)) return;
     ExtUI::printFile(filelist.shortFilename());
-    GotoScreen(DGUSLCD_SCREEN_STATUS);
+    gotoScreen(DGUSLCD_SCREEN_STATUS);
   }
 
   void DGUSScreenHandler::DGUSLCD_SD_ResumePauseAbort(DGUS_VP_Variable &var, void *val_ptr) {
@@ -85,7 +85,7 @@
 
       case 1: // Pause
 
-        GotoScreen(DGUSLCD_SCREEN_SDPRINTMANIPULATION);
+        gotoScreen(DGUSLCD_SCREEN_SDPRINTMANIPULATION);
         if (!ExtUI::isPrintingFromMediaPaused()) {
           ExtUI::pausePrint();
           //ExtUI::mks_pausePrint();
@@ -109,19 +109,19 @@
     DGUSLCD_SendStringToDisplay(var);
   }
 
-  void DGUSScreenHandler::SDCardInserted() {
+  void DGUSScreenHandler::sDCardInserted() {
     top_file = 0;
     filelist.refresh();
     auto cs = getCurrentScreen();
     if (cs == DGUSLCD_SCREEN_MAIN || cs == DGUSLCD_SCREEN_STATUS)
-      GotoScreen(DGUSLCD_SCREEN_SDFILELIST);
+      gotoScreen(DGUSLCD_SCREEN_SDFILELIST);
   }
 
   void DGUSScreenHandler::SDCardRemoved() {
     if (current_screen == DGUSLCD_SCREEN_SDFILELIST
-        || (current_screen == DGUSLCD_SCREEN_CONFIRM && (ConfirmVP == VP_SD_AbortPrintConfirmed || ConfirmVP == VP_SD_FileSelectConfirm))
+        || (current_screen == DGUSLCD_SCREEN_CONFIRM && (confirmVP == VP_SD_AbortPrintConfirmed || confirmVP == VP_SD_FileSelectConfirm))
         || current_screen == DGUSLCD_SCREEN_SDPRINTMANIPULATION
-    ) GotoScreen(DGUSLCD_SCREEN_MAIN);
+    ) gotoScreen(DGUSLCD_SCREEN_MAIN);
   }
 
 #endif // SDSUPPORT
@@ -196,7 +196,7 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
     //DEBUG_ECHOPGM(" ", buf);
     queue.enqueue_one_now(buf);
     //DEBUG_ECHOLNPGM(" ✓");
-    ForceCompleteUpdate();
+    forceCompleteUpdate();
     return;
   }
   else {
@@ -232,7 +232,7 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
     }
   }
 
-  ForceCompleteUpdate();
+  forceCompleteUpdate();
   DEBUG_ECHOLNPGM("manmv done.");
   return;
 
@@ -281,7 +281,7 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
     int16_t flag  = swap16(*(uint16_t*)val_ptr),
             steps = flag ? -20 : 20;
     ExtUI::smartAdjustAxis_steps(steps, ExtUI::axis_t::Z, true);
-    ForceCompleteUpdate();
+    forceCompleteUpdate();
   }
 #endif
 
@@ -337,7 +337,7 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
           thermalManager.setTargetHotend(e_temp, ExtUI::extruder_t::E1);
         #endif
       #endif
-      GotoScreen(DGUSLCD_SCREEN_UTILITY);
+      gotoScreen(DGUSLCD_SCREEN_UTILITY);
     }
     else { // Go to the preheat screen to show the heating progress
       switch (var.VP) {
@@ -355,7 +355,7 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
               break;
           #endif
       }
-      GotoScreen(DGUSLCD_SCREEN_FILAMENT_HEATING);
+      gotoScreen(DGUSLCD_SCREEN_FILAMENT_HEATING);
     }
   }
 
@@ -370,14 +370,14 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
 
       if (filament_data.action == 1) { // load filament
         if (!filament_data.heated) {
-          //GotoScreen(DGUSLCD_SCREEN_FILAMENT_LOADING);
+          //gotoScreen(DGUSLCD_SCREEN_FILAMENT_LOADING);
           filament_data.heated = true;
         }
         movevalue = ExtUI::getAxisPosition_mm(filament_data.extruder) + movevalue;
       }
       else { // unload filament
         if (!filament_data.heated) {
-          GotoScreen(DGUSLCD_SCREEN_FILAMENT_UNLOADING);
+          gotoScreen(DGUSLCD_SCREEN_FILAMENT_UNLOADING);
           filament_data.heated = true;
         }
         // Before unloading extrude to prevent jamming
@@ -395,14 +395,14 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
 #endif // DGUS_FILAMENT_LOADUNLOAD
 
 bool DGUSScreenHandler::loop() {
-  dgusdisplay.loop();
+  dgus.loop();
 
   const millis_t ms = millis();
   static millis_t next_event_ms = 0;
 
   if (!IsScreenComplete() || ELAPSED(ms, next_event_ms)) {
     next_event_ms = ms + DGUS_UPDATE_INTERVAL_MS;
-    UpdateScreenVPData();
+    updateScreenVPData();
   }
 
   #if ENABLED(SHOW_BOOTSCREEN)
@@ -413,7 +413,7 @@ bool DGUSScreenHandler::loop() {
 
     if (!booted && ELAPSED(ms, BOOTSCREEN_TIMEOUT)) {
       booted = true;
-      GotoScreen(TERN0(POWER_LOSS_RECOVERY, recovery.valid()) ? DGUSLCD_SCREEN_POWER_LOSS : DGUSLCD_SCREEN_MAIN);
+      gotoScreen(TERN0(POWER_LOSS_RECOVERY, recovery.valid()) ? DGUSLCD_SCREEN_POWER_LOSS : DGUSLCD_SCREEN_MAIN);
     }
   #endif
 

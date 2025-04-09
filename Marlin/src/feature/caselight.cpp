@@ -64,9 +64,9 @@ void CaseLight::update(const bool sflag) {
 
       #if ENABLED(DGUS_LCD_UI_MKS) //свое чтобы можно было тестить без дисплея
             if(on){
-          dgusdisplay.WriteVariable(VP_CASE_LIGHT_STATUS, (uint16_t)1); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+          dgus.writeVariable(VP_CASE_LIGHT_STATUS, (uint16_t)1); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
           } else {
-          dgusdisplay.WriteVariable(VP_CASE_LIGHT_STATUS, (uint16_t)0); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+          dgus.writeVariable(VP_CASE_LIGHT_STATUS, (uint16_t)0); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
           }
       #endif
        

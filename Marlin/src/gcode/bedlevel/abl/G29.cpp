@@ -653,10 +653,10 @@ G29_TYPE GcodeSuite::G29() {
         case LevelingBilinear::Mesh::FIRST: text = GET_TEXT_F(MSG_AUTO_CALIBRATE_FIRST); break;
         case LevelingBilinear::Mesh::SECOND: text = GET_TEXT_F(MSG_AUTO_CALIBRATE_SECOND); break;
       }
-      dgusdisplay.WriteString(VP_LEVELING_STATUS, text, VP_Status_LEN);
+      dgus.WriteString(VP_LEVELING_STATUS, text, VP_Status_LEN);
     }
     // else {
-    // dgusdisplay.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_LEVEL_BED_ABORTED), VP_Status_LEN);
+    // dgus.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_LEVEL_BED_ABORTED), VP_Status_LEN);
     // }
 
     abl.measured_z = 0;
@@ -712,7 +712,7 @@ G29_TYPE GcodeSuite::G29() {
             break; // Breaks out of both loops
           }
 
-          dgusdisplay.WriteVariable(VP_Level_Point_1 + vp_step * (pt_index - 1), static_cast<uint16_t>(1));
+          dgus.writeVariable(VP_Level_Point_1 + vp_step * (pt_index - 1), static_cast<uint16_t>(1));
 
           if(should_stop){
             should_stop = false;
@@ -961,7 +961,7 @@ G29_TYPE GcodeSuite::G29() {
   if(mesh_number == LevelingBilinear::Mesh::FIRST){
     if(!is_calibration_success){
       char buf[52] = {0};
-      dgusdisplay.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_CALIBRATION_FAILED), VP_Status_LEN); // выводить отмену калибровки
+      dgus.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_CALIBRATION_FAILED), VP_Status_LEN); // выводить отмену калибровки
        thermalManager.setTargetBed(0);
        thermalManager.setTargetHotend(0, 0);
        sprintf_P(buf, PSTR("M140 S0"));
@@ -977,22 +977,22 @@ G29_TYPE GcodeSuite::G29() {
       }
       GcodeSuite::should_stop = true; 
       thermalManager.setTargetBed(0);
-      DGUSScreenHandler::GotoScreen(MKSLCD_AUTO_LEVEL_DONE);
+      DGUSScreenHandler::gotoScreen(MKSLCD_AUTO_LEVEL_DONE);
     }else {
     uint16_t vp_step = VP_Level_Point_2 - VP_Level_Point_1;
     
     for (int i = 0; i < GRID_MAX_POINTS_X * GRID_MAX_POINTS_Y; i++)
     {
-        dgusdisplay.WriteVariable(VP_Level_Point_1 + vp_step * i, static_cast<uint16_t>(0));
+        dgus.writeVariable(VP_Level_Point_1 + vp_step * i, static_cast<uint16_t>(0));
     }
     }
 
   } else if (!should_stop && !ExtUI::isPrintingFromMedia()) {
     if(is_calibration_success){
-      dgusdisplay.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_CALIBRATION_COMPLETED), VP_Status_LEN);
+      dgus.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_CALIBRATION_COMPLETED), VP_Status_LEN);
     }
     
-    DGUSScreenHandler::GotoScreen(MKSLCD_AUTO_LEVEL_DONE);
+    DGUSScreenHandler::gotoScreen(MKSLCD_AUTO_LEVEL_DONE);
   }
 
   G29_RETURN(isnan(abl.measured_z), true);

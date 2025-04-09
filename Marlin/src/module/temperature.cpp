@@ -4235,7 +4235,7 @@ void Temperature::isr() {
     void Temperature::wait_for_bed_heating() {
       if (isHeatingBed()) {
         SERIAL_ECHOLNPGM("Wait for bed heating...");
-       //dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_BED_HEATING), VP_SD_FileName_LEN); //ДОБАВИТЬ
+       //dgus.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_BED_HEATING), VP_SD_FileName_LEN); //ДОБАВИТЬ
         LCD_MESSAGE(MSG_BED_HEATING);
         wait_for_bed();
         ui.reset_status();

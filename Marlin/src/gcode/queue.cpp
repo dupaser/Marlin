@@ -623,17 +623,17 @@ void GCodeQueue::exhaust() {
   // advance();
   while (ring_buffer.occupied()) {advance();}
   // while (i-- > 0) advance();
-  // DGUSScreenHandler::ForceCompleteUpdate();
+  // DGUSScreenHandler::forceCompleteUpdate();
 
   planner.synchronize();
-  // DGUSScreenHandler::ForceCompleteUpdate();
+  // DGUSScreenHandler::forceCompleteUpdate();
 }
 
 /**
  * Get the next command in the queue, optionally log it to SD, then dispatch it
  */
 void GCodeQueue::advance() {
-  // DGUSScreenHandler::ForceCompleteUpdate();
+  // DGUSScreenHandler::forceCompleteUpdate();
   // Process immediate commands
   #if HAS_BED_PROBE
     if(GcodeSuite::should_stop){  // TODO: задача с отменой команд
@@ -660,7 +660,7 @@ bool a = true;
     #endif
     return;
   }
-  // DGUSScreenHandler::ForceCompleteUpdate();
+  // DGUSScreenHandler::forceCompleteUpdate();
   #if ENABLED(BUFFER_MONITORING)
     if (command_buffer_empty) {
       command_buffer_empty = false;
@@ -707,7 +707,7 @@ bool a = true;
     gcode.process_next_command();
 
   #endif // SDSUPPORT
-  // DGUSScreenHandler::ForceCompleteUpdate();
+  // DGUSScreenHandler::forceCompleteUpdate();
 
   // The queue may be reset by a command handler or by code invoked by idle() within a handler
   ring_buffer.advance_pos(ring_buffer.index_r, -1);

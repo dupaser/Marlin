@@ -72,7 +72,7 @@ void HotendIdleProtection::check() {
    
   // if (ExtUI::isPrintingFromMedia())
 
-    //  DGUSScreenHandler::GotoScreen(MKSLCD_SCREEN_PRINT_REHEAT); 
+    //  DGUSScreenHandler::gotoScreen(MKSLCD_SCREEN_PRINT_REHEAT); 
 
   const millis_t ms = millis();                   // Shared millis
 

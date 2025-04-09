@@ -357,7 +357,7 @@ void GcodeSuite::G28() {
   endstops.enable(true); // Enable endstops for next homing move
 
  #if HAS_BED_PROBE
-    dgusdisplay.WriteString(VP_Zoffset_Status, "", VP_Status_LEN); // Свое очищение строки на экране при выставлении зазора 
+    dgus.WriteString(VP_Zoffset_Status, "", VP_Status_LEN); // Свое очищение строки на экране при выставлении зазора 
   #endif
 
   #if ENABLED(DELTA)

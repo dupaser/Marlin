@@ -46,7 +46,7 @@
   #include "origin/DGUSScreenHandler.h"
 #elif ENABLED(DGUS_LCD_UI_MKS)
   #include "mks/DGUSScreenHandler.h"
-  extern DGUSScreenHandlerClass ScreenHandler; //вроде свое
+  extern DGUSScreenHandlerClass screen; //вроде свое
 #elif ENABLED(DGUS_LCD_UI_FYSETC)
   #include "fysetc/DGUSScreenHandler.h"
 #elif ENABLED(DGUS_LCD_UI_HIPRECY)

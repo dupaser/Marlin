@@ -58,25 +58,25 @@ public:
 
   DGUSDisplay() = default;
 
-  static void InitDisplay();
+  static void initDisplay();
 
   static void SetIcon(uint16_t vp, bool is_on); // Свое
 
   // Variable access.
-  static void WriteVariable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr=false);
+  static void writeVariable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr=false);
   static void WriteVariablePGM(uint16_t adr, const void *values, uint8_t valueslen, bool isstr=false);
-  static void WriteVariable(uint16_t adr, int16_t value);
-  static void WriteVariable(uint16_t adr, uint16_t value);
-  static void WriteVariable(uint16_t adr, uint8_t value);
-  static void WriteVariable(uint16_t adr, int8_t value);
-  static void WriteVariable(uint16_t adr, long value);
+  static void writeVariable(uint16_t adr, int16_t value);
+  static void writeVariable(uint16_t adr, uint16_t value);
+  static void writeVariable(uint16_t adr, uint8_t value);
+  static void writeVariable(uint16_t adr, int8_t value);
+  static void writeVariable(uint16_t adr, long value);
   static void WriteString(uint16_t adr, const char *values, uint8_t valueslen);
   static void WriteString(uint16_t adr, FSTR_P values, uint8_t valueslen);
 
   // Utility functions for bridging ui_api and dbus
   template<typename T, float(*Getter)(const T), T selector, typename WireType=uint16_t>
   static void SetVariable(DGUS_VP_Variable &var) {
-    WriteVariable(var.VP, (WireType)Getter(selector));
+    writeVariable(var.VP, (WireType)Getter(selector));
   }
 
   template<typename T, void(*Setter)(const float V, const T), T selector>
@@ -115,7 +115,7 @@ private:
   static bool Initialized, no_reentrance;
 };
 
-extern DGUSDisplay dgusdisplay;
+extern DGUSDisplay dgus;
 
 // compile-time x^y
 constexpr float cpow(const float x, const int y) { return y == 0 ? 1.0 : x * cpow(x, y - 1); }

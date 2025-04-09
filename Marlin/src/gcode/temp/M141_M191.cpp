@@ -75,7 +75,7 @@ void GcodeSuite::M191() {
   if (is_heating || !no_wait_for_cooling) {
 
     #if ENABLED(DGUS_LCD_UI_MKS)
-    dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_CHAMBER_HEATING), VP_Status_LEN); //Свое
+    dgus.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_CHAMBER_HEATING), VP_Status_LEN); //Свое
     #endif
     
     ui.set_status(is_heating ? GET_TEXT_F(MSG_CHAMBER_HEATING) : GET_TEXT_F(MSG_CHAMBER_COOLING));

@@ -96,7 +96,7 @@ void GcodeSuite::M140_M190(const bool isM190) {
   if (isM190)
   {
     #if ENABLED(DGUS_LCD_UI_MKS)
-      dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_BED_HEATING), VP_Status_LEN); //Свое
+      dgus.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_BED_HEATING), VP_Status_LEN); //Свое
     #endif
     thermalManager.wait_for_bed(no_wait_for_cooling);
   }

@@ -292,7 +292,7 @@ void DGUSScreenHandler::FilamentRunout(const ExtUI::extruder_t extruder) {
 
 #if ENABLED(SDSUPPORT)
 
-  void DGUSScreenHandler::SDCardInserted() {
+  void DGUSScreenHandler::sDCardInserted() {
     if (current_screen == DGUS_Screen::HOME)
       TriggerScreenChange(DGUS_Screen::PRINT);
   }

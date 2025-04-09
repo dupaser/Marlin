@@ -50,7 +50,7 @@ public:
     sendinfoscreen(FTOP(line1), FTOP(line2), FTOP(line3), FTOP(line4), l1inflash, l2inflash, l3inflash, liinflash);
   }
 
-  static void HandleUserConfirmationPopUp(uint16_t ConfirmVP, PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4, bool l1inflash, bool l2inflash, bool l3inflash, bool liinflash);
+  static void HandleUserConfirmationPopUp(uint16_t confirmVP, PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4, bool l1inflash, bool l2inflash, bool l3inflash, bool liinflash);
 
   // "M117" Message -- msg is a RAM ptr.
   static void setstatusmessage(const char *msg);
@@ -142,7 +142,7 @@ public:
     // File touched.
     static void DGUSLCD_SD_FileSelected(DGUS_VP_Variable &var, void *val_ptr);
     // start print after confirmation received.
-    static void DGUSLCD_SD_StartPrint(DGUS_VP_Variable &var, void *val_ptr);
+    static void sdStartPrint(DGUS_VP_Variable &var, void *val_ptr);
     // User hit the pause, resume or abort button.
     static void DGUSLCD_SD_ResumePauseAbort(DGUS_VP_Variable &var, void *val_ptr);
 
@@ -155,7 +155,7 @@ public:
     // Send a single filename to the display.
     static void DGUSLCD_SD_SendFilename(DGUS_VP_Variable &var);
     // Marlin informed us that a new SD has been inserted.
-    static void SDCardInserted();
+    static void sDCardInserted();
     // Marlin informed us that the SD Card has been removed().
     static void SDCardRemoved();
     // Marlin informed us about a bad SD Card.
@@ -172,7 +172,7 @@ public:
   // OK Button on the Confirm screen.
   static void ScreenConfirmedOK(DGUS_VP_Variable &var, void *val_ptr);
 
-  // Update data after going to a new screen (by display or by GotoScreen)
+  // Update data after going to a new screen (by display or by gotoScreen)
   // remember to store the last-displayed screen so it can be restored.
   // (e.g., for popup messages)
   static void UpdateNewScreen(DGUSLCD_Screens newscreen, bool popup=false);
@@ -185,15 +185,15 @@ public:
 
 
   // Make the display show the screen and update all VPs in it.
-  static void GotoScreen(DGUSLCD_Screens screen, bool ispopup = false);
+  static void gotoScreen(DGUSLCD_Screens screen, bool ispopup = false);
 
-  static void UpdateScreenVPData();
+  static void updateScreenVPData();
 
   // Helpers to convert and transfer data to the display.
   static void DGUSLCD_SendWordValueToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendStringToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var);
-  // static void DGUSLCD_SendTemperaturePID(DGUS_VP_Variable &var);
+  // static void sendTemperaturePID(DGUS_VP_Variable &var);
   static void DGUSLCD_SendPercentageToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendPrintProgressToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendPrintTimeToDisplay(DGUS_VP_Variable &var);
@@ -237,7 +237,7 @@ public:
       float f = *(float *)var.memadr;
       f *= cpow(10, decimals);
       f = round(f);
-      dgusdisplay.WriteVariable(var.VP, (long)f);
+      dgus.writeVariable(var.VP, (long)f);
     }
   }
 
@@ -247,7 +247,7 @@ public:
       float f = *(float *)var.memadr;
       f = Babystep::accum;
       f *= cpow(10, decimals);
-      dgusdisplay.WriteVariable(var.VP, (long)f);
+      dgus.writeVariable(var.VP, (long)f);
     }
   }
 
@@ -261,7 +261,7 @@ public:
         f = probe.offset.z; 
         f *= cpow(10, decimals);
         f = round(f);
-        dgusdisplay.WriteVariable(var.VP, (long)f);
+        dgus.writeVariable(var.VP, (long)f);
       }
     }
   #endif
@@ -276,14 +276,14 @@ public:
       DEBUG_ECHOLNPAIR_F(" >> ", f, 6);
       f *= cpow(10, decimals);
       f = round(f);
-      dgusdisplay.WriteVariable(var.VP, (int16_t)f);
+      dgus.writeVariable(var.VP, (int16_t)f);
     }
   }
 
   // Force an update of all VP on the current screen.
-  static void ForceCompleteUpdate() { update_ptr = 0; ScreenComplete = false; }
+  static void forceCompleteUpdate() { update_ptr = 0; screenComplete = false; }
   // Has all VPs sent to the screen
-  static bool IsScreenComplete() { return ScreenComplete; }
+  static bool IsScreenComplete() { return screenComplete; }
 
   static DGUSLCD_Screens getCurrentScreen() { return current_screen; }
 
@@ -298,9 +298,9 @@ public:
 
   static uint8_t update_ptr;      //< Last sent entry in the VPList for the actual screen.
   static uint16_t skipVP;         //< When updating the screen data, skip this one, because the user is interacting with it.
-  static bool ScreenComplete;     //< All VPs sent to screen?
+  static bool screenComplete;     //< All VPs sent to screen?
 
-  static uint16_t ConfirmVP;      //< context for confirm screen (VP that will be emulated-sent on "OK").
+  static uint16_t confirmVP;      //< context for confirm screen (VP that will be emulated-sent on "OK").
 
   #if ENABLED(SDSUPPORT)
     static int16_t top_file;      //< file on top of file chooser

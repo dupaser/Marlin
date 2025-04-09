@@ -48,7 +48,7 @@
 #include "DGUSVPVariable.h"
 #include "DGUSDisplayDef.h"
 
-DGUSDisplay dgusdisplay;
+DGUSDisplay dgus;
 
 #ifdef DEBUG_DGUSLCD_COMM
   #define DEBUGLCDCOMM_ECHOPGM DEBUG_ECHOPGM
@@ -67,7 +67,7 @@ constexpr uint8_t DGUS_CMD_READVAR = 0x83;
   bool dguslcd_local_debug; // = false;
 #endif
 
-void DGUSDisplay::InitDisplay() {
+void DGUSDisplay::initDisplay() {
   #ifndef LCD_BAUDRATE
     #define LCD_BAUDRATE 115200
   #endif
@@ -76,17 +76,17 @@ void DGUSDisplay::InitDisplay() {
   if (TERN1(POWER_LOSS_RECOVERY, !recovery.valid())) {  // If no Power-Loss Recovery is needed...
     TERN_(DGUS_LCD_UI_MKS, delay(LOGO_TIME_DELAY));     // Show the logo for a little while
   }
-  //dgusdisplay.WriteVariable(VP_ERROR_STATUS, (uint16_t)0); //Свое 
+  //dgus.writeVariable(VP_ERROR_STATUS, (uint16_t)0); //Свое 
   RequestScreen(TERN(SHOW_BOOTSCREEN, DGUSLCD_SCREEN_BOOT, DGUSLCD_SCREEN_MAIN));
 }
 
 void DGUSDisplay::SetIcon(uint16_t vp, bool is_on){
-  if(is_on) dgusdisplay.WriteVariable(vp, (uint16_t)1); // свое uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
-  else dgusdisplay.WriteVariable(vp, (uint16_t)0); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+  if(is_on) dgus.writeVariable(vp, (uint16_t)1); // свое uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
+  else dgus.writeVariable(vp, (uint16_t)0); // uint16_t обязателен, чтобы было 00 01, а не 01 00(uint8_t).
 
 }
 
-void DGUSDisplay::WriteVariable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr) {
+void DGUSDisplay::writeVariable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr) {
   const char* myvalues = static_cast<const char*>(values);
   bool strend = !myvalues;
   WriteHeader(adr, DGUS_CMD_WRITEVAR, valueslen);
@@ -125,7 +125,7 @@ void DGUSDisplay::WriteString(uint16_t adr, const char *values, uint8_t valuesle
           destination[i++] = low_byte;
       }
 
-      dgusdisplay.WriteUtf16String(adr, destination, valueslen);
+      dgus.WriteUtf16String(adr, destination, valueslen);
 }
 
 // Свое метод отправки сиволов в формате UTF-16
@@ -156,25 +156,25 @@ void DGUSDisplay::WriteUtf16String(uint16_t adr, const char *values, uint8_t val
   }
 }
 
-void DGUSDisplay::WriteVariable(uint16_t adr, uint16_t value) {
+void DGUSDisplay::writeVariable(uint16_t adr, uint16_t value) {
   value = (value & 0xFFU) << 8U | (value >> 8U);
-  WriteVariable(adr, static_cast<const void*>(&value), sizeof(uint16_t));
+  writeVariable(adr, static_cast<const void*>(&value), sizeof(uint16_t));
 }
 
-void DGUSDisplay::WriteVariable(uint16_t adr, int16_t value) {
+void DGUSDisplay::writeVariable(uint16_t adr, int16_t value) {
   value = (value & 0xFFU) << 8U | (value >> 8U);
-  WriteVariable(adr, static_cast<const void*>(&value), sizeof(uint16_t));
+  writeVariable(adr, static_cast<const void*>(&value), sizeof(uint16_t));
 }
 
-void DGUSDisplay::WriteVariable(uint16_t adr, uint8_t value) {
-  WriteVariable(adr, static_cast<const void*>(&value), sizeof(uint8_t));
+void DGUSDisplay::writeVariable(uint16_t adr, uint8_t value) {
+  writeVariable(adr, static_cast<const void*>(&value), sizeof(uint8_t));
 }
 
-void DGUSDisplay::WriteVariable(uint16_t adr, int8_t value) {
-  WriteVariable(adr, static_cast<const void*>(&value), sizeof(int8_t));
+void DGUSDisplay::writeVariable(uint16_t adr, int8_t value) {
+  writeVariable(adr, static_cast<const void*>(&value), sizeof(int8_t));
 }
 
-void DGUSDisplay::WriteVariable(uint16_t adr, long value) {
+void DGUSDisplay::writeVariable(uint16_t adr, long value) {
   union { long l; char lb[4]; } endian;
   char tmp[4];
   endian.l = value;
@@ -182,7 +182,7 @@ void DGUSDisplay::WriteVariable(uint16_t adr, long value) {
   tmp[1] = endian.lb[2];
   tmp[2] = endian.lb[1];
   tmp[3] = endian.lb[0];
-  WriteVariable(adr, static_cast<const void*>(&tmp), sizeof(long));
+  writeVariable(adr, static_cast<const void*>(&tmp), sizeof(long));
 }
 
 void DGUSDisplay::WriteVariablePGM(uint16_t adr, const void *values, uint8_t valueslen, bool isstr) {

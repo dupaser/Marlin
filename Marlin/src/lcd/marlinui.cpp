@@ -1462,15 +1462,15 @@ void MarlinUI::init() {
 
       if (runout.filament_ran_out)
       {
-        dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_RUNOUT_SENSOR), VP_Status_LEN); //Свое
+        dgus.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_RUNOUT_SENSOR), VP_Status_LEN); //Свое
       }
       else{
-        dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINT_PAUSED), VP_Status_LEN);
+        dgus.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINT_PAUSED), VP_Status_LEN);
       }
     }
     #if ENABLED(SDSUPPORT)
       else if (IS_SD_PRINTING()) {
-       dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINTING), VP_Status_LEN); //Свое 
+       dgus.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINTING), VP_Status_LEN); //Свое 
         return set_status(card.longest_filename(), true);
       }
     #endif
@@ -1648,7 +1648,7 @@ void MarlinUI::init() {
     IF_DISABLED(SDSUPPORT, print_job_timer.stop());
     TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_open(PROMPT_INFO, F("UI Aborted"), FPSTR(DISMISS_STR)));
     LCD_MESSAGE(MSG_PRINT_ABORTED);
-    dgusdisplay.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINT_ABORTED), VP_Status_LEN); //Свое
+    dgus.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_PRINT_ABORTED), VP_Status_LEN); //Свое
     TERN_(HAS_MARLINUI_MENU, return_to_status());
   }
 
