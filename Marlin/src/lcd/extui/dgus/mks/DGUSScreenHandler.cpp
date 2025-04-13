@@ -108,7 +108,7 @@ void DGUSScreenHandlerMKS::sendinfoscreen_en(PGM_P const line1, PGM_P const line
   dgusdisplay.writeVariable(VP_MSGSTR4, line4, 32, true);
 }
 
-void DGUSScreenHandlerMKS::sendinfoscreen(const void *line1, const void *line2, const void *line3, const void *line4, uint16_t language) {
+void DGUSScreenHandlerMKS::sendInfoScreen_P(const void *line1, const void *line2, const void *line3, const void *line4, uint16_t language) {
   if (language == MKS_English)
     DGUSScreenHandlerMKS::sendinfoscreen_en((char *)line1, (char *)line2, (char *)line3, (char *)line4);
   else if (language == MKS_SimpleChinese)
@@ -159,12 +159,12 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendFanToDisplay(DGUS_VP_Variable &var) {
         if (step == 0){ //0,01
           // queue.inject(F("M290 Z-0.01"));
           babystep.add_mm(Z_AXIS, -0.01);
-          //RewriteBedGrid(-0.01);
+          //rewriteBedGrid(-0.01);
         }
         else if (step == 1){ //0,1
           // queue.inject(F("M290 Z-0.1"));
           babystep.add_mm(Z_AXIS, -0.1);
-          //RewriteBedGrid(-0.1);
+          //rewriteBedGrid(-0.1);
         }
         // babystep_add = Babystep::accum * 0.01f; 
         break;
@@ -173,12 +173,12 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendFanToDisplay(DGUS_VP_Variable &var) {
         if (step == 0){  //0,01
           // queue.inject(F("M290 Z0.01"));
           babystep.add_mm(Z_AXIS, 0.01);
-          //RewriteBedGrid(0.01);
+          //rewriteBedGrid(0.01);
         }
         else if (step == 1){ //0,1
           // queue.inject(F("M290 Z0.1"));
           babystep.add_mm(Z_AXIS, 0.1);
-          //RewriteBedGrid(0.1);
+          //rewriteBedGrid(0.1);
         }
 
         // babystep_add = Babystep::accum * 0.01f; 
@@ -192,7 +192,7 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendFanToDisplay(DGUS_VP_Variable &var) {
 #endif // BABYSTEPPING
 
 
-void DGUSScreenHandlerMKS::DGUSLCD_SendPrintTimeToDisplay(DGUS_VP_Variable &var) {
+void DGUSScreenHandlerMKS::sendPrintTimeToDisplay(DGUS_VP_Variable &var) {
   duration_t elapsed = print_job_timer.duration();
   uint32_t time = elapsed.value;
   dgus.writeVariable(VP_PrintTime_H, uint16_t(time / 3600));
@@ -254,7 +254,7 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
 
 #if ENABLED(SDSUPPORT)
 
-  void DGUSScreenHandler::DGUSLCD_SD_FileSelected(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::sdFileSelected(DGUS_VP_Variable &var, void *val_ptr) {
     uint16_t touched_nr = (int16_t)swap16(*(uint16_t*)val_ptr) + top_file;
     if (touched_nr != 0x0F && touched_nr > filelist.count()) return;
     if (!filelist.seek(touched_nr) && touched_nr != 0x0F) return;
@@ -307,7 +307,7 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
     babystep_add = 0;
   }
 
-  void DGUSScreenHandler::DGUSLCD_SD_ResumePauseAbort(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::sdResumePauseAbort(DGUS_VP_Variable &var, void *val_ptr) {
 
     if (!ExtUI::isPrintingFromMedia()) return; // avoid race condition when user stays in this menu and printer finishes.
     switch (swap16(*(uint16_t*)val_ptr)) {
@@ -338,7 +338,7 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
         break;
 
       case 2: // Abort
-        //HandleUserConfirmationPopUp(VP_SD_AbortPrintConfirmed, nullptr, PSTR("Abort printing"), filelist.filename(), PSTR("?"), true, true, false, true);
+        //handleUserConfirmationPopUp(VP_SD_AbortPrintConfirmed, nullptr, PSTR("Abort printing"), filelist.filename(), PSTR("?"), true, true, false, true);
         gotoScreen(MKSLCD_SCREEN_PrintDone); //свое
       break;
 
@@ -355,7 +355,7 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
 
 
   ///////Свое обработка отключения нагревателя при простое во время печати
-  void DGUSScreenHandler::HeaterPrintingTimeout() {
+  void DGUSScreenHandler::heaterPrintingTimeout() {
     if (!hotend_timeout_reheat) {
     hotend_before_timeout = thermalManager.temp_hotend[0].target;
     thermalManager.setTargetHotend(0, 0);
@@ -422,7 +422,7 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
   }
 
 
-  void DGUSScreenHandler::DGUSLCD_SD_SendFilename(DGUS_VP_Variable& var) {
+  void DGUSScreenHandler::sdSendFilename(DGUS_VP_Variable& var) {
     //     uint16_t target_line = (var.VP - VP_SD_FileName0) / VP_SD_FileName_LEN;
     // if (target_line > DGUS_SD_FILESPERSCREEN) return;
     // char tmpfilename[VP_SD_FileName_LEN + 1] = "";
@@ -433,7 +433,7 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
     //   snprintf_P(tmpfilename, VP_SD_FileName_LEN, PSTR("%s%c"), filelist.filename(), filelist.isDir() ? '/' : 0); // snprintf_P(tmpfilename, VP_SD_FileName_LEN, PSTR("%s"), filelist.filename());
     //   dir_icon_val = filelist.isDir() ? 0 : 1;
     // }
-    // DGUSLCD_SendStringToDisplay(var);
+    // sendStringToDisplay(var);
 
     // dgusdisplay.writeVariable(VP_File_Pictutr0 + target_line * 2, dir_icon_val);
 
@@ -513,7 +513,7 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
   }
 
 
-  void DGUSScreenHandler::sDCardInserted(){
+  void DGUSScreenHandler::sdCardInserted(){
       top_file = 0;
       filelist.refresh();
       // auto cs = getCurrentScreen();
@@ -521,25 +521,25 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
       //   gotoScreen(MKSLCD_SCREEN_CHOOSE_FILE);
   }
 
-  void DGUSScreenHandler::SDCardRemoved() {
-    // if (current_screen == DGUSLCD_SCREEN_SDFILELIST  //ЗАКОМЕНТИЛ
-    //     || (current_screen == DGUSLCD_SCREEN_CONFIRM && (confirmVP == VP_SD_AbortPrintConfirmed || confirmVP == VP_SD_FileSelectConfirm))
-    //     || current_screen == DGUSLCD_SCREEN_SDPRINTMANIPULATION
+  void DGUSScreenHandler::sdCardRemoved() {
+    // if (current_screenID == DGUSLCD_SCREEN_SDFILELIST  //ЗАКОМЕНТИЛ
+    //     || (current_screenID == DGUSLCD_SCREEN_CONFIRM && (confirmVP == VP_SD_AbortPrintConfirmed || confirmVP == VP_SD_FileSelectConfirm))
+    //     || current_screenID == DGUSLCD_SCREEN_SDPRINTMANIPULATION
     // ) filelist.refresh();
 
     // Свое
     if(ExtUI::isPrintingFromMedia()){
       dgus.WriteString(VP_PrintStatus, GET_TEXT_F(MSG_NO_MEDIA), VP_Status_LEN);
       gotoScreen(MKSLCD_SCREEN_PrintDone);
-    } else if (current_screen == MKSLCD_SCREEN_CHOOSE_FILE ||
-       current_screen == MKSLCD_SCREEN_CHOOSE_FILE_1 ||
-       current_screen == MKSLCD_SCREEN_CHOOSE_FILE_2 ||
-       current_screen == MKSLCD_SCREEN_CHOOSE_FILE_3 ||
-       current_screen == MKSLCD_SCREEN_CHOOSE_FILE_FOLDER ||
-       current_screen == MKSLCD_SCREEN_CHOOSE_FILE_FOLDER_1 ||
-       current_screen == MKSLCD_SCREEN_CHOOSE_FILE_FOLDER_2 ||
-       current_screen == MKSLCD_SCREEN_CHOOSE_FILE_FOLDER_3 ||
-       current_screen == MKSLCD_SCREEN_PRINT_CONFIRM
+    } else if (current_screenID == MKSLCD_SCREEN_CHOOSE_FILE ||
+       current_screenID == MKSLCD_SCREEN_CHOOSE_FILE_1 ||
+       current_screenID == MKSLCD_SCREEN_CHOOSE_FILE_2 ||
+       current_screenID == MKSLCD_SCREEN_CHOOSE_FILE_3 ||
+       current_screenID == MKSLCD_SCREEN_CHOOSE_FILE_FOLDER ||
+       current_screenID == MKSLCD_SCREEN_CHOOSE_FILE_FOLDER_1 ||
+       current_screenID == MKSLCD_SCREEN_CHOOSE_FILE_FOLDER_2 ||
+       current_screenID == MKSLCD_SCREEN_CHOOSE_FILE_FOLDER_3 ||
+       current_screenID == MKSLCD_SCREEN_PRINT_CONFIRM
        
     ) gotoScreen(MKSLCD_SCREEN_HOME);
   }
@@ -562,13 +562,13 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
   }
 #endif // SDSUPPORT
 
-void DGUSScreenHandler::ScreenChangeHook(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::screenChangeHook(DGUS_VP_Variable &var, void *val_ptr) {
   uint8_t *tmp = (uint8_t*)val_ptr;
 
   // The keycode in target is coded as <from-frame><to-frame>, so 0x0100A means
-  // from screen 1 (main) to 10 (temperature). DGUSLCD_SCREEN_POPUP is special,
+  // from screen 1 (main) to 10 (temperature). DGUS_SCREEN_POPUP is special,
   // meaning "return to previous screen"
-  DGUSLCD_Screens target = (DGUSLCD_Screens)tmp[1];
+  DGUS_ScreenID target = (DGUS_ScreenID)tmp[1];
 
   DEBUG_ECHOLNPGM("\n DEBUG target", target);
 
@@ -587,12 +587,12 @@ void DGUSScreenHandler::ScreenChangeHook(DGUS_VP_Variable &var, void *val_ptr) {
   // return;
   //}
 
-  if (target == DGUSLCD_SCREEN_POPUP) {
-    SetupConfirmAction(ExtUI::setUserConfirmed);
+  if (target == DGUS_SCREEN_POPUP) {
+    setupConfirmAction(ExtUI::setUserConfirmed);
 
     // Special handling for popup is to return to previous menu
-    if (current_screen == DGUSLCD_SCREEN_POPUP && confirm_action_cb) confirm_action_cb();
-    PopToOldScreen();
+    if (current_screenID == DGUS_SCREEN_POPUP && confirm_action_cb) confirm_action_cb();
+    popToOldScreen();
     return;
   }
 
@@ -640,7 +640,7 @@ void DGUSScreenHandlerMKS::KFactorSave(DGUS_VP_Variable &var, void *val_ptr) {
         }
         
         is_success = bedlevel.set_z_home_pos_shift(bedlevel.get_z_home_pos_shift()-result); //TODO внутри функции сделать проверку на пределы
-        RewriteBedGrid(-result);
+        rewriteBedGrid(-result);
         probe.offset.z = probe.offset.z - result;
         if (IsRunning()
           #if ENABLED(NO_MOTION_BEFORE_HOMING)
@@ -1282,8 +1282,8 @@ void DGUSScreenHandlerMKS::ManualAssistLeveling(DGUS_VP_Variable &var, void *val
 //   #endif
 // }
 
-void DGUSScreenHandler::HandleFanSpeedChange(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleFanSpeedChange");
+void DGUSScreenHandler::handleFanSpeedChange(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("handleFanSpeedChange");
 
   int16_t movevalue = swap16(*(uint16_t*)val_ptr);
 
@@ -1314,8 +1314,8 @@ void DGUSScreenHandler::HandleFanSpeedChange(DGUS_VP_Variable &var, void *val_pt
 
 
 //Свое
-void DGUSScreenHandler::HandlePidTempChange(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandlePidTempChange");
+void DGUSScreenHandler::handlePidTempChange(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("handlePidTempChange");
   int16_t movevalue = swap16(*(uint16_t*)val_ptr);
 
  if (var.VP == VP_PID_AUTOTUNE_E0_TEMP_SET) {
@@ -1344,8 +1344,8 @@ void DGUSScreenHandler::HandlePidTempChange(DGUS_VP_Variable &var, void *val_ptr
 
 ///свое температура калибровки стола
 #if HAS_BED_PROBE
-  void DGUSScreenHandler::HandleBedCalibrationTempChange(DGUS_VP_Variable &var, void *val_ptr) {
-    DEBUG_ECHOLNPGM("HandleBedCalibrationTempChange");
+  void DGUSScreenHandler::handleBedCalibrationTempChange(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("handleBedCalibrationTempChange");
     int16_t movevalue = swap16(*(uint16_t*)val_ptr);
 
   if (var.VP == VP_LEVELING_TEMP_1_SET) {
@@ -1374,8 +1374,8 @@ void DGUSScreenHandler::HandlePidTempChange(DGUS_VP_Variable &var, void *val_ptr
 
 
 //Свое
-void DGUSScreenHandler::HandleSettingsPrintChange(DGUS_VP_Variable &var, void *val_ptr) {
-  //DEBUG_ECHOLNPGM("HandleFanSpeedChange");
+void DGUSScreenHandler::handleSettingsPrintChange(DGUS_VP_Variable &var, void *val_ptr) {
+  //DEBUG_ECHOLNPGM("handleFanSpeedChange");
  int16_t StepChange = swap16(*(uint16_t*)val_ptr);
 
  switch (var.VP) {
@@ -1479,8 +1479,8 @@ void DGUSScreenHandler::HandleSettingsPrintChange(DGUS_VP_Variable &var, void *v
 
 
 
-void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleManualMove");
+void DGUSScreenHandler::handleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("handleManualMove");
 
   int16_t movevalue = swap16(*(uint16_t*)val_ptr);
 
@@ -1655,7 +1655,7 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
 }
 
 //Свое езда в определенную координату
-void DGUSScreenHandler::HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::handleManualMoveToPos(DGUS_VP_Variable &var, void *val_ptr) {
   if (!print_job_timer.isPaused() && !queue.ring_buffer.empty())
   return;
 
@@ -1718,8 +1718,8 @@ void DGUSScreenHandler::HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
 
 
 
-// void DGUSScreenHandlerMKS::HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr) { //ЗАКОМЕНТИЛ
-//   DEBUG_ECHOLNPGM("HandleStepPerMMChanged");
+// void DGUSScreenHandlerMKS::handleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr) { //ЗАКОМЕНТИЛ
+//   DEBUG_ECHOLNPGM("handleStepPerMMChanged");
 
 //   const uint16_t value_raw = swap16(*(uint16_t*)val_ptr);
 //   const float value = (float)value_raw;
@@ -1740,8 +1740,8 @@ void DGUSScreenHandler::HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
 //   skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
 // }
 
-// void DGUSScreenHandlerMKS::HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr) {
-//   DEBUG_ECHOLNPGM("HandleStepPerMMExtruderChanged");
+// void DGUSScreenHandlerMKS::handleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr) {
+//   DEBUG_ECHOLNPGM("handleStepPerMMExtruderChanged");
 
 //   const uint16_t value_raw = swap16(*(uint16_t*)val_ptr);
 //   const float value = (float)value_raw;
@@ -1890,7 +1890,7 @@ void DGUSScreenHandler::HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
 // #endif
 
 // #if HAS_PID_HEATING //ЗАКОМЕНТИЛ
-//   void DGUSScreenHandler::HandleTemperaturePIDChanged(DGUS_VP_Variable &var, void *val_ptr) {
+//   void DGUSScreenHandler::handleTemperaturePIDChanged(DGUS_VP_Variable &var, void *val_ptr) {
 //     const uint16_t rawvalue = swap16(*(uint16_t*)val_ptr);
 //     DEBUG_ECHOLNPGM("V1:", rawvalue);
 //     const float value = 1.0f * rawvalue;
@@ -1928,7 +1928,7 @@ void DGUSScreenHandler::HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
 
 ///свое Z offset коэффициент смещения для калибровки
 #if HAS_BED_PROBE
-  void DGUSScreenHandler::HandleLiveZoffset(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::handleLiveZoffset(DGUS_VP_Variable &var, void *val_ptr) {
     xyze_pos_t position_before_set;
     uint16_t step = Zoffset_Step;
     uint16_t flag = swap16(*(uint16_t*)val_ptr);
@@ -1959,7 +1959,7 @@ void DGUSScreenHandler::HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
     const float epsilon = 1e-4;
     if( !WITHIN(probe.offset.z + delta, Z_PROBE_OFFSET_RANGE_MIN - epsilon, Z_PROBE_OFFSET_RANGE_MAX + epsilon)) return;
 
-    RewriteBedGrid(delta);
+    rewriteBedGrid(delta);
     probe.offset.z += delta;
     //set_bed_leveling_enabled(true);
     bedlevel.refresh_bed_level();
@@ -1973,7 +1973,7 @@ void DGUSScreenHandler::HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
     forceCompleteUpdate();
   }
 
-  void DGUSScreenHandler::RewriteBedGrid(float grid_step) {
+  void DGUSScreenHandler::rewriteBedGrid(float grid_step) {
     for (uint16_t i = 0; i < GRID_MAX_POINTS_X; i++)
     {
       for (uint16_t j = 0; j < GRID_MAX_POINTS_Y; j++)
@@ -1989,11 +1989,11 @@ void DGUSScreenHandler::HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
   }
 
   //Свое - действия при нажатии на кнопку выставить зазор
-  void DGUSScreenHandler::Zoffset_Start(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::zOffset_Start(DGUS_VP_Variable &var, void *val_ptr) {
     using Mesh = LevelingBilinear::Mesh;
     float offset = probe.offset.z;
     //bedlevel.set_z_home_pos_shift(0);
-    RewriteBedGrid(-offset);
+    rewriteBedGrid(-offset);
     probe.offset.z = 0;
     char buf[60] = {0};
     int speed = homing_feedrate_mm_m.x; 
@@ -2015,7 +2015,7 @@ void DGUSScreenHandler::HandleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
 
 
 //Свое
-void DGUSScreenHandler::HandleKFactorSet(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::handleKFactorSet(DGUS_VP_Variable &var, void *val_ptr) {
 
         //uint16_t step = KFactorStep;
     uint16_t flag = swap16(*(uint16_t*)val_ptr);
@@ -2105,11 +2105,11 @@ void DGUSScreenHandlerMKS::FilamentLoadUnload(DGUS_VP_Variable &var, void *val_p
   #if BOTH(HAS_HOTEND, PREVENT_COLD_EXTRUSION)
     if (hotend_too_cold) {
       if (thermalManager.targetTooColdToExtrude(hotend_too_cold - 1)) thermalManager.setTargetHotend(thermalManager.extrude_min_temp, hotend_too_cold - 1);
-      //sendinfoscreen(F("NOTICE"), nullptr, F("Please wait."), F("Nozzle heating!"), true, true, true, true);
-      //SetupConfirmAction(nullptr);
+      //sendInfoScreen_P(F("NOTICE"), nullptr, F("Please wait."), F("Nozzle heating!"), true, true, true, true);
+      //setupConfirmAction(nullptr);
       //char tmpFilename[VP_SD_FileName_LEN ] = "AAAAAAAAAAAAA"; //TODO заменить на переменную из языкового блока STR_ERR_HOTEND_TOO_COLD
       dgus.WriteString(VP_FILAMENT_CHANGE_STATUS, GET_TEXT_F(MSG_HOTEND_TOO_COLD), VP_SD_FileName_LEN);
-      // gotoScreen(DGUSLCD_SCREEN_POPUP);// заменить на вывод текста что очень холодно
+      // gotoScreen(DGUS_SCREEN_POPUP);// заменить на вывод текста что очень холодно
     }
   #endif
 
@@ -2243,8 +2243,8 @@ void GcodeSuite::M1002() {
 
 #if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
 
-  // void DGUSScreenHandler::HandleFilamentOption(DGUS_VP_Variable &var, void *val_ptr) {  //ЗАКОМЕНТИЛ
-  //   DEBUG_ECHOLNPGM("HandleFilamentOption");
+  // void DGUSScreenHandler::handleFilamentOption(DGUS_VP_Variable &var, void *val_ptr) {  //ЗАКОМЕНТИЛ
+  //   DEBUG_ECHOLNPGM("handleFilamentOption");
 
   //   uint8_t e_temp = 0;
   //   filament_data.heated = false;
@@ -2312,8 +2312,8 @@ void GcodeSuite::M1002() {
   //   }
   // }
 
-  // void DGUSScreenHandler::HandleFilamentLoadUnload(DGUS_VP_Variable &var) {  //ЗАКОМЕНТИЛ
-  //   DEBUG_ECHOLNPGM("HandleFilamentLoadUnload");
+  // void DGUSScreenHandler::handleFilamentLoadUnload(DGUS_VP_Variable &var) {  //ЗАКОМЕНТИЛ
+  //   DEBUG_ECHOLNPGM("handleFilamentLoadUnload");
   //   if (filament_data.action <= 0) return;
 
   //   // If we close to the target temperature, we can start load or unload the filament
@@ -2355,7 +2355,7 @@ bool DGUSScreenHandlerMKS::loop() {
 
   static uint8_t language_times = 2;
 
-  if (!IsScreenComplete() || ELAPSED(ms, next_event_ms)) {
+  if (!isScreenComplete() || ELAPSED(ms, next_event_ms)) {
     next_event_ms = ms + DGUS_UPDATE_INTERVAL_MS;
     updateScreenVPData();
   }
@@ -2396,7 +2396,7 @@ bool DGUSScreenHandlerMKS::loop() {
     #endif
   #endif // SHOW_BOOTSCREEN
 
-  return IsScreenComplete();
+  return isScreenComplete();
 }
 
 void DGUSScreenHandlerMKS::LanguagePInit() {
@@ -2444,9 +2444,9 @@ void DGUSScreenHandlerMKS::DGUS_Runout_Idle() {
         queue.inject(F("M25"));
         gotoScreen(MKSLCD_SCREEN_PAUSE);
 
-        sendinfoscreen(F("NOTICE"), nullptr, F("Please change filament!"), nullptr, true, true, true, true);
-        //SetupConfirmAction(nullptr);
-        gotoScreen(DGUSLCD_SCREEN_POPUP);
+        sendInfoScreen_P(F("NOTICE"), nullptr, F("Please change filament!"), nullptr, true, true, true, true);
+        //setupConfirmAction(nullptr);
+        gotoScreen(DGUS_SCREEN_POPUP);
         break;
 
       case UNRUNOUT_STATUS:

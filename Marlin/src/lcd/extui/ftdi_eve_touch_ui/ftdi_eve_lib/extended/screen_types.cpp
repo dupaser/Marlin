@@ -99,6 +99,6 @@ void ScreenStack::goBack() {
   onEntry();
 }
 
-ScreenStack current_screen;
+ScreenStack current_screenID;
 
 #endif // FTDI_EXTENDED

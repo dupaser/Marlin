@@ -129,7 +129,7 @@ class ScreenStack : public ScreenRef {
     uint8_t getScreen() {return getType();}
 };
 
-extern ScreenStack current_screen;
+extern ScreenStack current_screenID;
 
 /********************** BASE SCREEN CLASS ******************************/
 
@@ -138,7 +138,7 @@ extern ScreenStack current_screen;
 class UIScreen {
   public:
     static void onStartup()            {}
-    static void onEntry()              {current_screen.onRefresh();}
+    static void onEntry()              {current_screenID.onRefresh();}
     static void onExit()               {}
     static void onIdle()               {}
     static bool onTouchStart(uint8_t)  {return true;}
@@ -164,7 +164,7 @@ class UncachedScreen {
         load_utf8_bitmaps(cmd);
       #endif
 
-      current_screen.onRedraw(BOTH);
+      current_screenID.onRedraw(BOTH);
 
       cmd.cmd(DL::DL_DISPLAY);
       cmd.cmd(CMD_SWAP);
@@ -204,7 +204,7 @@ class CachedScreen {
       #if ENABLED(TOUCH_UI_USE_UTF8)
         load_utf8_bitmaps(cmd);
       #endif
-      current_screen.onRedraw(BACKGROUND);
+      current_screenID.onRedraw(BACKGROUND);
 
       dlcache.store(DL_SIZE);
     }
@@ -227,11 +227,11 @@ class CachedScreen {
         #if ENABLED(TOUCH_UI_USE_UTF8)
           load_utf8_bitmaps(cmd);
         #endif
-        current_screen.onRedraw(BACKGROUND);
+        current_screenID.onRedraw(BACKGROUND);
         dlcache.store(DL_SIZE);
       }
 
-      current_screen.onRedraw(FOREGROUND);
+      current_screenID.onRedraw(FOREGROUND);
 
       cmd.cmd(DL::DL_DISPLAY);
       cmd.cmd(CMD_SWAP);

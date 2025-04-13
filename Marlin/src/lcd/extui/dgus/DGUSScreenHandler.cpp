@@ -48,8 +48,8 @@
 DGUSScreenHandlerClass screen;
 
 uint16_t DGUSScreenHandler::confirmVP;
-DGUSLCD_Screens DGUSScreenHandler::current_screen;
-DGUSLCD_Screens DGUSScreenHandler::past_screens[NUM_PAST_SCREENS];
+DGUS_ScreenID DGUSScreenHandler::current_screenID;
+DGUS_ScreenID DGUSScreenHandler::past_screenIDs[NUM_PAST_SCREENS];
 uint8_t DGUSScreenHandler::update_ptr;
 uint16_t DGUSScreenHandler::skipVP;
 bool DGUSScreenHandler::screenComplete;
@@ -66,55 +66,55 @@ void (*DGUSScreenHandler::confirm_action_cb)() = nullptr;
   filament_data_t filament_data;
 #endif
 
-void DGUSScreenHandler::sendinfoscreen(PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4, bool l1inflash, bool l2inflash, bool l3inflash, bool l4inflash) {
+void DGUSScreenHandler::sendInfoScreen_P(PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4, bool l1inflash, bool l2inflash, bool l3inflash, bool l4inflash) {
   DGUS_VP_Variable ramcopy;
   if (populate_VPVar(VP_MSGSTR1, &ramcopy)) {
     ramcopy.memadr = (void*) line1;
-    l1inflash ? DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(ramcopy) : DGUSScreenHandler::DGUSLCD_SendStringToDisplay(ramcopy);
+    l1inflash ? DGUSScreenHandler::sendStringToDisplayPGM(ramcopy) : DGUSScreenHandler::sendStringToDisplay(ramcopy);
   }
   if (populate_VPVar(VP_MSGSTR2, &ramcopy)) {
     ramcopy.memadr = (void*) line2;
-    l2inflash ? DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(ramcopy) : DGUSScreenHandler::DGUSLCD_SendStringToDisplay(ramcopy);
+    l2inflash ? DGUSScreenHandler::sendStringToDisplayPGM(ramcopy) : DGUSScreenHandler::sendStringToDisplay(ramcopy);
   }
   if (populate_VPVar(VP_MSGSTR3, &ramcopy)) {
     ramcopy.memadr = (void*) line3;
-    l3inflash ? DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(ramcopy) : DGUSScreenHandler::DGUSLCD_SendStringToDisplay(ramcopy);
+    l3inflash ? DGUSScreenHandler::sendStringToDisplayPGM(ramcopy) : DGUSScreenHandler::sendStringToDisplay(ramcopy);
   }
   #ifdef VP_MSGSTR4
     if (populate_VPVar(VP_MSGSTR4, &ramcopy)) {
       ramcopy.memadr = (void*) line4;
-      l4inflash ? DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(ramcopy) : DGUSScreenHandler::DGUSLCD_SendStringToDisplay(ramcopy);
+      l4inflash ? DGUSScreenHandler::sendStringToDisplayPGM(ramcopy) : DGUSScreenHandler::sendStringToDisplay(ramcopy);
     }
   #endif
 }
 
-void DGUSScreenHandler::HandleUserConfirmationPopUp(uint16_t VP, PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4, bool l1, bool l2, bool l3, bool l4) {
-  if (current_screen == DGUSLCD_SCREEN_CONFIRM) // Already showing a pop up, so we need to cancel that first.
-    PopToOldScreen();
+void DGUSScreenHandler::handleUserConfirmationPopUp(uint16_t VP, PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4, bool l1, bool l2, bool l3, bool l4) {
+  if (current_screenID == DGUSLCD_SCREEN_CONFIRM) // Already showing a pop up, so we need to cancel that first.
+    popToOldScreen();
 
   confirmVP = VP;
-  sendinfoscreen(line1, line2, line3, line4, l1, l2, l3, l4);
+  sendInfoScreen_P(line1, line2, line3, line4, l1, l2, l3, l4);
   gotoScreen(DGUSLCD_SCREEN_CONFIRM);
 }
 
-void DGUSScreenHandler::setstatusmessage(const char *msg) {
+void DGUSScreenHandler::setStatusMessage(const char *msg) {
   DGUS_VP_Variable ramcopy;
   if (populate_VPVar(VP_M117, &ramcopy)) {
     ramcopy.memadr = (void*) msg;
-    DGUSLCD_SendStringToDisplay(ramcopy);
+    sendStringToDisplay(ramcopy);
   }
 }
 
-void DGUSScreenHandler::setstatusmessagePGM(PGM_P const msg) {
+void DGUSScreenHandler::setStatusMessage_P(PGM_P const msg) {
   DGUS_VP_Variable ramcopy;
   if (populate_VPVar(VP_M117, &ramcopy)) {
     ramcopy.memadr = (void*) msg;
-    DGUSLCD_SendStringToDisplayPGM(ramcopy);
+    sendStringToDisplayPGM(ramcopy);
   }
 }
 
 // Send an 8 bit or 16 bit value to the display.
-void DGUSScreenHandler::DGUSLCD_SendWordValueToDisplay(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendWordValueToDisplay(DGUS_VP_Variable &var) {
   if (var.memadr) {
     //DEBUG_ECHOPGM(" DGUS_LCD_SendWordValueToDisplay ", var.VP);
     //DEBUG_ECHOLNPGM(" data ", *(uint16_t *)var.memadr);
@@ -126,7 +126,7 @@ void DGUSScreenHandler::DGUSLCD_SendWordValueToDisplay(DGUS_VP_Variable &var) {
 }
 
 // Send an uint8_t between 0 and 255 to the display, but scale to a percentage (0..100)
-void DGUSScreenHandler::DGUSLCD_SendPercentageToDisplay(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendPercentageToDisplay(DGUS_VP_Variable &var) {
   if (var.memadr) {
     //DEBUG_ECHOPGM(" DGUS_LCD_SendWordValueToDisplay ", var.VP);
     //DEBUG_ECHOLNPGM(" data ", *(uint16_t *)var.memadr);
@@ -137,8 +137,8 @@ void DGUSScreenHandler::DGUSLCD_SendPercentageToDisplay(DGUS_VP_Variable &var) {
 }
 
 // Send the current print progress to the display.
-void DGUSScreenHandler::DGUSLCD_SendPrintProgressToDisplay(DGUS_VP_Variable &var) {
-  //DEBUG_ECHOPGM(" DGUSLCD_SendPrintProgressToDisplay ", var.VP);
+void DGUSScreenHandler::sendPrintProgressToDisplay(DGUS_VP_Variable &var) {
+  //DEBUG_ECHOPGM(" sendPrintProgressToDisplay ", var.VP);
   uint16_t tmp = ExtUI::getProgress_percent();
   //DEBUG_ECHOLNPGM(" data ", tmp);
   dgus.writeVariable(var.VP, tmp);
@@ -146,7 +146,7 @@ void DGUSScreenHandler::DGUSLCD_SendPrintProgressToDisplay(DGUS_VP_Variable &var
 
 // Send the current print time to the display.
 // It is using a hex display for that: It expects BSD coded data in the format xxyyzz
-void DGUSScreenHandler::DGUSLCD_SendPrintTimeToDisplay(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendPrintTimeToDisplay(DGUS_VP_Variable &var) {
   duration_t elapsed = print_job_timer.duration();
   char buf[32];
   elapsed.toString(buf);
@@ -154,7 +154,7 @@ void DGUSScreenHandler::DGUSLCD_SendPrintTimeToDisplay(DGUS_VP_Variable &var) {
 }
 
 // Send an uint8_t between 0 and 100 to a variable scale to 0..255
-void DGUSScreenHandler::DGUSLCD_PercentageToUint8(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::percentageToUint8(DGUS_VP_Variable &var, void *val_ptr) {
   if (var.memadr) {
     uint16_t value = swap16(*(uint16_t*)val_ptr);
     DEBUG_ECHOLNPGM("FAN value get:", value);
@@ -166,7 +166,7 @@ void DGUSScreenHandler::DGUSLCD_PercentageToUint8(DGUS_VP_Variable &var, void *v
 // Sends a (RAM located) string to the DGUS Display
 // (Note: The DGUS Display does not clear after the \0, you have to
 // overwrite the remainings with spaces.// var.size has the display buffer size!
-void DGUSScreenHandler::DGUSLCD_SendStringToDisplay(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendStringToDisplay(DGUS_VP_Variable &var) {
   char *tmp = (char*) var.memadr;
   dgus.writeVariable(var.VP, tmp, var.size, true);
 }
@@ -174,7 +174,7 @@ void DGUSScreenHandler::DGUSLCD_SendStringToDisplay(DGUS_VP_Variable &var) {
 // Sends a (flash located) string to the DGUS Display
 // (Note: The DGUS Display does not clear after the \0, you have to
 // overwrite the remainings with spaces.// var.size has the display buffer size!
-void DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendStringToDisplayPGM(DGUS_VP_Variable &var) {
   char *tmp = (char*) var.memadr;
   dgus.WriteString(var.VP, tmp, var.size);
 }
@@ -218,7 +218,7 @@ void DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var) {
 
   // Send the accumulate print time to the display.
   // It is using a hex display for that: It expects BSD coded data in the format xxyyzz
-  void DGUSScreenHandler::DGUSLCD_SendPrintAccTimeToDisplay(DGUS_VP_Variable &var) {
+  void DGUSScreenHandler::sendPrintAccTimeToDisplay(DGUS_VP_Variable &var) {
     printStatistics state = print_job_timer.getStats();
     char buf[22];
     duration_t elapsed = state.printTime;
@@ -226,7 +226,7 @@ void DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var) {
     dgus.writeVariable(VP_PrintAccTime, buf, var.size, true);
   }
 
-  void DGUSScreenHandler::DGUSLCD_SendPrintsTotalToDisplay(DGUS_VP_Variable &var) {
+  void DGUSScreenHandler::sendPrintsTotalToDisplay(DGUS_VP_Variable &var) {
     printStatistics state = print_job_timer.getStats();
     char buf[10];
     sprintf_P(buf, PSTR("%u"), state.totalPrints);
@@ -238,9 +238,9 @@ void DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var) {
 // Send fan status value to the display.
 #if HAS_FAN
 
-  void DGUSScreenHandler::DGUSLCD_SendFanStatusToDisplay(DGUS_VP_Variable &var) {
+  void DGUSScreenHandler::sendFanStatusToDisplay(DGUS_VP_Variable &var) {
     if (var.memadr) {
-      DEBUG_ECHOPGM(" DGUSLCD_SendFanStatusToDisplay ", var.VP);
+      DEBUG_ECHOPGM(" sendFanStatusToDisplay ", var.VP);
       DEBUG_ECHOLNPGM(" data ", *(uint8_t *)var.memadr);
       uint16_t data_to_send = 0;
       if (*(uint8_t *) var.memadr) data_to_send = 1;
@@ -251,9 +251,9 @@ void DGUSScreenHandler::DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var) {
 #endif
 
 // Send heater status value to the display.
-void DGUSScreenHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendHeaterStatusToDisplay(DGUS_VP_Variable &var) {
   if (var.memadr) {
-    DEBUG_ECHOPGM(" DGUSLCD_SendHeaterStatusToDisplay ", var.VP);
+    DEBUG_ECHOPGM(" sendHeaterStatusToDisplay ", var.VP);
     DEBUG_ECHOLNPGM(" data ", *(int16_t *)var.memadr);
     uint16_t data_to_send = 0;
     if (*(int16_t *) var.memadr) data_to_send = 1;
@@ -262,7 +262,7 @@ void DGUSScreenHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variable &var)
 }
 
 // Свое обновление иконки "примонтирована ли флешка".
-void DGUSScreenHandler::DGUSLCD_SendFlashIconStatus(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendFlashIconStatus(DGUS_VP_Variable &var) {
   if(DiskIODriver_USBFlash::isInserted()){
     dgus.writeVariable(var.VP, (uint16_t)1);
   } else {
@@ -271,7 +271,7 @@ void DGUSScreenHandler::DGUSLCD_SendFlashIconStatus(DGUS_VP_Variable &var) {
 }
 
 
-void DGUSScreenHandler::DGUSLCD_SendFilamentChangeStatus(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendFilamentChangeStatus(DGUS_VP_Variable &var) {
    uint8_t hotend_too_cold = 0;
   if (thermalManager.tooColdToExtrude(0))
           hotend_too_cold = 1;
@@ -285,7 +285,7 @@ void DGUSScreenHandler::DGUSLCD_SendFilamentChangeStatus(DGUS_VP_Variable &var) 
 
 
 // Свое обновление иконки "высокая температура".
-void DGUSScreenHandler::DGUSLCD_SendAlarmTemperature(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendAlarmTemperature(DGUS_VP_Variable &var) {
   if(thermalManager.temp_hotend[0].celsius > ALARM_TEMPERATURE_ICON ||
      thermalManager.temp_bed.celsius > ALARM_TEMPERATURE_ICON ||
      thermalManager.temp_chamber.celsius > ALARM_TEMPERATURE_ICON  ) {
@@ -296,7 +296,7 @@ void DGUSScreenHandler::DGUSLCD_SendAlarmTemperature(DGUS_VP_Variable &var) {
 }
 
 // Свое обновление иконки сработал ли датчик филамента 
-void DGUSScreenHandler::DGUSLCD_SendFilamentRunoutStatus(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::sendFilamentRunoutStatus(DGUS_VP_Variable &var) {
 
 //uint8_t filament_status = FilamentSensorBase::poll_runout_states();
 //bool mem3 = FilamentSensorBase::poll_runout_pin_switch();
@@ -320,7 +320,7 @@ void DGUSScreenHandler::DGUSLCD_SendFilamentRunoutStatus(DGUS_VP_Variable &var) 
 
 
 //Иконка индикатор состояния датчика движения филамента
-void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdateIcon(DGUS_VP_Variable &var) {
+void DGUSScreenHandler::filamentSensorUpdateIcon(DGUS_VP_Variable &var) {
   if(runout.enabled){ //
     dgus.writeVariable(var.VP, (uint16_t)1);
   } else {
@@ -332,7 +332,7 @@ void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdateIcon(DGUS_VP_Variable &var) 
 
 
 // Свое вкл/выкл сенсора филамента.
-void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdate(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::filamentSensorUpdate(DGUS_VP_Variable &var, void *val_ptr) {
   
   runout.enabled = !runout.enabled;
 
@@ -352,11 +352,11 @@ void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdate(DGUS_VP_Variable &var, void
 
 #if ENABLED(DGUS_UI_WAITING)
 
-  void DGUSScreenHandler::DGUSLCD_SendWaitingStatusToDisplay(DGUS_VP_Variable &var) {
+  void DGUSScreenHandler::sendWaitingStatusToDisplay(DGUS_VP_Variable &var) {
     // In FYSETC UI design there are 10 statuses to loop
     static uint16_t period = 0;
     static uint16_t index = 0;
-    //DEBUG_ECHOPGM(" DGUSLCD_SendWaitingStatusToDisplay ", var.VP);
+    //DEBUG_ECHOPGM(" sendWaitingStatusToDisplay ", var.VP);
     //DEBUG_ECHOLNPGM(" data ", swap16(index));
     if (period++ > DGUS_UI_WAITING_STATUS_PERIOD) {
       dgus.writeVariable(var.VP, index);
@@ -370,11 +370,11 @@ void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdate(DGUS_VP_Variable &var, void
 
 #if ENABLED(SDSUPPORT)
 
-  // void DGUSScreenHandler::ScreenChangeHookIfSD(DGUS_VP_Variable &var, void *val_ptr) {  //ЗАКОМЕНТИЛ
+  // void DGUSScreenHandler::screenChangeHookIfSD(DGUS_VP_Variable &var, void *val_ptr) {  //ЗАКОМЕНТИЛ
   //   // default action executed when there is a SD card, but not printing
   //   if (ExtUI::isMediaInserted() && !ExtUI::isPrintingFromMedia()) {
-  //     ScreenChangeHook(var, val_ptr);
-  //     dgus.RequestScreen(current_screen);
+  //     screenChangeHook(var, val_ptr);
+  //     dgus.RequestScreen(current_screenID);
   //     return;
   //   }
 
@@ -388,16 +388,16 @@ void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdate(DGUS_VP_Variable &var, void
 
   //   // Don't let the user in the dark why there is no reaction.
   //   if (!ExtUI::isMediaInserted()) {
-  //     setstatusmessagePGM(GET_TEXT(MSG_NO_MEDIA));
+  //     setStatusMessage_P(GET_TEXT(MSG_NO_MEDIA));
   //     return;
   //   }
   //   if (card.flag.abort_sd_printing) {
-  //     setstatusmessagePGM(GET_TEXT(MSG_MEDIA_ABORTING));
+  //     setStatusMessage_P(GET_TEXT(MSG_MEDIA_ABORTING));
   //     return;
   //   }
   // }
 
-  void DGUSScreenHandler::DGUSLCD_SD_ScrollFilelist(DGUS_VP_Variable& var, void *val_ptr) {
+  void DGUSScreenHandler::sdScrollFilelist(DGUS_VP_Variable& var, void *val_ptr) {
     auto old_top = top_file;
     const int16_t scroll = (int16_t)swap16(*(uint16_t*)val_ptr); // TODO: использоать swap16 в выводе utf-16 строк
     if (scroll) {
@@ -462,7 +462,7 @@ void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdate(DGUS_VP_Variable &var, void
     }
   }
 
-  void DGUSScreenHandler::DGUSLCD_SD_ReallyAbort(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::sdReallyAbort(DGUS_VP_Variable &var, void *val_ptr) {
    
     ExtUI::stopPrint();
     gotoScreen(MKSLCD_SCREEN_PrintDone);
@@ -473,16 +473,16 @@ void DGUSScreenHandler::DGUSLCD_FIlamentSensorUpdate(DGUS_VP_Variable &var, void
   //   gotoScreen(DGUSLCD_SCREEN_SDPRINTTUNE);
   // }
 
-  void DGUSScreenHandler::SDCardError() {
-    DGUSScreenHandler::SDCardRemoved();
-    // sendinfoscreen(F("NOTICE"), nullptr, F("SD card error"), nullptr, true, true, true, true);
-    // SetupConfirmAction(nullptr);
-    // gotoScreen(DGUSLCD_SCREEN_POPUP);
+  void DGUSScreenHandler::sdCardError() {
+    DGUSScreenHandler::sdCardRemoved();
+    // sendInfoScreen_P(F("NOTICE"), nullptr, F("SD card error"), nullptr, true, true, true, true);
+    // setupConfirmAction(nullptr);
+    // gotoScreen(DGUS_SCREEN_POPUP);
   }
 
 #endif // SDSUPPORT
 
-void DGUSScreenHandler::ScreenConfirmedOK(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::screenConfirmedOK(DGUS_VP_Variable &var, void *val_ptr) {
   DGUS_VP_Variable ramcopy;
   if (!populate_VPVar(confirmVP, &ramcopy)) return;
   if (ramcopy.set_by_display_handler) ramcopy.set_by_display_handler(ramcopy, val_ptr);
@@ -511,10 +511,10 @@ const DGUS_VP_Variable* DGUSLCD_FindVPVar(const uint16_t vp) {
   return nullptr;
 }
 
-void DGUSScreenHandler::ScreenChangeHookIfIdle(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::screenChangeHookIfIdle(DGUS_VP_Variable &var, void *val_ptr) {
   if (!ExtUI::isPrinting()) {
-    ScreenChangeHook(var, val_ptr);
-    dgus.RequestScreen(current_screen);
+    screenChangeHook(var, val_ptr);
+    dgus.RequestScreen(current_screenID);
   }
 }
 
@@ -652,7 +652,7 @@ void DGUSScreenHandler::handleTemperatureChanged(DGUS_VP_Variable &var, void *va
   forceCompleteUpdate(); 
 }
 
-void DGUSScreenHandler::HandleFlowRateChanged(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::handleFlowRateChanged(DGUS_VP_Variable &var, void *val_ptr) {
   #if HAS_EXTRUDERS
     uint16_t newvalue = swap16(*(uint16_t*)val_ptr);
     uint8_t target_extruder;
@@ -726,8 +726,8 @@ void DGUSScreenHandler::handleMotorLockUnlock(DGUS_VP_Variable &var, void *val_p
   queue.enqueue_one_now(lock ? F("M18") : F("M17"));
 }
 
-void DGUSScreenHandler::HandleSettings(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleSettings");
+void DGUSScreenHandler::handleSettings(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("handleSettings");
   uint16_t value = swap16(*(uint16_t*)val_ptr);
   switch (value) {
     default: break;
@@ -741,8 +741,8 @@ void DGUSScreenHandler::HandleSettings(DGUS_VP_Variable &var, void *val_ptr) {
   }
 }
 
-// void DGUSScreenHandler::HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr) { //ЗАКОМЕНТИЛ
-//   DEBUG_ECHOLNPGM("HandleStepPerMMChanged");
+// void DGUSScreenHandler::handleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr) { //ЗАКОМЕНТИЛ
+//   DEBUG_ECHOLNPGM("handleStepPerMMChanged");
 
 //   uint16_t value_raw = swap16(*(uint16_t*)val_ptr);
 //   DEBUG_ECHOLNPGM("value_raw:", value_raw);
@@ -762,8 +762,8 @@ void DGUSScreenHandler::HandleSettings(DGUS_VP_Variable &var, void *val_ptr) {
 // }
 
 
-// void DGUSScreenHandler::HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr) { //ЗАКОМЕНТИЛ
-//   DEBUG_ECHOLNPGM("HandleStepPerMMExtruderChanged");
+// void DGUSScreenHandler::handleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr) { //ЗАКОМЕНТИЛ
+//   DEBUG_ECHOLNPGM("handleStepPerMMExtruderChanged");
 
 //   uint16_t value_raw = swap16(*(uint16_t*)val_ptr);
 //   DEBUG_ECHOLNPGM("value_raw:", value_raw);
@@ -786,8 +786,8 @@ void DGUSScreenHandler::HandleSettings(DGUS_VP_Variable &var, void *val_ptr) {
 
 
 //Свое частично 
-void DGUSScreenHandler::HandlePIDAutotune(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandlePIDAutotune");
+void DGUSScreenHandler::handlePIDAutotune(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("handlePIDAutotune");
 
   char buf[32] = {0};
   char buf1[32] = {0};
@@ -831,21 +831,21 @@ void DGUSScreenHandler::HandlePIDAutotune(DGUS_VP_Variable &var, void *val_ptr) 
           break;
   }
   //#if ENABLED(DGUS_UI_WAITING)
-    //sendinfoscreen(F("PID is autotuning"), F("please wait"), NUL_STR, NUL_STR, true, true, true, true);
+    //sendInfoScreen_P(F("PID is autotuning"), F("please wait"), NUL_STR, NUL_STR, true, true, true, true);
     //gotoScreen(MKSLCD_PID_PROCESS); //свое - изменил экран куда переход
   //#endif
 }
 
 //Свое
-void DGUSScreenHandler::HandlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandlePIDAbort");
+void DGUSScreenHandler::handlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("handlePIDAbort");
   wait_for_heatup = false;
 }
 
 //Свое
 #if HAS_BED_PROBE
-  void DGUSScreenHandler::HandleProbeOffsetZChanged(DGUS_VP_Variable &var, void *val_ptr) { //есть на других дисплеях, но не на нашем
-    DEBUG_ECHOLNPGM("HandleProbeOffsetZChanged");
+  void DGUSScreenHandler::handleProbeOffsetZChanged(DGUS_VP_Variable &var, void *val_ptr) { //есть на других дисплеях, но не на нашем
+    DEBUG_ECHOLNPGM("handleProbeOffsetZChanged");
 
     const float offset = float(int16_t(swap16(*(uint16_t*)val_ptr))) / 100.0f;
     ExtUI::setZOffset_mm(offset);
@@ -853,8 +853,8 @@ void DGUSScreenHandler::HandlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
     return;
   }
 
-  void DGUSScreenHandler::HandleAutoCalibrationStartStop(DGUS_VP_Variable &var, void *val_ptr) {
-    DEBUG_ECHOLNPGM("HandleAutoCalibrationStartStop");
+  void DGUSScreenHandler::handleAutoCalibrationStartStop(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("handleAutoCalibrationStartStop");
     int16_t movevalue = swap16(*(uint16_t*)val_ptr);
 
     thermalManager.zero_fan_speeds(); //вырубаем вентиляторы
@@ -950,8 +950,8 @@ void DGUSScreenHandler::HandlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
 
 
 #if HAS_FAN
-  void DGUSScreenHandler::HandleFanControl(DGUS_VP_Variable &var, void *val_ptr) {
-    DEBUG_ECHOLNPGM("HandleFanControl");
+  void DGUSScreenHandler::handleFanControl(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("handleFanControl");
     *(uint8_t*)var.memadr = *(uint8_t*)var.memadr > 0 ? 0 : 255;
     dgus.writeVariable(VP_T_Fan0_ON, thermalManager.fan_speed[0] > 0 ? (uint16_t)1 : (uint16_t)0); // Свое, без этого работало, но можно было встретить баг с реверсом иконки
     forceCompleteUpdate(); 
@@ -987,8 +987,8 @@ void DGUSScreenHandler::HandlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
 
 #if ENABLED(DGUS_PREHEAT_UI)
 
-  void DGUSScreenHandler::HandlePreheat(DGUS_VP_Variable &var, void *val_ptr) {
-    DEBUG_ECHOLNPGM("HandlePreheat");
+  void DGUSScreenHandler::handlePreheat(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("handlePreheat");
 
     const uint16_t preheat_option = swap16(*(uint16_t*)val_ptr);
     switch (preheat_option) {
@@ -1030,30 +1030,30 @@ void DGUSScreenHandler::HandlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
 
 
 
-void DGUSScreenHandler::UpdateNewScreen(DGUSLCD_Screens newscreen, bool popup) {
+void DGUSScreenHandler::UpdateNewScreen(DGUS_ScreenID newscreen, bool popup) {
   DEBUG_ECHOLNPGM("SetNewScreen: ", newscreen);
   if (!popup) {
-    memmove(&past_screens[1], &past_screens[0], sizeof(past_screens) - 1);
-    past_screens[0] = current_screen;
+    memmove(&past_screenIDs[1], &past_screenIDs[0], sizeof(past_screenIDs) - 1);
+    past_screenIDs[0] = current_screenID;
   }
-  current_screen = newscreen;
+  current_screenID = newscreen;
   skipVP = 0;
   forceCompleteUpdate();
 }
 
-void DGUSScreenHandler::PopToOldScreen() {
-  DEBUG_ECHOLNPGM("PopToOldScreen s=", past_screens[0]);
-  gotoScreen(past_screens[0], true);
-  memmove(&past_screens[0], &past_screens[1], sizeof(past_screens) - 1);
-  past_screens[sizeof(past_screens) - 1] = DGUSLCD_SCREEN_MAIN;
+void DGUSScreenHandler::popToOldScreen() {
+  DEBUG_ECHOLNPGM("popToOldScreen s=", past_screenIDs[0]);
+  gotoScreen(past_screenIDs[0], true);
+  memmove(&past_screenIDs[0], &past_screenIDs[1], sizeof(past_screenIDs) - 1);
+  past_screenIDs[sizeof(past_screenIDs) - 1] = DGUSLCD_SCREEN_MAIN;
 }
 
 void DGUSScreenHandler::updateScreenVPData() {
-  DEBUG_ECHOPGM(" updateScreenVPData Screen: ", current_screen);
+  DEBUG_ECHOPGM(" updateScreenVPData Screen: ", current_screenID);
 
-  const uint16_t *VPList = DGUSLCD_FindScreenVPMapList(current_screen);
+  const uint16_t *VPList = DGUSLCD_FindScreenVPMapList(current_screenID);
   if (!VPList) {
-    DEBUG_ECHOLNPGM(" NO SCREEN FOR: ", current_screen);
+    DEBUG_ECHOLNPGM(" NO SCREEN FOR: ", current_screenID);
     screenComplete = true;
     return; // nothing to do, likely a bug or boring screen.
   }
@@ -1096,12 +1096,12 @@ void DGUSScreenHandler::updateScreenVPData() {
   } while (++update_ptr, ++VPList, true);
 }
 
-void DGUSScreenHandler::gotoScreen(DGUSLCD_Screens screen, bool ispopup) {
+void DGUSScreenHandler::gotoScreen(DGUS_ScreenID screen, bool ispopup) {
   dgus.RequestScreen(screen);
   UpdateNewScreen(screen, ispopup);
 }
 
-void DGUSDisplay::RequestScreen(DGUSLCD_Screens screen) {
+void DGUSDisplay::RequestScreen(DGUS_ScreenID screen) {
   DEBUG_ECHOLNPGM("GotoScreen ", screen);
   const unsigned char gotoscreen[] = { 0x5A, 0x01, (unsigned char) (screen >> 8U), (unsigned char) (screen & 0xFFU) };
   writeVariable(0x84, gotoscreen, sizeof(gotoscreen));

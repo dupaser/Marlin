@@ -137,7 +137,7 @@ bool PreheatTimerScreen::onTouchHeld(uint8_t tag) {
 bool PreheatTimerScreen::onTouchEnd(uint8_t tag) {
   switch (tag) {
     case 1: GOTO_PREVIOUS(); return true;
-    default: return current_screen.onTouchHeld(tag);
+    default: return current_screenID.onTouchHeld(tag);
   }
   return false;
 }
@@ -147,7 +147,7 @@ void PreheatTimerScreen::onIdle() {
     AlertDialogBox::show(GET_TEXT_F(MSG_PREHEAT_FINISHED));
     // Remove SaveSettingsDialogBox from the stack
     // so the alert box doesn't return to me.
-    current_screen.forget();
+    current_screenID.forget();
   }
 
   reset_menu_timeout();

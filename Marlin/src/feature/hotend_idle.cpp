@@ -87,7 +87,7 @@ void HotendIdleProtection::check() {
   { 
     if (ExtUI::isPrintingFromMedia() && printingIsPaused() )
     {
-      DGUSScreenHandler::HeaterPrintingTimeout(); //Свое
+      DGUSScreenHandler::heaterPrintingTimeout(); //Свое
     }
     else if (!ExtUI::isPrintingFromMedia())
 

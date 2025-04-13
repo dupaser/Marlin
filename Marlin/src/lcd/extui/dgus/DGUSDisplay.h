@@ -37,7 +37,7 @@
 #endif
 #include "DGUSVPVariable.h"
 
-enum DGUSLCD_Screens : uint8_t;
+enum DGUS_ScreenID : uint8_t;
 
 //#define DEBUG_DGUSLCD
 #define DEBUG_OUT ENABLED(DEBUG_DGUSLCD)
@@ -91,7 +91,7 @@ public:
   // Force display into another screen.
   // (And trigger update of containing VPs)
   // (to implement a pop up message, which may not be nested)
-  static void RequestScreen(DGUSLCD_Screens screen);
+  static void RequestScreen(DGUS_ScreenID screen);
 
   // Periodic tasks, eg. Rx-Queue handling.
   static void loop();

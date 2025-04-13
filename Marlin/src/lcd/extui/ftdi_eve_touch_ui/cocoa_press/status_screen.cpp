@@ -257,7 +257,7 @@ bool StatusScreen::onTouchEnd(uint8_t tag) {
       break;
     case  7:
       GOTO_SCREEN(ConfirmAbortPrintDialogBox);
-      current_screen.forget();
+      current_screenID.forget();
       PUSH_SCREEN(StatusScreen);
       break;
     case  9: GOTO_SCREEN(FilesScreen); break;
@@ -274,7 +274,7 @@ bool StatusScreen::onTouchHeld(uint8_t tag) {
   if (tag == 8 && !ExtUI::isMoving()) {
     LoadChocolateScreen::setManualFeedrateAndIncrement(1, increment);
     UI_INCREMENT(AxisPosition_mm, E0);
-    current_screen.onRefresh();
+    current_screenID.onRefresh();
   }
   return false;
 }

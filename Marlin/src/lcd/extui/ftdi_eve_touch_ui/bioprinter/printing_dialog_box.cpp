@@ -132,7 +132,7 @@ void BioPrintingDialogBox::setStatusMessage(const char *cmsg) {
   #endif
 
   if (AT_SCREEN(BioPrintingDialogBox))
-    current_screen.onRefresh();
+    current_screenID.onRefresh();
 }
 
 void BioPrintingDialogBox::onIdle() {

@@ -344,7 +344,7 @@ bool StatusScreen::onTouchHeld(uint8_t tag) {
       const float increment = 0.25 * feedrate * (tag == 7 ? -1 : 1);
       MoveAxisScreen::setManualFeedrate(E0, feedrate);
       UI_INCREMENT(AxisPosition_mm, E0);
-      current_screen.onRefresh();
+      current_screenID.onRefresh();
       break;
     }
     default:

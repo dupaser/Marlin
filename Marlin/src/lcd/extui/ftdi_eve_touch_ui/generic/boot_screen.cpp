@@ -68,7 +68,7 @@ void BootScreen::onIdle() {
     StatusScreen::loadBitmaps();
     StatusScreen::setStatusMessage(GET_TEXT_F(WELCOME_MSG));
     GOTO_SCREEN(TouchCalibrationScreen);
-    current_screen.forget();
+    current_screenID.forget();
     PUSH_SCREEN(StatusScreen);
   }
   else {
@@ -94,7 +94,7 @@ void BootScreen::onIdle() {
 
     #if ENABLED(TOUCH_UI_LULZBOT_BIO)
       GOTO_SCREEN(BioConfirmHomeXYZ);
-      current_screen.forget();
+      current_screenID.forget();
       PUSH_SCREEN(StatusScreen);
       PUSH_SCREEN(BioConfirmHomeE);
     #elif NUM_LANGUAGES > 1

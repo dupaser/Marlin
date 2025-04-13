@@ -23,7 +23,7 @@
 
 #include "../DGUSDisplayDef.h"
 
-enum DGUSLCD_Screens : uint8_t {
+enum DGUS_ScreenID : uint8_t {
   DGUSLCD_SCREEN_BOOT                 = 160,
   DGUSLCD_SCREEN_MAIN                 =   1,
   DGUSLCD_SCREEN_STATUS               =   1,
@@ -50,8 +50,8 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_CONFIRM              = 240,
   DGUSLCD_SCREEN_KILL                 = 250, ///< Kill Screen. Must always be 250 (to be able to display "Error wrong LCD Version")
   DGUSLCD_SCREEN_WAITING              = 251,
-  DGUSLCD_SCREEN_POPUP                = 252, ///< special target, popup screen will also return this code to say "return to previous screen"
-  DGUSLCD_SCREEN_UNUSED               = 255
+  DGUS_SCREEN_POPUP                = 252, ///< special target, popup screen will also return this code to say "return to previous screen"
+  DGUS_SCREEN_UNUSED               = 255
 };
 
 // Display Memory layout used (T5UID)

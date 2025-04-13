@@ -57,7 +57,7 @@ uint8_t DGUSScreenHandler::pid_cycles = 5;
 bool DGUSScreenHandler::settings_ready = false;
 bool DGUSScreenHandler::booted = false;
 
-DGUS_Screen DGUSScreenHandler::current_screen = DGUS_Screen::BOOT;
+DGUS_Screen DGUSScreenHandler::current_screenID = DGUS_Screen::BOOT;
 DGUS_Screen DGUSScreenHandler::new_screen = DGUS_Screen::BOOT;
 bool DGUSScreenHandler::full_update = false;
 
@@ -90,7 +90,7 @@ void DGUSScreenHandler::Ready() {
 }
 
 void DGUSScreenHandler::Loop() {
-  if (!settings_ready || current_screen == DGUS_Screen::KILL) {
+  if (!settings_ready || current_screenID == DGUS_Screen::KILL) {
     return;
   }
 
@@ -100,7 +100,7 @@ void DGUSScreenHandler::Loop() {
   if (new_screen != DGUS_Screen::BOOT) {
     const DGUS_Screen screen = new_screen;
     new_screen = DGUS_Screen::BOOT;
-    if (current_screen == screen)
+    if (current_screenID == screen)
       TriggerFullUpdate();
     else
       MoveToScreen(screen);
@@ -112,7 +112,7 @@ void DGUSScreenHandler::Loop() {
 
     dgus_display.ReadVersions();
 
-    if (current_screen == DGUS_Screen::BOOT)
+    if (current_screenID == DGUS_Screen::BOOT)
       MoveToScreen(DGUS_Screen::HOME);
 
     return;
@@ -121,13 +121,13 @@ void DGUSScreenHandler::Loop() {
   if (ELAPSED(ms, next_event_ms) || full_update) {
     next_event_ms = ms + DGUS_UPDATE_INTERVAL_MS;
 
-    if (!SendScreenVPData(current_screen, full_update))
+    if (!SendScreenVPData(current_screenID, full_update))
       DEBUG_ECHOLNPGM("SendScreenVPData failed");
 
     return;
   }
 
-  if (current_screen == DGUS_Screen::WAIT
+  if (current_screenID == DGUS_Screen::WAIT
       && ((wait_continue && !wait_for_user)
           || (!wait_continue && IsPrinterIdle()))
   ) {
@@ -135,7 +135,7 @@ void DGUSScreenHandler::Loop() {
     return;
   }
 
-  if (current_screen == DGUS_Screen::LEVELING_PROBING && IsPrinterIdle()) {
+  if (current_screenID == DGUS_Screen::LEVELING_PROBING && IsPrinterIdle()) {
     dgus_display.PlaySound(3);
 
     SetStatusMessage(ExtUI::getMeshValid() ? F("Probing successful") : F("Probing failed"));
@@ -177,7 +177,7 @@ void DGUSScreenHandler::UserConfirmRequired(const char * const msg) {
 
   dgus_display.PlaySound(3);
 
-  dgus_screen_handler.ShowWaitScreen(current_screen, true);
+  dgus_screen_handler.ShowWaitScreen(current_screenID, true);
 }
 
 void DGUSScreenHandler::SettingsReset() {
@@ -248,8 +248,8 @@ void DGUSScreenHandler::PlayTone(const uint16_t frequency, const uint16_t durati
 }
 
 void DGUSScreenHandler::MeshUpdate(const int8_t xpos, const int8_t ypos) {
-  if (current_screen != DGUS_Screen::LEVELING_PROBING) {
-    if (current_screen == DGUS_Screen::LEVELING_AUTOMATIC)
+  if (current_screenID != DGUS_Screen::LEVELING_PROBING) {
+    if (current_screenID == DGUS_Screen::LEVELING_AUTOMATIC)
       TriggerFullUpdate();
     return;
   }
@@ -273,7 +273,7 @@ void DGUSScreenHandler::PrintTimerPaused() {
 }
 
 void DGUSScreenHandler::PrintTimerStopped() {
-  if (current_screen != DGUS_Screen::PRINT_STATUS && current_screen != DGUS_Screen::PRINT_ADJUST)
+  if (current_screenID != DGUS_Screen::PRINT_STATUS && current_screenID != DGUS_Screen::PRINT_ADJUST)
     return;
 
   dgus_display.PlaySound(3);
@@ -292,19 +292,19 @@ void DGUSScreenHandler::FilamentRunout(const ExtUI::extruder_t extruder) {
 
 #if ENABLED(SDSUPPORT)
 
-  void DGUSScreenHandler::sDCardInserted() {
-    if (current_screen == DGUS_Screen::HOME)
+  void DGUSScreenHandler::sdCardInserted() {
+    if (current_screenID == DGUS_Screen::HOME)
       TriggerScreenChange(DGUS_Screen::PRINT);
   }
 
-  void DGUSScreenHandler::SDCardRemoved() {
-    if (current_screen == DGUS_Screen::PRINT)
+  void DGUSScreenHandler::sdCardRemoved() {
+    if (current_screenID == DGUS_Screen::PRINT)
       TriggerScreenChange(DGUS_Screen::HOME);
   }
 
-  void DGUSScreenHandler::SDCardError() {
+  void DGUSScreenHandler::sdCardError() {
     SetStatusMessage(GET_TEXT_F(MSG_MEDIA_READ_ERROR));
-    if (current_screen == DGUS_Screen::PRINT)
+    if (current_screenID == DGUS_Screen::PRINT)
       TriggerScreenChange(DGUS_Screen::HOME);
   }
 
@@ -404,7 +404,7 @@ void DGUSScreenHandler::ShowWaitScreen(DGUS_Screen return_screen, bool has_conti
 }
 
 DGUS_Screen DGUSScreenHandler::GetCurrentScreen() {
-  return current_screen;
+  return current_screenID;
 }
 
 void DGUSScreenHandler::TriggerScreenChange(DGUS_Screen screen) {
@@ -455,11 +455,11 @@ bool DGUSScreenHandler::CallScreenSetup(DGUS_Screen screen) {
 }
 
 void DGUSScreenHandler::MoveToScreen(DGUS_Screen screen, bool abort_wait) {
-  if (current_screen == DGUS_Screen::KILL) {
+  if (current_screenID == DGUS_Screen::KILL) {
     return;
   }
 
-  if (current_screen == DGUS_Screen::WAIT) {
+  if (current_screenID == DGUS_Screen::WAIT) {
     if (screen != DGUS_Screen::WAIT) {
       wait_return_screen = screen;
     }
@@ -478,8 +478,8 @@ void DGUSScreenHandler::MoveToScreen(DGUS_Screen screen, bool abort_wait) {
     return;
   }
 
-  current_screen = screen;
-  dgus_display.SwitchScreen(current_screen);
+  current_screenID = screen;
+  dgus_display.SwitchScreen(current_screenID);
 }
 
 bool DGUSScreenHandler::SendScreenVPData(DGUS_Screen screen, bool complete_update) {

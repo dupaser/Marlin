@@ -54,11 +54,11 @@ public:
 
   #if ENABLED(SDSUPPORT)
     /// Marlin informed us that a new SD has been inserted.
-    static void sDCardInserted();
+    static void sdCardInserted();
     /// Marlin informed us that the SD Card has been removed().
-    static void SDCardRemoved();
+    static void sdCardRemoved();
     /// Marlin informed us about a bad SD Card.
-    static void SDCardError();
+    static void sdCardError();
   #endif
 
   #if ENABLED(POWER_LOSS_RECOVERY)
@@ -121,7 +121,7 @@ private:
   static bool settings_ready;
   static bool booted;
 
-  static DGUS_Screen current_screen;
+  static DGUS_Screen current_screenID;
   static DGUS_Screen new_screen;
   static bool full_update;
 

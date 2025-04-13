@@ -51,14 +51,14 @@ namespace ExtUI {
     DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_PLEASE_RESET), 1); //свое
 
    // dgusdisplay.writeVariable(VP_ERROR_STATUS, (uint16_t)1); //Свое 
-    //screen.sendinfoscreen(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET), true, true, true, true);
+    //screen.sendInfoScreen_P(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET), true, true, true, true);
     //screen.gotoScreen(DGUSLCD_SCREEN_KILL);
    // while (!screen.loop());  // Wait while anything is left to be sent
   }
 
-  void onMediaInserted() { TERN_(SDSUPPORT, screen.sDCardInserted()); }
-  void onMediaError()    { TERN_(SDSUPPORT, screen.SDCardError()); }
-  void onMediaRemoved()  { TERN_(SDSUPPORT, screen.SDCardRemoved()); }
+  void onMediaInserted() { TERN_(SDSUPPORT, screen.sdCardInserted()); }
+  void onMediaError()    { TERN_(SDSUPPORT, screen.sdCardError()); }
+  void onMediaRemoved()  { TERN_(SDSUPPORT, screen.sdCardRemoved()); }
 
   void onPlayTone(const uint16_t frequency, const uint16_t duration) {}
   void onPrintTimerStarted() {}
@@ -68,17 +68,17 @@ namespace ExtUI {
 
   void onUserConfirmRequired(const char * const msg) {
     if (msg) {
-      screen.sendinfoscreen(F("Please confirm."), nullptr, msg, nullptr, true, true, false, true);
-      screen.SetupConfirmAction(setUserConfirmed);
-      screen.gotoScreen(DGUSLCD_SCREEN_POPUP);
+      screen.sendInfoScreen(F("Please confirm."), nullptr, msg, nullptr, true, true, false, true);
+      screen.setupConfirmAction(setUserConfirmed);
+      screen.gotoScreen(DGUS_SCREEN_POPUP);
     }
-    else if (screen.getCurrentScreen() == DGUSLCD_SCREEN_POPUP) {
-      screen.SetupConfirmAction(nullptr);
-      screen.PopToOldScreen();
+    else if (screen.getCurrentScreen() == DGUS_SCREEN_POPUP) {
+      screen.setupConfirmAction(nullptr);
+      screen.popToOldScreen();
     }
   }
 
-  void onStatusChanged(const char * const msg) { screen.setstatusmessage(msg); }
+  void onStatusChanged(const char * const msg) { screen.setStatusMessage(msg); }
 
   void onHomingStart() {}
   void onHomingDone() {}

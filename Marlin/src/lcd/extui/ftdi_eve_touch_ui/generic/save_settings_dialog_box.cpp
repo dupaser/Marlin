@@ -42,7 +42,7 @@ bool SaveSettingsDialogBox::onTouchEnd(uint8_t tag) {
       AlertDialogBox::show(GET_TEXT_F(MSG_EEPROM_SAVED));
       // Remove SaveSettingsDialogBox from the stack
       // so the alert box doesn't return to me.
-      current_screen.forget();
+      current_screenID.forget();
       return true;
     default:
       return DialogBoxBaseClass::onTouchEnd(tag);
@@ -54,7 +54,7 @@ void SaveSettingsDialogBox::promptToSaveSettings() {
      // Remove current screen from the stack
      // so SaveSettingsDialogBox doesn't return here.
      GOTO_SCREEN(SaveSettingsDialogBox);
-     current_screen.forget();
+     current_screenID.forget();
    }
    else
      GOTO_PREVIOUS(); // No save needed.

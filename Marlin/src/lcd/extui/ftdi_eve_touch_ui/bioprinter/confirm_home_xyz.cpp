@@ -41,7 +41,7 @@ bool BioConfirmHomeXYZ::onTouchEnd(uint8_t tag) {
          PARK_AND_RELEASE_COMMANDS
         ));
       #endif
-      current_screen.forget();
+      current_screenID.forget();
       break;
     case 2:
       GOTO_SCREEN(StatusScreen);

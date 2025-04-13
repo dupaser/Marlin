@@ -371,7 +371,7 @@ bool BaseNumericAdjustmentScreen::onTouchEnd(uint8_t tag) {
   switch (tag) {
     case 1:           GOTO_PREVIOUS(); return true;
     case 240 ... 245: mydata.increment = tag; break;
-    default:          return current_screen.onTouchHeld(tag);
+    default:          return current_screenID.onTouchHeld(tag);
   }
   return true;
 }

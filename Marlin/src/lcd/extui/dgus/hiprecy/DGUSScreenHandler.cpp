@@ -44,7 +44,7 @@
 
   extern ExtUI::FileList filelist;
 
-  void DGUSScreenHandler::DGUSLCD_SD_FileSelected(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::sdFileSelected(DGUS_VP_Variable &var, void *val_ptr) {
     uint16_t touched_nr = (int16_t)swap16(*(uint16_t*)val_ptr) + top_file;
     if (touched_nr > filelist.count()) return;
     if (!filelist.seek(touched_nr)) return;
@@ -64,7 +64,7 @@
     // Setup Confirmation screen
     file_to_print = touched_nr;
 
-    HandleUserConfirmationPopUp(VP_SD_FileSelectConfirm, nullptr, PSTR("Print file"), filelist.filename(), PSTR("from SD Card?"), true, true, false, true);
+    handleUserConfirmationPopUp(VP_SD_FileSelectConfirm, nullptr, PSTR("Print file"), filelist.filename(), PSTR("from SD Card?"), true, true, false, true);
   }
 
   void DGUSScreenHandler::sdStartPrint(DGUS_VP_Variable &var, void *val_ptr) {
@@ -73,7 +73,7 @@
     gotoScreen(DGUSLCD_SCREEN_SDPRINTMANIPULATION);
   }
 
-  void DGUSScreenHandler::DGUSLCD_SD_ResumePauseAbort(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::sdResumePauseAbort(DGUS_VP_Variable &var, void *val_ptr) {
 
     if (!ExtUI::isPrintingFromMedia()) return; // avoid race condition when user stays in this menu and printer finishes.
     switch (swap16(*(uint16_t*)val_ptr)) {
@@ -92,12 +92,12 @@
         }
         break;
       case 2: // Abort
-        HandleUserConfirmationPopUp(VP_SD_AbortPrintConfirmed, nullptr, PSTR("Abort printing"), filelist.filename(), PSTR("?"), true, true, false, true);
+        handleUserConfirmationPopUp(VP_SD_AbortPrintConfirmed, nullptr, PSTR("Abort printing"), filelist.filename(), PSTR("?"), true, true, false, true);
         break;
     }
   }
 
-  void DGUSScreenHandler::DGUSLCD_SD_SendFilename(DGUS_VP_Variable& var) {
+  void DGUSScreenHandler::sdSendFilename(DGUS_VP_Variable& var) {
     uint16_t target_line = (var.VP - VP_SD_FileName0) / VP_SD_FileName_LEN;
     if (target_line > DGUS_SD_FILESPERSCREEN) return;
     char tmpfilename[VP_SD_FileName_LEN + 1] = "";
@@ -106,10 +106,10 @@
     if (filelist.seek(top_file + target_line)) {
       snprintf_P(tmpfilename, VP_SD_FileName_LEN, PSTR("%s%c"), filelist.filename(), filelist.isDir() ? '/' : 0); // snprintf_P(tmpfilename, VP_SD_FileName_LEN, PSTR("%s"), filelist.filename());
     }
-    DGUSLCD_SendStringToDisplay(var);
+    sendStringToDisplay(var);
   }
 
-  void DGUSScreenHandler::sDCardInserted() {
+  void DGUSScreenHandler::sdCardInserted() {
     top_file = 0;
     filelist.refresh();
     auto cs = getCurrentScreen();
@@ -117,29 +117,29 @@
       gotoScreen(DGUSLCD_SCREEN_SDFILELIST);
   }
 
-  void DGUSScreenHandler::SDCardRemoved() {
-    if (current_screen == DGUSLCD_SCREEN_SDFILELIST
-        || (current_screen == DGUSLCD_SCREEN_CONFIRM && (confirmVP == VP_SD_AbortPrintConfirmed || confirmVP == VP_SD_FileSelectConfirm))
-        || current_screen == DGUSLCD_SCREEN_SDPRINTMANIPULATION
+  void DGUSScreenHandler::sdCardRemoved() {
+    if (current_screenID == DGUSLCD_SCREEN_SDFILELIST
+        || (current_screenID == DGUSLCD_SCREEN_CONFIRM && (confirmVP == VP_SD_AbortPrintConfirmed || confirmVP == VP_SD_FileSelectConfirm))
+        || current_screenID == DGUSLCD_SCREEN_SDPRINTMANIPULATION
     ) gotoScreen(DGUSLCD_SCREEN_MAIN);
   }
 
 #endif // SDSUPPORT
 
-void DGUSScreenHandler::ScreenChangeHook(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenHandler::screenChangeHook(DGUS_VP_Variable &var, void *val_ptr) {
   uint8_t *tmp = (uint8_t*)val_ptr;
 
   // The keycode in target is coded as <from-frame><to-frame>, so 0x0100A means
-  // from screen 1 (main) to 10 (temperature). DGUSLCD_SCREEN_POPUP is special,
+  // from screen 1 (main) to 10 (temperature). DGUS_SCREEN_POPUP is special,
   // meaning "return to previous screen"
-  DGUSLCD_Screens target = (DGUSLCD_Screens)tmp[1];
+  DGUS_ScreenID target = (DGUS_ScreenID)tmp[1];
 
   DEBUG_ECHOLNPGM("\n DEBUG target", target);
 
-  if (target == DGUSLCD_SCREEN_POPUP) {
+  if (target == DGUS_SCREEN_POPUP) {
     // Special handling for popup is to return to previous menu
-    if (current_screen == DGUSLCD_SCREEN_POPUP && confirm_action_cb) confirm_action_cb();
-    PopToOldScreen();
+    if (current_screenID == DGUS_SCREEN_POPUP && confirm_action_cb) confirm_action_cb();
+    popToOldScreen();
     return;
   }
 
@@ -150,8 +150,8 @@ void DGUSScreenHandler::ScreenChangeHook(DGUS_VP_Variable &var, void *val_ptr) {
   #endif
 }
 
-void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleManualMove");
+void DGUSScreenHandler::handleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("handleManualMove");
 
   int16_t movevalue = swap16(*(uint16_t*)val_ptr);
   #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
@@ -242,7 +242,7 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
 }
 
 #if HAS_PID_HEATING
-  void DGUSScreenHandler::HandleTemperaturePIDChanged(DGUS_VP_Variable &var, void *val_ptr) {
+  void DGUSScreenHandler::handleTemperaturePIDChanged(DGUS_VP_Variable &var, void *val_ptr) {
     uint16_t rawvalue = swap16(*(uint16_t*)val_ptr);
     DEBUG_ECHOLNPGM("V1:", rawvalue);
     float value = (float)rawvalue / 10;
@@ -287,8 +287,8 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
 
 #if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
 
-  void DGUSScreenHandler::HandleFilamentOption(DGUS_VP_Variable &var, void *val_ptr) {
-    DEBUG_ECHOLNPGM("HandleFilamentOption");
+  void DGUSScreenHandler::handleFilamentOption(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("handleFilamentOption");
 
     uint8_t e_temp = 0;
     filament_data.heated = false;
@@ -359,8 +359,8 @@ void DGUSScreenHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
     }
   }
 
-  void DGUSScreenHandler::HandleFilamentLoadUnload(DGUS_VP_Variable &var) {
-    DEBUG_ECHOLNPGM("HandleFilamentLoadUnload");
+  void DGUSScreenHandler::handleFilamentLoadUnload(DGUS_VP_Variable &var) {
+    DEBUG_ECHOLNPGM("handleFilamentLoadUnload");
     if (filament_data.action <= 0) return;
 
     // If we close to the target temperature, we can start load or unload the filament
@@ -400,7 +400,7 @@ bool DGUSScreenHandler::loop() {
   const millis_t ms = millis();
   static millis_t next_event_ms = 0;
 
-  if (!IsScreenComplete() || ELAPSED(ms, next_event_ms)) {
+  if (!isScreenComplete() || ELAPSED(ms, next_event_ms)) {
     next_event_ms = ms + DGUS_UPDATE_INTERVAL_MS;
     updateScreenVPData();
   }
@@ -417,7 +417,7 @@ bool DGUSScreenHandler::loop() {
     }
   #endif
 
-  return IsScreenComplete();
+  return isScreenComplete();
 }
 
 #endif // DGUS_LCD_UI_HIPRECY

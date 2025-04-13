@@ -128,12 +128,12 @@ namespace FTDI {
           #endif
 
           pressed_tag = tag;
-          current_screen.onRefresh();
+          current_screenID.onRefresh();
 
           // When the user taps on a button, activate the onTouchStart handler
-          const uint8_t lastScreen = current_screen.getScreen();
+          const uint8_t lastScreen = current_screenID.getScreen();
 
-          if (current_screen.onTouchStart(tag)) {
+          if (current_screenID.onTouchStart(tag)) {
             touch_timer.start();
             if (UIData::flags.bits.touch_start_sound) sound.play(press_sound);
           }
@@ -141,7 +141,7 @@ namespace FTDI {
           // In the case in which a touch event triggered a new screen to be
           // drawn, we don't issue a touchEnd since it would be sent to the
           // wrong screen.
-          UIData::flags.bits.ignore_unpress = (lastScreen != current_screen.getScreen());
+          UIData::flags.bits.ignore_unpress = (lastScreen != current_screenID.getScreen());
         }
         else {
           touch_timer.start();
@@ -152,8 +152,8 @@ namespace FTDI {
           if (tag == pressed_tag) {
             // The user is holding down a button.
             if (touch_timer.elapsed(1000 / TOUCH_REPEATS_PER_SECOND)) {
-              if (current_screen.onTouchHeld(tag)) {
-                current_screen.onRefresh();
+              if (current_screenID.onTouchHeld(tag)) {
+                current_screenID.onRefresh();
                 if (UIData::flags.bits.touch_repeat_sound) sound.play(repeat_sound);
               }
               touch_timer.start();
@@ -190,8 +190,8 @@ namespace FTDI {
 
             const uint8_t saved_pressed_tag = pressed_tag;
             pressed_tag = UNPRESSED;
-            current_screen.onTouchEnd(saved_pressed_tag);
-            current_screen.onRefresh();
+            current_screenID.onTouchEnd(saved_pressed_tag);
+            current_screenID.onRefresh();
           }
         }
         break;
@@ -203,7 +203,7 @@ namespace FTDI {
     CLCD::init();
     DLCache::init();
     UIData::reset_persistent_data();
-    current_screen.start();
+    current_screenID.start();
   }
 
   void EventLoop::loop() {
@@ -216,7 +216,7 @@ namespace FTDI {
       */
     if (!UIData::flags.bits.prevent_reentry) {
       UIData::flags.bits.prevent_reentry = true;
-      current_screen.onIdle();
+      current_screenID.onIdle();
       process_events();
       UIData::flags.bits.prevent_reentry = false;
     }

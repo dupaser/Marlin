@@ -104,17 +104,17 @@ void StressTestScreen::onEntry() {
 
 void StressTestScreen::recursiveLockup() {
   mydata.message = PSTR("Test 2: Printer will restart.");
-  current_screen.onRefresh();
+  current_screenID.onRefresh();
   recursiveLockup();
 }
 
 void StressTestScreen::iterativeLockup() {
   mydata.message = PSTR("Test 3: Printer will restart.");
-  for (;;) current_screen.onRefresh();
+  for (;;) current_screenID.onRefresh();
 }
 
 void StressTestScreen::onIdle() {
-  current_screen.onRefresh();
+  current_screenID.onRefresh();
   reset_menu_timeout();
 
   if (!commandsInQueue()) {

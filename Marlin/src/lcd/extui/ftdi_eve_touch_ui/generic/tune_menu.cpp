@@ -114,7 +114,7 @@ bool TuneMenu::onTouchEnd(uint8_t tag) {
     case  7: resumePrint(); break;
     case  8:
       GOTO_SCREEN(ConfirmAbortPrintDialogBox);
-      current_screen.forget();
+      current_screenID.forget();
       PUSH_SCREEN(StatusScreen);
       break;
     #if EITHER(LIN_ADVANCE, FILAMENT_RUNOUT_SENSOR)

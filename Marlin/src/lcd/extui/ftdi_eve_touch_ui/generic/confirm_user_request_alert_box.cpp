@@ -39,7 +39,7 @@ bool ConfirmUserRequestAlertBox::onTouchEnd(uint8_t tag) {
         if (ExtUI::isPrintingPaused()) {
           // The TuneMenu will call ExtUI::setUserConfirmed()
           GOTO_SCREEN(TuneMenu);
-          current_screen.forget();
+          current_screenID.forget();
         }
         else
       #endif

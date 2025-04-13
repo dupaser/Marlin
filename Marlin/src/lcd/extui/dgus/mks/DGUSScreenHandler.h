@@ -23,7 +23,7 @@
 
 #include "../DGUSScreenHandlerBase.h"
 
-enum DGUSLCD_Screens : uint8_t;
+enum DGUS_ScreenID : uint8_t;
 
 class DGUSScreenHandlerMKS : public DGUSScreenHandler {
 public:
@@ -33,7 +33,7 @@ public:
   #if 0
   static void sendinfoscreen_ch(const uint16_t *line1, const uint16_t *line2, const uint16_t *line3, const uint16_t *line4);
   static void sendinfoscreen_en(PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4);
-  static void sendinfoscreen(const void *line1, const void *line2, const void *line3, const void *line4, uint16_t language);
+  static void sendInfoScreen_P(const void *line1, const void *line2, const void *line3, const void *line4, uint16_t language);
   #endif
 
   static void Cool_Down(DGUS_VP_Variable &var, void *val_ptr); //своя для выкл нагревателей
@@ -84,8 +84,8 @@ public:
   static void LCD_BLK_Adjust(DGUS_VP_Variable &var, void *val_ptr);
   static void SD_FileBack(DGUS_VP_Variable &var, void *val_ptr);
 
-  //static void HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr);
-  // static void HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr);
+  //static void handleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr);
+  // static void handleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr);
   // static void HandleMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr);
   // static void HandleExtruderMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr);
   // static void HandleAccChange(DGUS_VP_Variable &var, void *val_ptr);
@@ -116,7 +116,7 @@ public:
     static void GetBabyStep_Step(DGUS_VP_Variable &var, void *val_ptr);
   #endif
 
-  static void DGUSLCD_SendPrintTimeToDisplay(DGUS_VP_Variable &var);
+  static void sendPrintTimeToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendFanToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendGbkToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable &var);

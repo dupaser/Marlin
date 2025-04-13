@@ -39,7 +39,7 @@ bool RestoreFailsafeDialogBox::onTouchEnd(uint8_t tag) {
       AlertDialogBox::show(GET_TEXT_F(MSG_EEPROM_RESET));
       // Remove RestoreFailsafeDialogBox from the stack
       // so the alert box doesn't return to it.
-      current_screen.forget();
+      current_screenID.forget();
       SaveSettingsDialogBox::settingsChanged();
       return true;
     default:

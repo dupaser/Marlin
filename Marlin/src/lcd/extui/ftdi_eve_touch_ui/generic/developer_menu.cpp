@@ -94,7 +94,7 @@ bool DeveloperMenu::onTouchEnd(uint8_t tag) {
     case 3:
       PUSH_SCREEN(StressTestScreen);
       AlertDialogBox::show(F("Please do not run this test unattended as it may cause your printer to malfunction."));
-      current_screen.forget();
+      current_screenID.forget();
       break;
     case 4: GOTO_SCREEN(TouchRegistersScreen);          break;
     case 5: sound.play(js_bach_joy, PLAY_ASYNCHRONOUS); break;

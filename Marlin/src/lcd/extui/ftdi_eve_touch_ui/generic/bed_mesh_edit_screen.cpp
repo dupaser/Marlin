@@ -193,7 +193,7 @@ void BedMeshEditScreen::show() {
   // On entry, always home (to account for possible Z offset changes) and save current mesh
   SpinnerDialogBox::enqueueAndWait(F("G28\nG29 S1"));
   // After the spinner, go to this screen.
-  current_screen.forget();
+  current_screenID.forget();
   PUSH_SCREEN(BedMeshEditScreen);
 }
 

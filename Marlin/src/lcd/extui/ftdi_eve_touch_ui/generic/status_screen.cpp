@@ -368,7 +368,7 @@ void StatusScreen::setStatusMessage(const char *message) {
   #endif
 
   if (AT_SCREEN(StatusScreen)) {
-    current_screen.onRefresh();
+    current_screenID.onRefresh();
   }
 }
 

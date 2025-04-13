@@ -131,7 +131,7 @@ void LockScreen::onPasscodeEntered() {
     message_style() = 'w';
     onRefresh();
     sound.play(sad_trombone, PLAY_SYNCHRONOUS);
-    current_screen.forget(); // Discard the screen the user was trying to go to.
+    current_screenID.forget(); // Discard the screen the user was trying to go to.
     GOTO_PREVIOUS();
   }
 }
