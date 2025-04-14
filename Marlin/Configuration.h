@@ -2480,6 +2480,71 @@
 #define PREHEAT_2_TEMP_CHAMBER 35
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
 
+#define PREHEAT_3_LABEL       "ABS" //добавил сам скопировав строчки
+#define PREHEAT_3_TEMP_HOTEND 240
+#define PREHEAT_3_TEMP_BED    110
+#define PREHEAT_3_TEMP_CHAMBER 45
+#define PREHEAT_3_FAN_SPEED     0 // Value from 0 to 255
+
+#define PREHEAT_4_LABEL       "NYLON" //добавил сам скопировав строчки
+#define PREHEAT_4_TEMP_HOTEND 260
+#define PREHEAT_4_TEMP_BED    115
+#define PREHEAT_4_TEMP_CHAMBER 55
+#define PREHEAT_4_FAN_SPEED     0 // Value from 0 to 255
+
+#define PREHEAT_5_LABEL       "MAX" // свое добавил сам скопировав строчки
+#define PREHEAT_5_TEMP_HOTEND 280
+#define PREHEAT_5_TEMP_BED    120
+#define PREHEAT_5_TEMP_CHAMBER 60
+#define PREHEAT_5_FAN_SPEED     0 // Value from 0 to 255
+
+// СВОИ ПЕРЕМЕННЫЕ ДЛЯ НАСТРОЙКИ В DWIN МЕНЮ
+
+//Переменные для меню загрузки выгрузки филамента
+#define FILAMENT_UNLOAD_CONST_LENGTH        110    //Длина выгрузки из сопла
+#define FILAMENT_PREUNLOAD_CONST_LENGTH     5      //Длина маленькой загрузки перед выгрузкой из сопла чтобы не было пробки
+#define FILAMENT_UNLOAD_CONST_SPEED         25     //скорость выгрузки из сопла
+#define FILAMENT_PREUNLOAD_CONST_SPEED      6      //Скорость маленькой загрузки перед выгрузкой из сопла чтобы не было пробки
+
+#define FILAMENT_LOAD_CONST_LENGTH          70     //Длина загрузки в сопло
+#define FILAMENT_LOAD_CONST_SPEED           15     //скорость загрузки в сопло
+
+#define FILAMENT_CLEAN_CONST_LENGTH         30     //Длина прочистки сопло
+#define FILAMENT_CLEAN_CONST_SPEED          4      //скоростьпрочистки в сопло
+
+
+//температуры
+#define ALARM_TEMPERATURE_ICON              55     //температура включения иконки горячо 
+#define PID_TEMPERATURE_HOTEND              230    //температура начальная для автотюна
+#define PID_TEMPERATURE_BED                 70     //температура начальная для автотюна
+
+//ограничения
+#define MAX_PRINT_SPEED               300
+#define MIN_PRINT_SPEED               10
+#define MAX_FLOW_RATE                 200
+#define MIN_FLOW_RATE                 10
+#define BABYSTEPPING_SET_LIMIT        100      //Ограничение величины Z offset по колличеству шагов
+#define Z_HOME_POS_SHIFT_LIMIT        3        //Ограничение величины сдвига координаты парковки Z в мм
+
+
+
+///парковка
+#define NOZZLE_PARK_POINT_X X_BED_SIZE / 2 //парковка сопла по центру оси Х
+#define NOZZLE_PARK_POINT_Z 5
+#define PAUSE_PARK_RETRACT_FEEDRATE 25
+#define PAUSE_PARK_RETRACT_LENGTH 1
+
+#if PRINTER_MODEL == 1 || PRINTER_MODEL == 2 || PRINTER_MODEL == 102
+  #define NOZZLE_PARK_POINT_Y 0
+#elif PRINTER_MODEL == 3 || PRINTER_MODEL == 31
+  #define NOZZLE_PARK_POINT_Y -10
+#endif
+
+
+///автокалибровка 
+#define LEVELING_TEMPERATURE_1 60 //пресет первой калибровочной температуры
+#define LEVELING_TEMPERATURE_2 100
+
 /**
  * @section nozzle park
  *
@@ -2675,7 +2740,7 @@
  * SD Card support is disabled by default. If your controller has an SD slot,
  * you must uncomment the following option or it won't work.
  */
-//#define SDSUPPORT
+#define SDSUPPORT
 
 /**
  * SD CARD: ENABLE CRC
@@ -3257,7 +3322,7 @@
  *
  * :[ 'ORIGIN', 'FYSETC', 'HYPRECY', 'MKS', 'RELOADED', 'IA_CREALITY', 'E3S1PRO' ]
  */
-#define DGUS_LCD_UI ORIGIN
+#define DGUS_LCD_UI MKS
 #if DGUS_UI_IS(MKS)
   #define USE_MKS_GREEN_UI
 #elif DGUS_UI_IS(IA_CREALITY)

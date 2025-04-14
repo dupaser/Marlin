@@ -141,54 +141,51 @@ namespace ExtUI {
   #endif
 
   #if HAS_PID_HEATING
-    void onPidTuning(const result_t rst, int heater_type, int cycles , int ncycles ) {
+  void onPIDTuning(const pidresult_t rst) { // fixme
+    // void onPidTuning(const result_t rst, int heater_type, int cycles , int ncycles ) {
       // Called for temperature PID tuning result
-      const char* statusMessage = nullptr;
-      char buf[20];  
-      bool screen = 0;
-      switch (rst) {
-        case PID_TUNING_CYCLE: 
-          sprintf_P(buf, PSTR("%s %d / %d"), GET_TEXT(MSG_PID_CYCLE), cycles, ncycles);
-          dgus.WriteString(VP_PID_AUTOTUNE_CYCLES, buf, 20);
-          screen = 1;
-          break;
+      // const char* statusMessage = nullptr;
+      // char buf[20];  
+      // bool screen = 0;
+      // switch (rst) {
+      //   case PID_TUNING_CYCLE: 
+      //     sprintf_P(buf, PSTR("%s %d / %d"), GET_TEXT(MSG_PID_CYCLE), cycles, ncycles);
+      //     dgus.WriteString(VP_PID_AUTOTUNE_CYCLES, buf, 20);
+      //     screen = 1;
+      //     break;
 
-        case PID_STARTED:
-           if (heater_type == 0 || heater_type == 1)
-            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_E);
-            else if (heater_type == -1 )
-            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_BED);
-            else 
-            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE);
-            screen = 1;
-            break;
-        case PID_BAD_EXTRUDER_NUM:
-            statusMessage = GET_TEXT(MSG_PID_BAD_EXTRUDER_NUM);
-            break;
-        case PID_TEMP_TOO_HIGH:
-            statusMessage = GET_TEXT(MSG_PID_TEMP_TOO_HIGH);
-            break;
-        case PID_TUNING_TIMEOUT:
-            statusMessage = GET_TEXT(MSG_PID_TIMEOUT);
-            break;
-        case PID_DONE:
-            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_DONE);
-            settings.save();
-            break;
-        case PID_TUNING_ABORT:
-            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_ABORTED);
-            break;
-      }
-      if (statusMessage) 
-        dgus.WriteString(VP_PID_AUTOTUNE_STATUS, statusMessage, VP_SD_FileName_LEN);
-      if (screen)
-        screen.gotoScreen(MKSLCD_PID_PROCESS);
-      else
-        screen.gotoScreen(MKSLCD_PID_COMPLETE);
-   
-    
-    
-
+      //   case PID_STARTED:
+      //      if (heater_type == 0 || heater_type == 1)
+      //       statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_E);
+      //       else if (heater_type == -1 )
+      //       statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_BED);
+      //       else 
+      //       statusMessage = GET_TEXT(MSG_PID_AUTOTUNE);
+      //       screen = 1;
+      //       break;
+      //   case PID_BAD_EXTRUDER_NUM:
+      //       statusMessage = GET_TEXT(MSG_PID_BAD_EXTRUDER_NUM);
+      //       break;
+      //   case PID_TEMP_TOO_HIGH:
+      //       statusMessage = GET_TEXT(MSG_PID_TEMP_TOO_HIGH);
+      //       break;
+      //   case PID_TUNING_TIMEOUT:
+      //       statusMessage = GET_TEXT(MSG_PID_TIMEOUT);
+      //       break;
+      //   case PID_DONE:
+      //       statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_DONE);
+      //       settings.save();
+      //       break;
+      //   case PID_TUNING_ABORT:
+      //       statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_ABORTED);
+      //       break;
+      // }
+      // if (statusMessage) 
+      //   dgus.WriteString(VP_PID_AUTOTUNE_STATUS, statusMessage, VP_SD_FileName_LEN);
+      // if (screen)
+      //   screen.gotoScreen(MKSLCD_PID_PROCESS);
+      // else
+      //   screen.gotoScreen(MKSLCD_PID_COMPLETE);
     }    
   #endif
     

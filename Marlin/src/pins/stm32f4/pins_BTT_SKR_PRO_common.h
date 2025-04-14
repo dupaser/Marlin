@@ -288,8 +288,12 @@
 //
 // Fans
 //
-#define FAN0_PIN                            PC8   // Fan0
+#define FAN_PIN                             PC8   // Fan0
 #define FAN1_PIN                            PE5   // Fan1
+#define FAN2_PIN                            PD14  //Обдув камеры
+#define CONTROLLER_FAN_PIN                  PE6   //Вентилятор дна
+#define CASE_LIGHT_PIN                      PB0   // Подсветка камеры
+#define CHAMBER_FAN_PIN FAN2_PIN
 
 #ifndef E0_AUTO_FAN_PIN
   #define E0_AUTO_FAN_PIN               FAN1_PIN

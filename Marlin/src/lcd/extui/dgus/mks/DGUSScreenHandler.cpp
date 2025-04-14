@@ -200,10 +200,10 @@ void DGUSScreenHandlerMKS::sendPrintTimeToDisplay(DGUS_VP_Variable &var) {
   dgus.writeVariable(VP_PrintTime_S, uint16_t((time % 3600) % 60));
 
   #if HAS_BED_PROBE
-    uint32_t remaining_time_sec = ui.get_remaining_time(); // свое 
-    dgus.writeVariable(VP_PrintTime_H_R, uint16_t(remaining_time_sec / 3600)); // добавил свое
-    dgus.writeVariable(VP_PrintTime_M_R, uint16_t(remaining_time_sec % 3600 / 60));
-    dgus.writeVariable(VP_PrintTime_S_R, uint16_t((remaining_time_sec % 3600) % 60));
+    // uint32_t remaining_time_sec = ui.get_remaining_time(); // свое fixme
+    // dgus.writeVariable(VP_PrintTime_H_R, uint16_t(remaining_time_sec / 3600)); // добавил свое
+    // dgus.writeVariable(VP_PrintTime_M_R, uint16_t(remaining_time_sec % 3600 / 60));
+    // dgus.writeVariable(VP_PrintTime_S_R, uint16_t((remaining_time_sec % 3600) % 60));
   #endif
 }
 
@@ -631,15 +631,17 @@ void DGUSScreenHandlerMKS::KFactorSave(DGUS_VP_Variable &var, void *val_ptr) {
       bool is_success = true;
       if (!ExtUI::isPrintingFromMedia()) {
         float result;
-        if(bedlevel.get_mesh_type_in_use() == LevelingBilinear::Mesh::ORIGINAL){
-           result = bedlevel.get_mesh_average(LevelingBilinear::Mesh::ORIGINAL);
-        } else {
-          float first_mesh_av = bedlevel.get_mesh_average(LevelingBilinear::Mesh::FIRST);
-          float second_mesh_av = bedlevel.get_mesh_average(LevelingBilinear::Mesh::SECOND);
-          result = round((first_mesh_av + second_mesh_av) / 2 * 100) / 100;
-        }
+        // fixme
+        // if(bedlevel.get_mesh_type_in_use() == LevelingBilinear::Mesh::ORIGINAL){
+        //    result = bedlevel.get_mesh_average(LevelingBilinear::Mesh::ORIGINAL);
+        // } else {
+        //   float first_mesh_av = bedlevel.get_mesh_average(LevelingBilinear::Mesh::FIRST);
+        //   float second_mesh_av = bedlevel.get_mesh_average(LevelingBilinear::Mesh::SECOND);
+        //   result = round((first_mesh_av + second_mesh_av) / 2 * 100) / 100;
+        // }
         
-        is_success = bedlevel.set_z_home_pos_shift(bedlevel.get_z_home_pos_shift()-result); //TODO внутри функции сделать проверку на пределы
+        // fixme
+        // is_success = bedlevel.set_z_home_pos_shift(bedlevel.get_z_home_pos_shift()-result); //TODO внутри функции сделать проверку на пределы
         rewriteBedGrid(-result);
         probe.offset.z = probe.offset.z - result;
         if (IsRunning()
@@ -2061,8 +2063,8 @@ void DGUSScreenHandlerMKS::GetManualFilamentSpeed(DGUS_VP_Variable &var, void *v
   skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
 }
 
-void DGUSScreenHandlerMKS::FilamentLoadUnload(DGUS_VP_Variable &var, void *val_ptr, const int filamentDir) {
-  #if EITHER(HAS_MULTI_HOTEND, SINGLENOZZLE)
+void DGUSScreenHandlerMKS::filamentLoadUnload(DGUS_VP_Variable &var, void *val_ptr, const int filamentDir) {
+  #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
     uint8_t swap_tool = 0;
   #else
     constexpr uint8_t swap_tool = 1; // T0 (or none at all)
@@ -2102,7 +2104,7 @@ void DGUSScreenHandlerMKS::FilamentLoadUnload(DGUS_VP_Variable &var, void *val_p
   //     break;
   // }
 
-  #if BOTH(HAS_HOTEND, PREVENT_COLD_EXTRUSION)
+  #if ALL(HAS_HOTEND, PREVENT_COLD_EXTRUSION)
     if (hotend_too_cold) {
       if (thermalManager.targetTooColdToExtrude(hotend_too_cold - 1)) thermalManager.setTargetHotend(thermalManager.extrude_min_temp, hotend_too_cold - 1);
       //sendInfoScreen_P(F("NOTICE"), nullptr, F("Please wait."), F("Nozzle heating!"), true, true, true, true);
@@ -2148,7 +2150,7 @@ void DGUSScreenHandlerMKS::FilamentLoadUnload(DGUS_VP_Variable &var, void *val_p
     if(val_t == 6){
       char buf[30] = {0};
       snprintf_P(buf, 30
-        #if EITHER(HAS_MULTI_HOTEND, SINGLENOZZLE)
+        #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
           , PSTR("M1002T%cE%dF%d"), char('0' + swap_tool - 1)
         #else
           , PSTR("M1002E%dF%d\nM1002E-%dF%d")
@@ -2160,7 +2162,7 @@ void DGUSScreenHandlerMKS::FilamentLoadUnload(DGUS_VP_Variable &var, void *val_p
     else if (val_t == 4){
     char buf[30] = {0};
     snprintf_P(buf, 30
-      #if EITHER(HAS_MULTI_HOTEND, SINGLENOZZLE)
+      #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
         , PSTR("M1002T%cE%dF%d"), char('0' + swap_tool - 1)
       #else
         , PSTR("M1002E%dF%d\nM1002E%dF%d")
@@ -2173,7 +2175,7 @@ void DGUSScreenHandlerMKS::FilamentLoadUnload(DGUS_VP_Variable &var, void *val_p
     else {
     char buf[30] = {0};
     snprintf_P(buf, 30
-      #if EITHER(HAS_MULTI_HOTEND, SINGLENOZZLE)
+      #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
         , PSTR("M1002T%cE%dF%d"), char('0' + swap_tool - 1)
       #else
         , PSTR("M1002E%dF%d")
@@ -2190,16 +2192,16 @@ void DGUSScreenHandlerMKS::FilamentLoadUnload(DGUS_VP_Variable &var, void *val_p
 
 void DGUSScreenHandlerMKS::FilamentLoad(DGUS_VP_Variable &var, void *val_ptr) { //совпадает со старой логикой загрузка
   DEBUG_ECHOLNPGM("FilamentLoad");
-  FilamentLoadUnload(var, val_ptr, 1);
+  filamentLoadUnload(var, val_ptr, 1);
 }
 
 void DGUSScreenHandlerMKS::FilamentUnLoad(DGUS_VP_Variable &var, void *val_ptr) { ///совпадает со старой логикой выгрузка
   DEBUG_ECHOLNPGM("FilamentUnLoad");
-  FilamentLoadUnload(var, val_ptr, -1);
+  filamentLoadUnload(var, val_ptr, -1);
 }
 
 /**
- * M1002: Do a tool-change and relative move for FilamentLoadUnload
+ * M1002: Do a tool-change and relative move for filamentLoadUnload
  *        within the G-code execution window for best concurrency.
  */
 void GcodeSuite::M1002() {
@@ -2207,7 +2209,7 @@ void GcodeSuite::M1002() {
 
   float ext1 = current_position.e; //позиция экструдера до движения из меню так оно не робит
 
-  #if EITHER(HAS_MULTI_HOTEND, SINGLENOZZLE)
+  #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
   {
     char buf[3];
     sprintf_P(buf, PSTR("T%c"), char('0' + parser.intval('T')));
