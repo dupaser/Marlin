@@ -26,7 +26,7 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
-#if DGUS_LCD_UI_ORIGIN
+#if ENABLED(DGUS_LCD_UI_ORIGIN)
 
 #include "DGUSDisplayDef.h"
 #include "../DGUSDisplay.h"
@@ -108,17 +108,17 @@ const uint16_t VPList_SDFileList[]           PROGMEM = { VP_SD_FileName0, VP_SD_
 const uint16_t VPList_SD_PrintManipulation[] PROGMEM = { VP_PrintProgress_Percentage, VP_PrintTime, 0x0000 };
 
 const struct VPMapping VPMap[] PROGMEM = {
-  { DGUS_SCREEN_BOOT,                VPList_Boot                 },
-  { DGUS_SCREEN_MAIN,                VPList_Main                 },
-  { DGUS_SCREEN_TEMPERATURE,         VPList_Temp                 },
-  { DGUS_SCREEN_STATUS,              VPList_Status               },
-  { DGUS_SCREEN_STATUS2,             VPList_Status2              },
-  { DGUS_SCREEN_MANUALMOVE,          VPList_ManualMove           },
-  { DGUS_SCREEN_MANUALEXTRUDE,       VPList_ManualExtrude        },
-  { DGUS_SCREEN_FANANDFEEDRATE,      VPList_FanAndFeedrate       },
-  { DGUS_SCREEN_FLOWRATES,           VPList_SD_FlowRates         },
-  { DGUS_SCREEN_SDPRINTMANIPULATION, VPList_SD_PrintManipulation },
-  { DGUS_SCREEN_SDFILELIST,          VPList_SDFileList           },
+  { DGUSLCD_SCREEN_BOOT,                VPList_Boot                 },
+  { DGUSLCD_SCREEN_MAIN,                VPList_Main                 },
+  { DGUSLCD_SCREEN_TEMPERATURE,         VPList_Temp                 },
+  { DGUSLCD_SCREEN_STATUS,              VPList_Status               },
+  { DGUSLCD_SCREEN_STATUS2,             VPList_Status2              },
+  { DGUSLCD_SCREEN_MANUALMOVE,          VPList_ManualMove           },
+  { DGUSLCD_SCREEN_MANUALEXTRUDE,       VPList_ManualExtrude        },
+  { DGUSLCD_SCREEN_FANANDFEEDRATE,      VPList_FanAndFeedrate       },
+  { DGUSLCD_SCREEN_FLOWRATES,           VPList_SD_FlowRates         },
+  { DGUSLCD_SCREEN_SDPRINTMANIPULATION, VPList_SD_PrintManipulation },
+  { DGUSLCD_SCREEN_SDFILELIST,          VPList_SDFileList           },
   { 0 , nullptr } // List is terminated with an nullptr as table entry.
 };
 
@@ -128,7 +128,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   // Helper to detect touch events
   VPHELPER(VP_SCREENCHANGE, nullptr, screen.screenChangeHook, nullptr),
   VPHELPER(VP_SCREENCHANGE_ASK, nullptr, screen.screenChangeHookIfIdle, nullptr),
-  #if HAS_MEDIA
+  #if ENABLED(SDSUPPORT)
     VPHELPER(VP_SCREENCHANGE_WHENSD, nullptr, screen.screenChangeHookIfSD, nullptr),
   #endif
   VPHELPER(VP_CONFIRMED, nullptr, screen.screenConfirmedOK, nullptr),
@@ -152,7 +152,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
   VPHELPER(VP_MOTOR_LOCK_UNLOK, nullptr, screen.handleMotorLockUnlock, nullptr),
   #if ENABLED(POWER_LOSS_RECOVERY)
-    VPHELPER(VP_POWER_LOSS_RECOVERY, nullptr, screen.handlePowerLossRecovery, nullptr),
+    VPHELPER(VP_POWER_LOSS_RECOVERY, nullptr, screen.HandlePowerLossRecovery, nullptr),
   #endif
   VPHELPER(VP_SETTINGS, nullptr, screen.handleSettings, nullptr),
 
@@ -167,7 +167,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER(VP_Flowrate_E0, nullptr, screen.handleFlowRateChanged, screen.sendWordValueToDisplay),
     VPHELPER(VP_EPos, &destination.e, nullptr, screen.sendFloatAsLongValueToDisplay<2>),
     VPHELPER(VP_MOVE_E0, nullptr, screen.handleManualExtrude, nullptr),
-    VPHELPER(VP_E0_CONTROL, &thermalManager.temp_hotend[0].target, screen.handleHeaterControl, nullptr),
+    VPHELPER(VP_E0_CONTROL, &thermalManager.temp_hotend[0].target, screen.HandleHeaterControl, nullptr),
     VPHELPER(VP_E0_STATUS, &thermalManager.temp_hotend[0].target, nullptr, screen.sendHeaterStatusToDisplay),
     #if ENABLED(DGUS_PREHEAT_UI)
       VPHELPER(VP_E0_BED_PREHEAT, nullptr, screen.handlePreheat, nullptr),
@@ -187,7 +187,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER(VP_T_E1_Set, &thermalManager.temp_hotend[1].target, screen.handleTemperatureChanged, screen.sendWordValueToDisplay),
     VPHELPER(VP_Flowrate_E1, nullptr, screen.handleFlowRateChanged, screen.sendWordValueToDisplay),
     VPHELPER(VP_MOVE_E1, nullptr, screen.handleManualExtrude, nullptr),
-    VPHELPER(VP_E1_CONTROL, &thermalManager.temp_hotend[1].target, screen.handleHeaterControl, nullptr),
+    VPHELPER(VP_E1_CONTROL, &thermalManager.temp_hotend[1].target, screen.HandleHeaterControl, nullptr),
     VPHELPER(VP_E1_STATUS, &thermalManager.temp_hotend[1].target, nullptr, screen.sendHeaterStatusToDisplay),
     #if ENABLED(PIDTEMP)
       VPHELPER(VP_PID_AUTOTUNE_E1, nullptr, screen.handlePIDAutotune, nullptr),
@@ -196,7 +196,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   #if HAS_HEATED_BED
     VPHELPER(VP_T_Bed_Is, &thermalManager.temp_bed.celsius, nullptr, screen.sendFloatAsLongValueToDisplay<0>),
     VPHELPER(VP_T_Bed_Set, &thermalManager.temp_bed.target, screen.handleTemperatureChanged, screen.sendWordValueToDisplay),
-    VPHELPER(VP_BED_CONTROL, &thermalManager.temp_bed.target, screen.handleHeaterControl, nullptr),
+    VPHELPER(VP_BED_CONTROL, &thermalManager.temp_bed.target, screen.HandleHeaterControl, nullptr),
     VPHELPER(VP_BED_STATUS, &thermalManager.temp_bed.target, nullptr, screen.sendHeaterStatusToDisplay),
     #if ENABLED(PIDTEMPBED)
       VPHELPER(VP_BED_PID_P, &thermalManager.temp_bed.pid.Kp, screen.handleTemperaturePIDChanged, screen.sendTemperaturePID),
@@ -207,18 +207,11 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
   // Fan Data
   #if HAS_FAN
-    #if HOTENDS <= 2
-      #define FAN_CONTROL HOTENDS
-    #elif FAN_COUNT <= 2
-      #define FAN_CONTROL FAN_COUNT
-    #else
-      #define FAN_CONTROL 2
-    #endif
     #define FAN_VPHELPER(N) \
       VPHELPER(VP_Fan##N##_Percentage, &thermalManager.fan_speed[N], screen.percentageToUint8, screen.sendPercentageToDisplay), \
       VPHELPER(VP_FAN##N##_CONTROL, &thermalManager.fan_speed[N], screen.handleFanControl, nullptr), \
       VPHELPER(VP_FAN##N##_STATUS, &thermalManager.fan_speed[N], nullptr, screen.sendFanStatusToDisplay),
-    REPEAT(FAN_CONTROL, FAN_VPHELPER)
+    REPEAT(FAN_COUNT, FAN_VPHELPER)
   #endif
 
   // Feedrate
@@ -239,20 +232,18 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER_STR(VP_PrintsTotal, nullptr, VP_PrintsTotal_LEN, nullptr, screen.sendPrintsTotalToDisplay),
   #endif
 
-  #if ENABLED(EDITABLE_STEPS_PER_UNIT)
-    VPHELPER(VP_X_STEP_PER_MM, &planner.settings.axis_steps_per_mm[X_AXIS], screen.handleStepPerMMChanged, screen.sendFloatAsIntValueToDisplay<1>),
-    VPHELPER(VP_Y_STEP_PER_MM, &planner.settings.axis_steps_per_mm[Y_AXIS], screen.handleStepPerMMChanged, screen.sendFloatAsIntValueToDisplay<1>),
-    VPHELPER(VP_Z_STEP_PER_MM, &planner.settings.axis_steps_per_mm[Z_AXIS], screen.handleStepPerMMChanged, screen.sendFloatAsIntValueToDisplay<1>),
-    #if HAS_HOTEND
-      VPHELPER(VP_E0_STEP_PER_MM, &planner.settings.axis_steps_per_mm[E_AXIS_N(0)], screen.handleStepPerMMExtruderChanged, screen.sendFloatAsIntValueToDisplay<1>),
-      #if HAS_MULTI_HOTEND
-        VPHELPER(VP_E1_STEP_PER_MM, &planner.settings.axis_steps_per_mm[E_AXIS_N(1)], screen.handleStepPerMMExtruderChanged, screen.sendFloatAsIntValueToDisplay<1>),
-      #endif
+  VPHELPER(VP_X_STEP_PER_MM, &planner.settings.axis_steps_per_mm[X_AXIS], screen.handleStepPerMMChanged, screen.sendFloatAsIntValueToDisplay<1>),
+  VPHELPER(VP_Y_STEP_PER_MM, &planner.settings.axis_steps_per_mm[Y_AXIS], screen.handleStepPerMMChanged, screen.sendFloatAsIntValueToDisplay<1>),
+  VPHELPER(VP_Z_STEP_PER_MM, &planner.settings.axis_steps_per_mm[Z_AXIS], screen.handleStepPerMMChanged, screen.sendFloatAsIntValueToDisplay<1>),
+  #if HAS_HOTEND
+    VPHELPER(VP_E0_STEP_PER_MM, &planner.settings.axis_steps_per_mm[E_AXIS_N(0)], screen.handleStepPerMMExtruderChanged, screen.sendFloatAsIntValueToDisplay<1>),
+    #if HAS_MULTI_HOTEND
+      VPHELPER(VP_E1_STEP_PER_MM, &planner.settings.axis_steps_per_mm[E_AXIS_N(1)], screen.handleStepPerMMExtruderChanged, screen.sendFloatAsIntValueToDisplay<1>),
     #endif
   #endif
 
   // SDCard File listing.
-  #if HAS_MEDIA
+  #if ENABLED(SDSUPPORT)
     VPHELPER(VP_SD_ScrollEvent, nullptr, screen.sdScrollFilelist, nullptr),
     VPHELPER(VP_SD_FileSelected, nullptr, screen.sdFileSelected, nullptr),
     VPHELPER(VP_SD_FileSelectConfirm, nullptr, screen.sdStartPrint, nullptr),
@@ -263,11 +254,11 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER_STR(VP_SD_FileName4, nullptr, VP_SD_FileName_LEN, nullptr, screen.sdSendFilename),
     VPHELPER(VP_SD_ResumePauseAbort, nullptr, screen.sdResumePauseAbort, nullptr),
     VPHELPER(VP_SD_AbortPrintConfirmed, nullptr, screen.sdReallyAbort, nullptr),
-    VPHELPER(VP_SD_Print_Setting, nullptr, screen.sdPrintTune, nullptr),
+    VPHELPER(VP_SD_Print_Setting, nullptr, screen.DGUSLCD_SD_PrintTune, nullptr),
     #if HAS_BED_PROBE
       VPHELPER(VP_SD_Print_ProbeOffsetZ, &probe.offset.z, screen.handleProbeOffsetZChanged, screen.sendFloatAsIntValueToDisplay<2>),
       #if ENABLED(BABYSTEPPING)
-        VPHELPER(VP_SD_Print_LiveAdjustZ, nullptr, screen.handleLiveAdjustZ, nullptr),
+        VPHELPER(VP_SD_Print_BabyStep_Set, nullptr, screen.HandleLiveAdjustZ, nullptr),
       #endif
     #endif
   #endif

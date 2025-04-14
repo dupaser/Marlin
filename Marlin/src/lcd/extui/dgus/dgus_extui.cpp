@@ -33,6 +33,10 @@
 #include "DGUSDisplayDef.h"
 #include "DGUSScreenHandler.h"
 
+#include "../../../module/settings.h" //свое для пида
+
+#include "../../../module/temperature.h" //свое для выключения нагрева при килл
+
 namespace ExtUI {
 
   void onStartup() {
@@ -43,20 +47,20 @@ namespace ExtUI {
   void onIdle() { screen.loop(); }
 
   void onPrinterKilled(FSTR_P const error, FSTR_P const) {
-    screen.sendInfoScreen(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET), true, true, true, true);
-    screen.gotoScreen(DGUS_SCREEN_KILL);
-    while (!screen.loop());  // Wait while anything is left to be sent
+   Temperature::disable_all_heaters(); //свое
+    DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_PLEASE_RESET), 1); //свое
+
+   // dgusdisplay.writeVariable(VP_ERROR_STATUS, (uint16_t)1); //Свое 
+    //screen.sendInfoScreen_P(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET), true, true, true, true);
+    //screen.gotoScreen(DGUSLCD_SCREEN_KILL);
+   // while (!screen.loop());  // Wait while anything is left to be sent
   }
 
-  void onMediaMounted() { TERN_(HAS_MEDIA, screen.sdCardInserted()); }
-  void onMediaError()   { TERN_(HAS_MEDIA, screen.sdCardError()); }
-  void onMediaRemoved() { TERN_(HAS_MEDIA, screen.sdCardRemoved()); }
+  void onMediaInserted() { TERN_(SDSUPPORT, screen.sdCardInserted()); }
+  void onMediaError()    { TERN_(SDSUPPORT, screen.sdCardError()); }
+  void onMediaRemoved()  { TERN_(SDSUPPORT, screen.sdCardRemoved()); }
 
-  void onHeatingError(const heater_id_t header_id) {}
-  void onMinTempError(const heater_id_t header_id) {}
-  void onMaxTempError(const heater_id_t header_id) {}
-
-  void onPlayTone(const uint16_t frequency, const uint16_t duration/*=0*/) {}
+  void onPlayTone(const uint16_t frequency, const uint16_t duration) {}
   void onPrintTimerStarted() {}
   void onPrintTimerPaused() {}
   void onPrintTimerStopped() {}
@@ -74,31 +78,10 @@ namespace ExtUI {
     }
   }
 
-  // For fancy LCDs include an icon ID, message, and translated button title
-  void onUserConfirmRequired(const int icon, const char * const cstr, FSTR_P const fBtn) {
-    onUserConfirmRequired(cstr);
-    UNUSED(icon); UNUSED(fBtn);
-  }
-  void onUserConfirmRequired(const int icon, FSTR_P const fstr, FSTR_P const fBtn) {
-    onUserConfirmRequired(fstr);
-    UNUSED(icon); UNUSED(fBtn);
-  }
-
-  #if ENABLED(ADVANCED_PAUSE_FEATURE)
-    void onPauseMode(
-      const PauseMessage message,
-      const PauseMode mode/*=PAUSE_MODE_SAME*/,
-      const uint8_t extruder/*=active_extruder*/
-    ) {
-      stdOnPauseMode(message, mode, extruder);
-    }
-  #endif
-
   void onStatusChanged(const char * const msg) { screen.setStatusMessage(msg); }
 
   void onHomingStart() {}
   void onHomingDone() {}
-
   void onPrintDone() {}
 
   void onFactoryReset() {}
@@ -127,25 +110,20 @@ namespace ExtUI {
     // Called after loading or resetting stored settings
   }
 
-  void onSettingsStored(const bool success) {
+  void onSettingsStored(bool success) {
     // Called after the entire EEPROM has been written,
     // whether successful or not.
   }
 
-  void onSettingsLoaded(const bool success) {
+  void onSettingsLoaded(bool success) {
     // Called after the entire EEPROM has been read,
     // whether successful or not.
   }
 
-  #if HAS_LEVELING
+  #if HAS_MESH
     void onLevelingStart() {}
     void onLevelingDone() {}
-    #if ENABLED(PREHEAT_BEFORE_LEVELING)
-      celsius_t getLevelingBedTemp() { return LEVELING_BED_TEMP; }
-    #endif
-  #endif
 
-  #if HAS_MESH
     void onMeshUpdate(const int8_t xpos, const int8_t ypos, const_float_t zval) {
       // Called when any mesh points are updated
     }
@@ -155,81 +133,67 @@ namespace ExtUI {
     }
   #endif
 
-  #if ENABLED(PREVENT_COLD_EXTRUSION)
-    void onSetMinExtrusionTemp(const celsius_t) {}
-  #endif
-
   #if ENABLED(POWER_LOSS_RECOVERY)
-    void onSetPowerLoss(const bool onoff) {
-      // Called when power-loss is enabled/disabled
-    }
-    void onPowerLoss() {
-      // Called when power-loss state is detected
-    }
     void onPowerLossResume() {
       // Called on resume from power-loss
-      IF_DISABLED(DGUS_LCD_UI_MKS, screen.gotoScreen(DGUS_SCREEN_POWER_LOSS));
+      IF_DISABLED(DGUS_LCD_UI_MKS, screen.gotoScreen(DGUSLCD_SCREEN_POWER_LOSS));
     }
   #endif
 
   #if HAS_PID_HEATING
-    void onPIDTuning(const pidresult_t rst) {
+    void onPidTuning(const result_t rst, int heater_type, int cycles , int ncycles ) {
       // Called for temperature PID tuning result
+      const char* statusMessage = nullptr;
+      char buf[20];  
+      bool screen = 0;
       switch (rst) {
+        case PID_TUNING_CYCLE: 
+          sprintf_P(buf, PSTR("%s %d / %d"), GET_TEXT(MSG_PID_CYCLE), cycles, ncycles);
+          dgus.WriteString(VP_PID_AUTOTUNE_CYCLES, buf, 20);
+          screen = 1;
+          break;
+
         case PID_STARTED:
-        case PID_BED_STARTED:
-        case PID_CHAMBER_STARTED:
-          screen.setStatusMessage(GET_TEXT_F(MSG_PID_AUTOTUNE));
-          break;
-        case PID_BAD_HEATER_ID:
-          screen.setStatusMessage(GET_TEXT_F(MSG_PID_BAD_HEATER_ID));
-          break;
+           if (heater_type == 0 || heater_type == 1)
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_E);
+            else if (heater_type == -1 )
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_BED);
+            else 
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE);
+            screen = 1;
+            break;
+        case PID_BAD_EXTRUDER_NUM:
+            statusMessage = GET_TEXT(MSG_PID_BAD_EXTRUDER_NUM);
+            break;
         case PID_TEMP_TOO_HIGH:
-          screen.setStatusMessage(GET_TEXT_F(MSG_PID_TEMP_TOO_HIGH));
-          break;
+            statusMessage = GET_TEXT(MSG_PID_TEMP_TOO_HIGH);
+            break;
         case PID_TUNING_TIMEOUT:
-          screen.setStatusMessage(GET_TEXT_F(MSG_PID_TIMEOUT));
-          break;
+            statusMessage = GET_TEXT(MSG_PID_TIMEOUT);
+            break;
         case PID_DONE:
-          screen.setStatusMessage(GET_TEXT_F(MSG_PID_AUTOTUNE_DONE));
-          break;
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_DONE);
+            settings.save();
+            break;
+        case PID_TUNING_ABORT:
+            statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_ABORTED);
+            break;
       }
-      screen.gotoScreen(DGUS_SCREEN_MAIN);
-    }
-    void onStartM303(const int count, const heater_id_t hid, const celsius_t temp) {
-      // Called by M303 to update the UI
-    }
-  #endif
+      if (statusMessage) 
+        dgus.WriteString(VP_PID_AUTOTUNE_STATUS, statusMessage, VP_SD_FileName_LEN);
+      if (screen)
+        screen.gotoScreen(MKSLCD_PID_PROCESS);
+      else
+        screen.gotoScreen(MKSLCD_PID_COMPLETE);
+   
+    
+    
 
-  #if ENABLED(MPC_AUTOTUNE)
-    void onMPCTuning(const mpcresult_t rst) {
-      // Called for temperature MPC tuning result
-      switch (rst) {
-        case MPC_STARTED:
-          screen.setStatusMessage(GET_TEXT_F(MSG_MPC_AUTOTUNE));
-          break;
-        case MPC_TEMP_ERROR:
-          //screen.setStatusMessage(GET_TEXT_F(MSG_MPC_TEMP_ERROR));
-          break;
-        case MPC_INTERRUPTED:
-          //screen.setStatusMessage(GET_TEXT_F(MSG_MPC_INTERRUPTED));
-          break;
-        case MPC_DONE:
-          //screen.setStatusMessage(GET_TEXT_F(MSG_MPC_AUTOTUNE_DONE));
-          break;
-      }
-      screen.gotoScreen(DGUS_SCREEN_MAIN);
-    }
+    }    
   #endif
-
-  #if ENABLED(PLATFORM_M997_SUPPORT)
-    void onFirmwareFlash() {}
-  #endif
-
+    
   void onSteppersDisabled() {}
-  void onSteppersEnabled() {}
-  void onAxisDisabled(const axis_t) {}
-  void onAxisEnabled(const axis_t) {}
+  void onSteppersEnabled()  {}
 }
 
 #endif // HAS_DGUS_LCD_CLASSIC

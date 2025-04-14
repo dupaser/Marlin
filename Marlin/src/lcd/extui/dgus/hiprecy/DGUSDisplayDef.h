@@ -24,33 +24,33 @@
 #include "../DGUSDisplayDef.h"
 
 enum DGUS_ScreenID : uint8_t {
-  DGUS_SCREEN_BOOT                 = 160,
-  DGUS_SCREEN_MAIN                 =   1,
-  DGUS_SCREEN_STATUS               =   1,
-  DGUS_SCREEN_STATUS2              =   1,
-  DGUS_SCREEN_POWER_LOSS           =  17,
-  DGUS_SCREEN_TEMPERATURE          =  40,
-  DGUS_SCREEN_MANUALMOVE           =  86,
-  DGUS_SCREEN_PREHEAT              =  48,
-  DGUS_SCREEN_UTILITY              =  70,
-  DGUS_SCREEN_FILAMENT_HEATING     =  80,
-  DGUS_SCREEN_FILAMENT_LOADING     =  76,
-  DGUS_SCREEN_FILAMENT_UNLOADING   =  82,
-  DGUS_SCREEN_MANUALEXTRUDE        =  84,
-  DGUS_SCREEN_Z_OFFSET             =  88,
-  DGUS_SCREEN_SDFILELIST           =   3,
-  DGUS_SCREEN_SDPRINTMANIPULATION  =   7,
-  DGUS_SCREEN_SDPRINTTUNE          =   9,
-  DGUS_SCREEN_FLC_PREHEAT          =  94,
-  DGUS_SCREEN_FLC_PRINTING         =  96,
-  DGUS_SCREEN_STEPPERMM            = 122,
-  DGUS_SCREEN_PID_E                = 126,
-  DGUS_SCREEN_PID_BED              = 128,
-  DGUS_SCREEN_INFOS                = 131,
-  DGUS_SCREEN_CONFIRM              = 240,
-  DGUS_SCREEN_KILL                 = 250, //!< Kill Screen. Must always be 250 (to be able to display "Error wrong LCD Version")
-  DGUS_SCREEN_WAITING              = 251,
-  DGUS_SCREEN_POPUP                = 252, //!< special target, popup screen will also return this code to say "return to previous screen"
+  DGUSLCD_SCREEN_BOOT                 = 160,
+  DGUSLCD_SCREEN_MAIN                 =   1,
+  DGUSLCD_SCREEN_STATUS               =   1,
+  DGUSLCD_SCREEN_STATUS2              =   1,
+  DGUSLCD_SCREEN_POWER_LOSS           =  17,
+  DGUSLCD_SCREEN_TEMPERATURE          =  40,
+  DGUSLCD_SCREEN_MANUALMOVE           =  86,
+  DGUSLCD_SCREEN_PREHEAT              =  48,
+  DGUSLCD_SCREEN_UTILITY              =  70,
+  DGUSLCD_SCREEN_FILAMENT_HEATING     =  80,
+  DGUSLCD_SCREEN_FILAMENT_LOADING     =  76,
+  DGUSLCD_SCREEN_FILAMENT_UNLOADING   =  82,
+  DGUSLCD_SCREEN_MANUALEXTRUDE        =  84,
+  DGUSLCD_SCREEN_Z_OFFSET             =  88,
+  DGUSLCD_SCREEN_SDFILELIST           =   3,
+  DGUSLCD_SCREEN_SDPRINTMANIPULATION  =   7,
+  DGUSLCD_SCREEN_SDPRINTTUNE          =   9,
+  DGUSLCD_SCREEN_FLC_PREHEAT          =  94,
+  DGUSLCD_SCREEN_FLC_PRINTING         =  96,
+  DGUSLCD_SCREEN_STEPPERMM            = 122,
+  DGUSLCD_SCREEN_PID_E                = 126,
+  DGUSLCD_SCREEN_PID_BED              = 128,
+  DGUSLCD_SCREEN_INFOS                = 131,
+  DGUSLCD_SCREEN_CONFIRM              = 240,
+  DGUSLCD_SCREEN_KILL                 = 250, ///< Kill Screen. Must always be 250 (to be able to display "Error wrong LCD Version")
+  DGUSLCD_SCREEN_WAITING              = 251,
+  DGUS_SCREEN_POPUP                = 252, ///< special target, popup screen will also return this code to say "return to previous screen"
   DGUS_SCREEN_UNUSED               = 255
 };
 
@@ -100,7 +100,7 @@ constexpr uint16_t VP_SD_FileSelectConfirm = 0x2024; // (This is a virtual VP an
 constexpr uint16_t VP_SD_ResumePauseAbort = 0x2026; // Resume(Data=0), Pause(Data=1), Abort(Data=2) SD Card prints
 constexpr uint16_t VP_SD_AbortPrintConfirmed = 0x2028; // Abort print confirmation (virtual, will be injected by the confirm dialog)
 constexpr uint16_t VP_SD_Print_Setting = 0x2040;
-constexpr uint16_t VP_SD_Print_LiveAdjustZ = 0x2050; // Data: 0 down, 1 up
+constexpr uint16_t VP_SD_Print_BabyStep_Set = 0x2050; // Data: 0 down, 1 up
 
 // Controls for movement (we can't use the incremental / decremental feature of the display at this feature works only with 16 bit values
 // (which would limit us to 655.35mm, which is likely not a problem for common setups, but i don't want to rule out hangprinters support)
@@ -257,7 +257,7 @@ constexpr uint16_t VP_BED_STATUS = 0x331C;
 constexpr uint16_t VP_MOVE_OPTION = 0x3400;
 
 // Step per mm
-constexpr uint16_t VP_X_STEP_PER_MM = 0x3600; // at the moment , uint16_t , 0~1638.4
+constexpr uint16_t VP_X_STEP_PER_MM = 0x3600; // at the moment , 2 byte unsigned int , 0~1638.4
 //constexpr uint16_t VP_X2_STEP_PER_MM = 0x3602;
 constexpr uint16_t VP_Y_STEP_PER_MM = 0x3604;
 //constexpr uint16_t VP_Y2_STEP_PER_MM = 0x3606;
@@ -271,7 +271,7 @@ constexpr uint16_t VP_E0_STEP_PER_MM = 0x3610;
 //constexpr uint16_t VP_E5_STEP_PER_MM = 0x361A;
 
 // PIDs
-constexpr uint16_t VP_E0_PID_P = 0x3700; // at the moment , uint16_t , 0~1638.4
+constexpr uint16_t VP_E0_PID_P = 0x3700; // at the moment , 2 byte unsigned int , 0~1638.4
 constexpr uint16_t VP_E0_PID_I = 0x3702;
 constexpr uint16_t VP_E0_PID_D = 0x3704;
 constexpr uint16_t VP_BED_PID_P = 0x3710;

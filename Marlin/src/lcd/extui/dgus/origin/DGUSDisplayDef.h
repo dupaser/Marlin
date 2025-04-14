@@ -24,28 +24,28 @@
 #include "../DGUSDisplayDef.h"
 
 enum DGUS_ScreenID : uint8_t {
-  DGUS_SCREEN_BOOT                =   0,
-  DGUS_SCREEN_MAIN                =  10,
-  DGUS_SCREEN_TEMPERATURE         =  20,
-  DGUS_SCREEN_STATUS              =  30,
-  DGUS_SCREEN_STATUS2             =  32,
-  DGUS_SCREEN_MANUALMOVE          =  40,
-  DGUS_SCREEN_MANUALEXTRUDE       =  42,
-  DGUS_SCREEN_FANANDFEEDRATE      =  44,
-  DGUS_SCREEN_FLOWRATES           =  46,
-  DGUS_SCREEN_SDFILELIST          =  50,
-  DGUS_SCREEN_SDPRINTMANIPULATION =  52,
-  DGUS_SCREEN_POWER_LOSS          = 100,
-  DGUS_SCREEN_PREHEAT             = 120,
-  DGUS_SCREEN_UTILITY             = 110,
-  DGUS_SCREEN_FILAMENT_HEATING    = 146,
-  DGUS_SCREEN_FILAMENT_LOADING    = 148,
-  DGUS_SCREEN_FILAMENT_UNLOADING  = 158,
-  DGUS_SCREEN_SDPRINTTUNE         = 170,
-  DGUS_SCREEN_CONFIRM             = 240,
-  DGUS_SCREEN_KILL                = 250, //!< Kill Screen. Must always be 250 (to be able to display "Error wrong LCD Version")
-  DGUS_SCREEN_WAITING             = 251,
-  DGUS_SCREEN_POPUP               = 252, //!< special target, popup screen will also return this code to say "return to previous screen"
+  DGUSLCD_SCREEN_BOOT                =   0,
+  DGUSLCD_SCREEN_MAIN                =  10,
+  DGUSLCD_SCREEN_TEMPERATURE         =  20,
+  DGUSLCD_SCREEN_STATUS              =  30,
+  DGUSLCD_SCREEN_STATUS2             =  32,
+  DGUSLCD_SCREEN_MANUALMOVE          =  40,
+  DGUSLCD_SCREEN_MANUALEXTRUDE       =  42,
+  DGUSLCD_SCREEN_FANANDFEEDRATE      =  44,
+  DGUSLCD_SCREEN_FLOWRATES           =  46,
+  DGUSLCD_SCREEN_SDFILELIST          =  50,
+  DGUSLCD_SCREEN_SDPRINTMANIPULATION =  52,
+  DGUSLCD_SCREEN_POWER_LOSS          = 100,
+  DGUSLCD_SCREEN_PREHEAT             = 120,
+  DGUSLCD_SCREEN_UTILITY             = 110,
+  DGUSLCD_SCREEN_FILAMENT_HEATING    = 146,
+  DGUSLCD_SCREEN_FILAMENT_LOADING    = 148,
+  DGUSLCD_SCREEN_FILAMENT_UNLOADING  = 158,
+  DGUSLCD_SCREEN_SDPRINTTUNE         = 170,
+  DGUSLCD_SCREEN_CONFIRM             = 240,
+  DGUSLCD_SCREEN_KILL                = 250, ///< Kill Screen. Must always be 250 (to be able to display "Error wrong LCD Version")
+  DGUSLCD_SCREEN_WAITING             = 251,
+  DGUS_SCREEN_POPUP               = 252, ///< special target, popup screen will also return this code to say "return to previous screen"
   DGUS_SCREEN_UNUSED              = 255
 };
 
@@ -95,7 +95,7 @@ constexpr uint16_t VP_SD_FileSelectConfirm = 0x2024; // (This is a virtual VP an
 constexpr uint16_t VP_SD_ResumePauseAbort = 0x2026; // Resume(Data=0), Pause(Data=1), Abort(Data=2) SD Card prints
 constexpr uint16_t VP_SD_AbortPrintConfirmed = 0x2028; // Abort print confirmation (virtual, will be injected by the confirm dialog)
 constexpr uint16_t VP_SD_Print_Setting = 0x2040;
-constexpr uint16_t VP_SD_Print_LiveAdjustZ = 0x2050; // Data: 0 down, 1 up
+constexpr uint16_t VP_SD_Print_BabyStep_Set = 0x2050; // Data: 0 down, 1 up
 
 // Controls for movement (we can't use the incremental / decremental feature of the display at this feature works only with 16 bit values
 // (which would limit us to 655.35mm, which is likely not a problem for common setups, but i don't want to rule out hangprinters support)
@@ -247,7 +247,7 @@ constexpr uint16_t VP_BED_STATUS = 0x331C;
 constexpr uint16_t VP_MOVE_OPTION = 0x3400;
 
 // Step per mm
-constexpr uint16_t VP_X_STEP_PER_MM = 0x3600; // at the moment , uint16_t , 0~1638.4
+constexpr uint16_t VP_X_STEP_PER_MM = 0x3600; // at the moment , 2 byte unsigned int , 0~1638.4
 //constexpr uint16_t VP_X2_STEP_PER_MM = 0x3602;
 constexpr uint16_t VP_Y_STEP_PER_MM = 0x3604;
 //constexpr uint16_t VP_Y2_STEP_PER_MM = 0x3606;
@@ -261,7 +261,7 @@ constexpr uint16_t VP_E0_STEP_PER_MM = 0x3610;
 //constexpr uint16_t VP_E5_STEP_PER_MM = 0x361A;
 
 // PIDs
-constexpr uint16_t VP_E0_PID_P = 0x3700; // at the moment , uint16_t , 0~1638.4
+constexpr uint16_t VP_E0_PID_P = 0x3700; // at the moment , 2 byte unsigned int , 0~1638.4
 constexpr uint16_t VP_E0_PID_I = 0x3702;
 constexpr uint16_t VP_E0_PID_D = 0x3704;
 constexpr uint16_t VP_BED_PID_P = 0x3710;
