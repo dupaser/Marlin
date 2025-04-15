@@ -145,7 +145,8 @@ void MKS_resume_print_move() {
   TERN_(POWER_LOSS_RECOVERY, if (recovery.enabled) recovery.save(true));
 
   FilamentMonitorBase::filament_ran_out = false;
-  RunoutResponseDelayed::reset();
+  // fixme
+  // RunoutResponseDelayed::reset();
   nozzle_park_mks.print_pause_start_flag = 0;
   nozzle_park_mks.filament_change = 0;
 }
@@ -506,8 +507,8 @@ const char H43Version[] PROGMEM = CUSTOM_SCREEN_VERSION;
 const char Updata_Time[] PROGMEM = STRING_DISTRIBUTION_DATE;
 const char Printer_Name[] PROGMEM = CUSTOM_MACHINE_NAME; 
 
-  uint16_t a = ((unsigned char) (DGUSScreenHandler::current_screenID >> 8U)) + ( (unsigned char) (DGUSScreenHandler::current_screenID & 0xFFU));
-  uint16_t b = DGUSScreenHandler::current_screenID;
+  // uint16_t a = ((unsigned char) (DGUSScreenHandler::current_screenID >> 8U)) + ( (unsigned char) (DGUSScreenHandler::current_screenID & 0xFFU));
+  // uint16_t b = DGUSScreenHandler::current_screenID;
   // int* b = &a;
 
   const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
@@ -654,7 +655,8 @@ const char Printer_Name[] PROGMEM = CUSTOM_MACHINE_NAME;
     //VPHELPER(VP_E0_CONTROL, &thermalManager.temp_hotend[0].target, screen.HandleHeaterControl, nullptr),
     VPHELPER(VP_E0_STATUS, &thermalManager.temp_hotend[0].target, nullptr, screen.sendHeaterStatusToDisplay),
     #if ENABLED(DGUS_PREHEAT_UI)
-      VPHELPER(VP_E0_BED_PREHEAT, nullptr, screen.handlePreheat, nullptr),
+    // fixme
+    // VPHELPER(VP_E0_BED_PREHEAT, nullptr, screen.handlePreheat, nullptr),
     #endif
     #if ENABLED(PIDTEMP)
       // VPHELPER(VP_E0_PID_P, &thermalManager.temp_hotend[0].pid.Kp, screen.handleTemperaturePIDChanged, screen.sendTemperaturePID),

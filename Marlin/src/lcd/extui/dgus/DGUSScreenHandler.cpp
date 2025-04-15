@@ -906,7 +906,8 @@ void DGUSScreenHandler::handlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
 
     case 0x0003: //отмена
     {
-      dgus.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_LEVEL_BED_ABORTED), VP_Status_LEN); // выводить отмену калибровки
+      // fixme
+      // dgus.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_LEVEL_BED_ABORTED), VP_Status_LEN); // выводить отмену калибровки
 
        thermalManager.setTargetBed(0);
        thermalManager.setTargetHotend(0, 0);
@@ -932,7 +933,7 @@ void DGUSScreenHandler::handlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
       // planner.synchronize();
 
       // print_job_timer.abort();
-      GcodeSuite::should_stop = true; 
+      // GcodeSuite::should_stop = true; 
       // queue.enqueue_one_now(buf);
       thermalManager.setTargetBed(0);
       gotoScreen(MKSLCD_AUTO_LEVEL_DONE);}

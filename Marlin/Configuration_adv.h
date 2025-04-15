@@ -2080,7 +2080,7 @@
 
   #if DGUS_UI_IS(FYSETC, MKS, HIPRECY)
     #define DGUS_PRINT_FILENAME           // Display the filename during printing
-    #define DGUS_PREHEAT_UI               // Display a preheat screen during heatup
+    // #define DGUS_PREHEAT_UI               // Display a preheat screen during heatup ЗАКОМЕНТИЛ
 
     #if DGUS_UI_IS(FYSETC, MKS)
       //#define DGUS_UI_MOVE_DIS_OPTION   // Disabled by default for FYSETC and MKS
@@ -2094,7 +2094,7 @@
       #define DGUS_FILAMENT_LOAD_LENGTH_PER_TIME 0.5 // (mm) Adjust in proportion to DGUS_UPDATE_INTERVAL_MS
     #endif
 
-    #define DGUS_UI_WAITING               // Show a "waiting" screen between some screens
+    // #define DGUS_UI_WAITING               // Show a "waiting" screen between some screens
     #if ENABLED(DGUS_UI_WAITING)
       #define DGUS_UI_WAITING_STATUS 10
       #define DGUS_UI_WAITING_STATUS_PERIOD 8 // Increase to slower waiting status looping
