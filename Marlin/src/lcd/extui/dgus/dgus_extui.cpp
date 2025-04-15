@@ -145,12 +145,12 @@ namespace ExtUI {
       // Called for temperature PID tuning result
       const char* statusMessage = nullptr;
       char buf[20];  
-      bool screen = 0;
+      bool screen_flag = 0;
       switch (rst) {
         case PID_TUNING_CYCLE: 
           sprintf_P(buf, PSTR("%s %d / %d"), GET_TEXT(MSG_PID_CYCLE), cycles, ncycles);
           dgus.WriteString(VP_PID_AUTOTUNE_CYCLES, buf, 20);
-          screen = 1;
+          screen_flag = 1;
           break;
 
         case PID_STARTED:
@@ -160,7 +160,7 @@ namespace ExtUI {
             statusMessage = GET_TEXT(MSG_PID_AUTOTUNE_BED);
             else 
             statusMessage = GET_TEXT(MSG_PID_AUTOTUNE);
-            screen = 1;
+            screen_flag = 1;
             break;
         case PID_BAD_EXTRUDER_NUM:
             statusMessage = GET_TEXT(MSG_PID_BAD_EXTRUDER_NUM);
@@ -181,14 +181,10 @@ namespace ExtUI {
       }
       if (statusMessage) 
         dgus.WriteString(VP_PID_AUTOTUNE_STATUS, statusMessage, VP_SD_FileName_LEN);
-      if (screen)
+      if (screen_flag)
         screen.gotoScreen(MKSLCD_PID_PROCESS);
       else
         screen.gotoScreen(MKSLCD_PID_COMPLETE);
-   
-    
-    
-
     }    
   #endif
     

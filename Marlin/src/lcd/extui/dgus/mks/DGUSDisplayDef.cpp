@@ -506,8 +506,7 @@ const char H43Version[] PROGMEM = CUSTOM_SCREEN_VERSION;
 const char Updata_Time[] PROGMEM = STRING_DISTRIBUTION_DATE;
 const char Printer_Name[] PROGMEM = CUSTOM_MACHINE_NAME; 
 
-  uint16_t a = ((unsigned char) (DGUSScreenHandler::current_screenID >> 8U)) + ( (unsigned char) (DGUSScreenHandler::current_screenID & 0xFFU));
-  uint16_t b = DGUSScreenHandler::current_screenID;
+  // uint16_t itb = DGUSScreenHandler::current_screenID;
   // int* b = &a;
 
   const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
