@@ -128,7 +128,34 @@
 //#define BLUETOOTH
 
 // Name displayed in the LCD "Ready" message and Info menu
-//#define CUSTOM_MACHINE_NAME "3D Printer"
+#define STRING_DISTRIBUTION_DATE "29.01.2025"
+
+#if PRINTER_MODEL == 1
+    #define CUSTOM_MACHINE_NAME "TEST_AMIGO"
+    #define CUSTOM_SCREEN_VERSION "43_T2.1"
+#elif PRINTER_MODEL == 2
+    #define CUSTOM_MACHINE_NAME "ФРОЗА А2"
+    #define CUSTOM_SCREEN_VERSION "43_А2.1"
+    #define SHORT_BUILD_VERSION "A2_1.0.0 "STRING_DISTRIBUTION_DATE
+#elif PRINTER_MODEL == 102
+    #define CUSTOM_MACHINE_NAME "OLD AMIGO"
+    #define CUSTOM_SCREEN_VERSION "43_А2.1"
+    #define SHORT_BUILD_VERSION "A2_1.0.0 "STRING_DISTRIBUTION_DATE
+#elif PRINTER_MODEL == 3
+    #define CUSTOM_MACHINE_NAME "ФРОЗА А3"
+     #define CUSTOM_SCREEN_VERSION "43_А3.1"
+     #define SHORT_BUILD_VERSION "A3_1.0.0 "STRING_DISTRIBUTION_DATE
+#elif PRINTER_MODEL == 31
+    #define CUSTOM_MACHINE_NAME "ФРОЗА А3 ТЕСТ"
+     #define CUSTOM_SCREEN_VERSION "43_А31.1"
+     #define SHORT_BUILD_VERSION "A31_1.0.0 "STRING_DISTRIBUTION_DATE
+#elif PRINTER_MODEL == 4
+   #define CUSTOM_MACHINE_NAME "ФРОЗА А4"
+   #define CUSTOM_SCREEN_VERSION "43_А4.1"
+  #define SHORT_BUILD_VERSION "A4_1.0.0 (2024-11-19)"
+#else
+    #error "Неизвестная модель 3D-принтера"
+#endif
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -1736,8 +1763,13 @@
 //#define PROBE_OFFSET_XMAX  50   // (mm)
 //#define PROBE_OFFSET_YMIN -50   // (mm)
 //#define PROBE_OFFSET_YMAX  50   // (mm)
-//#define PROBE_OFFSET_ZMIN -20   // (mm)
-//#define PROBE_OFFSET_ZMAX  20   // (mm)
+#define PROBE_OFFSET_ZMIN -20   // (mm)
+#define PROBE_OFFSET_ZMAX  20   // (mm)
+
+// fixme было
+// #define Z_PROBE_OFFSET_RANGE_MIN -4 //-5
+// #define Z_PROBE_OFFSET_RANGE_MAX  4 //5
+/////
 
 // Enable the M48 repeatability test to test probe accuracy
 //#define Z_MIN_PROBE_REPEATABILITY_TEST
@@ -1961,7 +1993,7 @@
  * RAMPS-based boards use SERVO3_PIN for the first runout sensor.
  * For other boards you may need to define FIL_RUNOUT_PIN, FIL_RUNOUT2_PIN, etc.
  */
-//#define FILAMENT_RUNOUT_SENSOR
+#define FILAMENT_RUNOUT_SENSOR
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
   #define FIL_RUNOUT_ENABLED_DEFAULT true // Enable the sensor on startup. Override with M412 followed by M500.
   #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
@@ -2008,7 +2040,9 @@
   // Commands to execute on filament runout.
   // With multiple runout sensors use the %c placeholder for the current tool in commands (e.g., "M600 T%c")
   // NOTE: After 'M412 H1' the host handles filament runout and this script does not apply.
-  #define FILAMENT_RUNOUT_SCRIPT "M600"
+  // fixme было #define FILAMENT_RUNOUT_SCRIPT "M600"
+  #define FILAMENT_RUNOUT_SCRIPT "M25"
+  /////
 
   // After a runout is detected, continue printing this length of filament
   // before executing the runout script. Useful for a sensor at the end of

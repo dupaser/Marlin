@@ -310,11 +310,12 @@ void DGUSScreenHandler::sendFilamentRunoutStatus(DGUS_VP_Variable &var) {
     }
  }
  else {
-    if(FilamentSensorBase::poll_runout_pin_switch()) { //!runout.filament_ran_out
-      dgus.writeVariable(var.VP, (uint16_t)1);
-    } else {
-      dgus.writeVariable(var.VP, (uint16_t)0);
-    }
+    // fixme
+    // if(FilamentSensorBase::poll_runout_pin_switch()) { //!runout.filament_ran_out
+    //   dgus.writeVariable(var.VP, (uint16_t)1);
+    // } else {
+    //   dgus.writeVariable(var.VP, (uint16_t)0);
+    // }
  }
 }
 
@@ -555,7 +556,8 @@ void DGUSScreenHandler::handleTemperatureChanged(DGUS_VP_Variable &var, void *va
   celsius_t newvalue = swap16(*(uint16_t*)val_ptr);
   celsius_t acceptedvalue;
 
-  hotend_idle.reset_timed_out(); //типо если включил то сбросил таймер
+  // fixme
+  // hotend_idle.reset_timed_out(); //типо если включил то сбросил таймер
 
   switch (var.VP) {
     default: return;
@@ -872,9 +874,10 @@ void DGUSScreenHandler::handlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
     switch (movevalue) {
     case 0x0001: // Калибровка стандартная на 1 температуру
       thermalManager.setTargetHotend(EXTRUDE_MINTEMP, 0);
-      GcodeSuite::should_stop = false;
-      dgus.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_PREPARATION), VP_Status_LEN); //TODO переделать с нагрева стола на ИДЕТ НАГРЕВ
-
+      // fixme
+      // GcodeSuite::should_stop = false;
+      // dgus.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_PREPARATION), VP_Status_LEN); //TODO переделать с нагрева стола на ИДЕТ НАГРЕВ
+      /////
       for (uint8_t pt_index = 0; pt_index < GRID_MAX_POINTS; pt_index++)
       {
         dgus.writeVariable(VP_Level_Point_1 + vp_step * pt_index, static_cast<uint16_t>(0));
@@ -887,8 +890,9 @@ void DGUSScreenHandler::handlePIDAbort(DGUS_VP_Variable &var, void *val_ptr) {
 
     case 0x0002: //Калибровка своя для двух температур TODO
       thermalManager.setTargetHotend(EXTRUDE_MINTEMP, 0);
-      GcodeSuite::should_stop = false;
-      dgus.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_PREPARATION), VP_Status_LEN);
+      // fixme
+      // GcodeSuite::should_stop = false;
+      // dgus.WriteString(VP_LEVELING_STATUS, GET_TEXT_F(MSG_PREPARATION), VP_Status_LEN);
       
       for (uint8_t pt_index = 0; pt_index < GRID_MAX_POINTS; pt_index++)
       {

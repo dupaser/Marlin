@@ -415,6 +415,21 @@ namespace LanguageNarrow_ru {
   LSTR MSG_FILAMENT_SWAP_EXTRA              = _UxGT("Доп. длина");
   LSTR MSG_FILAMENT_PURGE_LENGTH            = _UxGT("Длина прочистки");
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ #if DISPLAY_TYPE == 1
+  LSTR MSG_PRINT_PAUSED                     = _UxGT("Печать на паузе");
+  LSTR MSG_PRINTING                         = _UxGT("Печать...");
+  LSTR MSG_PRINT_ABORTED                    = _UxGT("Печать отменена");
+  LSTR MSG_PRINT_DONE                       = _UxGT("Печать завершена");
+ #elif DISPLAY_TYPE == 2
+  LSTR MSG_PRINT_PAUSED                     = _UxGT("Пауза");
+  LSTR MSG_PRINTING                         = _UxGT("Печать...");
+  LSTR MSG_PRINT_ABORTED                    = _UxGT("Отменено");
+  LSTR MSG_PRINT_DONE                       = _UxGT("Завершено");
+  LSTR MSG_LEVEL_BED_ABORTED                = _UxGT("Отменено");
+  LSTR MSG_PREPARATION                      = _UxGT("Подготовка");
+ #endif
+
   LSTR MSG_TOOL_CHANGE                      = _UxGT("Смена сопел");
   LSTR MSG_TOOL_CHANGE_ZLIFT                = _UxGT("Поднятие по Z");
   LSTR MSG_SINGLENOZZLE_PRIME_SPEED         = _UxGT("Началь.скор.");

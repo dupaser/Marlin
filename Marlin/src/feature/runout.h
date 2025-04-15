@@ -192,10 +192,12 @@ class FilamentSensorBase {
 
   public:
     static void setup() {
-      #define _INIT_RUNOUT_PIN(P,S,U,D) do{ if (ENABLED(U)) SET_INPUT_PULLUP(P); else if (ENABLED(D)) SET_INPUT_PULLDOWN(P); else SET_INPUT(P); }while(0);
-      #define  INIT_RUNOUT_PIN(N) _INIT_RUNOUT_PIN(FIL_RUNOUT##N##_PIN, FIL_RUNOUT##N##_STATE, FIL_RUNOUT##N##_PULLUP, FIL_RUNOUT##N##_PULLDOWN);
-      REPEAT_1(NUM_RUNOUT_SENSORS, INIT_RUNOUT_PIN)
-      #undef INIT_RUNOUT_PIN
+      // fixme
+      // #define _INIT_RUNOUT_PIN(P,S,U,D) do{ if (ENABLED(U)) SET_INPUT_PULLUP(P); else if (ENABLED(D)) SET_INPUT_PULLDOWN(P); else SET_INPUT(P); }while(0);
+      // #define  INIT_RUNOUT_PIN(N) _INIT_RUNOUT_PIN(FIL_RUNOUT##N##_PIN, FIL_RUNOUT##N##_STATE, FIL_RUNOUT##N##_PULLUP, FIL_RUNOUT##N##_PULLDOWN);
+      // REPEAT_1(NUM_RUNOUT_SENSORS, INIT_RUNOUT_PIN)
+      // #undef INIT_RUNOUT_PIN
+      /////
 
       #if ENABLED(FILAMENT_SWITCH_AND_MOTION)
         #define INIT_MOTION_PIN(N) _INIT_RUNOUT_PIN(FIL_MOTION##N##_PIN, FIL_MOTION##N##_STATE, FIL_MOTION##N##_PULLUP, FIL_MOTION##N##_PULLDOWN);
@@ -207,9 +209,11 @@ class FilamentSensorBase {
 
     // Return a bitmask of runout pin states
     static uint8_t poll_runout_pins() {
-      #define _OR_RUNOUT(N) | (READ(FIL_RUNOUT##N##_PIN) ? _BV((N) - 1) : 0)
-      return (0 REPEAT_1(NUM_RUNOUT_SENSORS, _OR_RUNOUT));
-      #undef _OR_RUNOUT
+      // fixme
+      // #define _OR_RUNOUT(N) | (READ(FIL_RUNOUT##N##_PIN) ? _BV((N) - 1) : 0)
+      // return (0 REPEAT_1(NUM_RUNOUT_SENSORS, _OR_RUNOUT));
+      // #undef _OR_RUNOUT
+      /////
     }
 
     // Return a bitmask of runout flag states (1 bits always indicates runout)

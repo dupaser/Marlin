@@ -343,7 +343,9 @@ void DGUSScreenHandlerMKS::DGUSLCD_SendStringToDisplay_Language(DGUS_VP_Variable
       break;
 
       case 3: // Свое нагреть заново экструдер
-        hotend_idle.reset_timed_out();
+        // fixme
+        // hotend_idle.reset_timed_out();
+        /////
         char buf[12] = {0};
         sprintf_P(buf, PSTR("M109 S%u"), hotend_before_timeout);
         queue.inject(buf);
@@ -1959,7 +1961,7 @@ void DGUSScreenHandler::handleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
     }
 
     const float epsilon = 1e-4;
-    if( !WITHIN(probe.offset.z + delta, Z_PROBE_OFFSET_RANGE_MIN - epsilon, Z_PROBE_OFFSET_RANGE_MAX + epsilon)) return;
+    if( !WITHIN(probe.offset.z + delta, PROBE_OFFSET_ZMIN - epsilon, PROBE_OFFSET_ZMAX + epsilon)) return;
 
     rewriteBedGrid(delta);
     probe.offset.z += delta;
@@ -1980,37 +1982,41 @@ void DGUSScreenHandler::handleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
     {
       for (uint16_t j = 0; j < GRID_MAX_POINTS_Y; j++)
       {
-        if(LevelingBilinear::get_mesh_type_in_use() == LevelingBilinear::Mesh::ORIGINAL){
-          bedlevel.z_values[i][j] += grid_step;
-        } else {
-          bedlevel.new_z_values_1[i][j] += grid_step;
-          bedlevel.new_z_values_2[i][j] += grid_step;
-        }
+        // fixme
+        // if(LevelingBilinear::get_mesh_type_in_use() == LevelingBilinear::Mesh::ORIGINAL){
+        //   bedlevel.z_values[i][j] += grid_step;
+        // } else {
+        //   bedlevel.new_z_values_1[i][j] += grid_step;
+        //   bedlevel.new_z_values_2[i][j] += grid_step;
+        // }
+        /////
       }
     }
   }
 
   //Свое - действия при нажатии на кнопку выставить зазор
   void DGUSScreenHandler::zOffset_Start(DGUS_VP_Variable &var, void *val_ptr) {
-    using Mesh = LevelingBilinear::Mesh;
-    float offset = probe.offset.z;
-    //bedlevel.set_z_home_pos_shift(0);
-    rewriteBedGrid(-offset);
-    probe.offset.z = 0;
-    char buf[60] = {0};
-    int speed = homing_feedrate_mm_m.x; 
-    int bed_temp = 60;
-    auto mesh_type_in_use = LevelingBilinear::get_mesh_type_in_use();
-    if( mesh_type_in_use == Mesh::ORIGINAL){
-      bed_temp = LevelingBilinear::get_mesh_temp(Mesh::ORIGINAL); //короче надо просто вытащить условия которые были при калибровке. Если двойная то среднее значение пусть будет
-    } else if (mesh_type_in_use == Mesh::FIRST || mesh_type_in_use == Mesh::SECOND){
-      bed_temp = (LevelingBilinear::get_mesh_temp(Mesh::FIRST) + LevelingBilinear::get_mesh_temp(Mesh::SECOND)) / 2;
-    }
+    // fixme
+    // using Mesh = LevelingBilinear::Mesh;
+    // float offset = probe.offset.z;
+    // //bedlevel.set_z_home_pos_shift(0);
+    // rewriteBedGrid(-offset);
+    // probe.offset.z = 0;
+    // char buf[60] = {0};
+    // int speed = homing_feedrate_mm_m.x; 
+    // int bed_temp = 60;
+    // auto mesh_type_in_use = LevelingBilinear::get_mesh_type_in_use();
+    // if( mesh_type_in_use == Mesh::ORIGINAL){
+    //   bed_temp = LevelingBilinear::get_mesh_temp(Mesh::ORIGINAL); //короче надо просто вытащить условия которые были при калибровке. Если двойная то среднее значение пусть будет
+    // } else if (mesh_type_in_use == Mesh::FIRST || mesh_type_in_use == Mesh::SECOND){
+    //   bed_temp = (LevelingBilinear::get_mesh_temp(Mesh::FIRST) + LevelingBilinear::get_mesh_temp(Mesh::SECOND)) / 2;
+    // }
 
-    dgus.WriteString(VP_Zoffset_Status, GET_TEXT_F(MSG_PREPARATION), VP_Status_LEN);
+    // dgus.WriteString(VP_Zoffset_Status, GET_TEXT_F(MSG_PREPARATION), VP_Status_LEN);
 
-    sprintf_P(buf, PSTR("M104 S%d\nM190 S%d\nM09 S%d\nG28\nG0 X%d Y10 F%d\nG0 Z0.1"),EXTRUDE_MINTEMP, bed_temp, EXTRUDE_MINTEMP, (X_BED_SIZE/2), speed); //вставить нагрев сопла на минимум и ожидание + нагрев стола до температуры средней между калибровками
-    queue.inject(buf);
+    // sprintf_P(buf, PSTR("M104 S%d\nM190 S%d\nM09 S%d\nG28\nG0 X%d Y10 F%d\nG0 Z0.1"),EXTRUDE_MINTEMP, bed_temp, EXTRUDE_MINTEMP, (X_BED_SIZE/2), speed); //вставить нагрев сопла на минимум и ожидание + нагрев стола до температуры средней между калибровками
+    // queue.inject(buf);
+    /////
   }
 
 #endif // Zoffset

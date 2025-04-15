@@ -288,7 +288,7 @@
 //
 // Fans
 //
-#define FAN_PIN                             PC8   // Fan0
+#define FAN0_PIN                            PC8   // Fan0
 #define FAN1_PIN                            PE5   // Fan1
 #define FAN2_PIN                            PD14  //Обдув камеры
 #define CONTROLLER_FAN_PIN                  PE6   //Вентилятор дна
@@ -299,11 +299,13 @@
   #define E0_AUTO_FAN_PIN               FAN1_PIN
 #endif
 
-#if !defined(CONTROLLER_FAN_PIN) && ENABLED(USE_CONTROLLER_FAN) && HOTENDS < 2
-  #define CONTROLLER_FAN_PIN                PE6   // Fan2
-#else
-  #define FAN2_PIN                          PE6   // Fan2
-#endif
+// fixme
+// #if !defined(CONTROLLER_FAN_PIN) && ENABLED(USE_CONTROLLER_FAN) && HOTENDS < 2
+//   #define CONTROLLER_FAN_PIN                PE6   // Fan2
+// #else
+//   #define FAN2_PIN                          PE6   // Fan2
+// #endif
+/////
 
 //
 // Misc. Functions
