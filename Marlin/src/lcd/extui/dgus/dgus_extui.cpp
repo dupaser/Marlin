@@ -60,6 +60,10 @@ namespace ExtUI {
   void onMediaError()    { TERN_(SDSUPPORT, screen.sdCardError()); }
   void onMediaRemoved()  { TERN_(SDSUPPORT, screen.sdCardRemoved()); }
 
+  void onHeatingError(const heater_id_t header_id) {}
+  void onMinTempError(const heater_id_t header_id) {}
+  void onMaxTempError(const heater_id_t header_id) {}
+
   void onPlayTone(const uint16_t frequency, const uint16_t duration) {}
   void onPrintTimerStarted() {}
   void onPrintTimerPaused() {}
