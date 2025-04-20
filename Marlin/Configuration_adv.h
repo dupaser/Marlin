@@ -1615,7 +1615,7 @@
     //#define CUSTOM_STATUS_SCREEN_IMAGE  // Show the bitmap in Marlin/_Statusscreen.h on the status screen.
   #endif
 
-  #define PRINTER_MODEL 3 // 31
+  // #define PRINTER_MODEL 3 // 31
   
   //1  - TEST_AMIGO
   //2  - A2 
@@ -4664,7 +4664,7 @@
  * When running in the debugger it will break for debugging. This is useful to help understand
  * a crash from a remote location. Requires ~400 bytes of SRAM and 5Kb of flash.
  */
-//#define POSTMORTEM_DEBUGGING
+#define POSTMORTEM_DEBUGGING
 
 /**
  * Software Reset options

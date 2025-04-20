@@ -47,6 +47,7 @@ public:
 
   void Initialize(MultiValueBuffer * const pbuf) {
     pBuf = (uint8_t*)pbuf->pValue;
+    // fixme warning
     countDown = valueSize = pbuf->valueSize;
   }
 
