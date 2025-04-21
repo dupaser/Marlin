@@ -1828,8 +1828,7 @@ void MarlinUI::host_notify(const char * const cstr) {
     if (old_status < 2) {   // Skip this section on first boot check
       if (status) {         // Media Mounted
         #if ENABLED(EXTENSIBLE_UI)
-          // fixme
-          // ExtUI::onMediaMounted();
+          ExtUI::onMediaMounted();
         #elif ENABLED(BROWSE_MEDIA_ON_INSERT)
           clear_menu_history();
           quick_feedback();

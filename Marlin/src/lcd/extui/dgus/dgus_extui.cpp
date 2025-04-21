@@ -56,7 +56,7 @@ namespace ExtUI {
    // while (!screen.loop());  // Wait while anything is left to be sent
   }
 
-  void onMediaInserted() { TERN_(SDSUPPORT, screen.sdCardInserted()); }
+  void onMediaMounted() { TERN_(SDSUPPORT, screen.sdCardInserted()); }
   void onMediaError()    { TERN_(SDSUPPORT, screen.sdCardError()); }
   void onMediaRemoved()  { TERN_(SDSUPPORT, screen.sdCardRemoved()); }
 
@@ -137,7 +137,17 @@ namespace ExtUI {
     }
   #endif
 
+  #if ENABLED(PREVENT_COLD_EXTRUSION)
+    void onSetMinExtrusionTemp(const celsius_t) {}
+  #endif
+
   #if ENABLED(POWER_LOSS_RECOVERY)
+    void onSetPowerLoss(const bool onoff) {
+      // Called when power-loss is enabled/disabled
+    }
+    void onPowerLoss() {
+      // Called when power-loss state is detected
+    }
     void onPowerLossResume() {
       // Called on resume from power-loss
       IF_DISABLED(DGUS_LCD_UI_MKS, screen.gotoScreen(DGUSLCD_SCREEN_POWER_LOSS));
@@ -145,7 +155,29 @@ namespace ExtUI {
   #endif
 
   #if HAS_PID_HEATING
-  void onPIDTuning(const pidresult_t rst) { // fixme
+    void onPIDTuning(const pidresult_t rst) { // fixme
+      switch (rst) {
+        case PID_STARTED:
+        case PID_BED_STARTED:
+        case PID_CHAMBER_STARTED:
+          screen.setStatusMessage(GET_TEXT_F(MSG_PID_AUTOTUNE));
+          break;
+        case PID_BAD_HEATER_ID:
+          screen.setStatusMessage(GET_TEXT_F(MSG_PID_BAD_HEATER_ID));
+          break;
+        case PID_TEMP_TOO_HIGH:
+          screen.setStatusMessage(GET_TEXT_F(MSG_PID_TEMP_TOO_HIGH));
+          break;
+        case PID_TUNING_TIMEOUT:
+          screen.setStatusMessage(GET_TEXT_F(MSG_PID_TIMEOUT));
+          break;
+        case PID_DONE:
+          screen.setStatusMessage(GET_TEXT_F(MSG_PID_AUTOTUNE_DONE));
+          break;
+      }
+      // screen.gotoScreen(DGUS_SCREEN_MAIN);
+      screen.gotoScreen(MKSLCD_PID_COMPLETE);
+
     // void onPidTuning(const result_t rst, int heater_type, int cycles , int ncycles ) {
       // Called for temperature PID tuning result
       // const char* statusMessage = nullptr;
@@ -193,8 +225,14 @@ namespace ExtUI {
     }    
   #endif
     
+  #if ENABLED(PLATFORM_M997_SUPPORT)
+    void onFirmwareFlash() {}
+  #endif
+
   void onSteppersDisabled() {}
-  void onSteppersEnabled()  {}
+  void onSteppersEnabled() {}
+  void onAxisDisabled(const axis_t) {}
+  void onAxisEnabled(const axis_t) {}
 }
 
 #endif // HAS_DGUS_LCD_CLASSIC

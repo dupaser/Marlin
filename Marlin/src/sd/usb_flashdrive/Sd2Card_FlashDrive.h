@@ -39,9 +39,7 @@
 
   // SPI pin definitions - do not edit here - change in SdFatConfig.h
   #if ENABLED(SOFTWARE_SPI)
-    // fixme
-    // #warning "Auto-assigning '10' as the SD_CHIP_SELECT_PIN."
-    /////
+    #warning "Auto-assigning '10' as the SD_CHIP_SELECT_PIN."
     #define SD_CHIP_SELECT_PIN  10                // Software SPI chip select pin for the SD
   #else
     // hardware pin defs

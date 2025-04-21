@@ -299,13 +299,11 @@
   #define E0_AUTO_FAN_PIN               FAN1_PIN
 #endif
 
-// fixme
-// #if !defined(CONTROLLER_FAN_PIN) && ENABLED(USE_CONTROLLER_FAN) && HOTENDS < 2
-//   #define CONTROLLER_FAN_PIN                PE6   // Fan2
-// #else
-//   #define FAN2_PIN                          PE6   // Fan2
-// #endif
-/////
+#if !defined(CONTROLLER_FAN_PIN) && ENABLED(USE_CONTROLLER_FAN) && HOTENDS < 2
+  #define CONTROLLER_FAN_PIN                PE6   // Fan2
+#else
+  // #define FAN2_PIN                          PE6   // Fan2
+#endif
 
 //
 // Misc. Functions

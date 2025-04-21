@@ -555,8 +555,7 @@ void Stepper::enable_axis(const AxisEnum axis) {
     default: break;
   }
   mark_axis_enabled(axis);
-  // fixme
-  // TERN_(EXTENSIBLE_UI, ExtUI::onAxisEnabled(ExtUI::axis_to_axis_t(axis)));
+  TERN_(EXTENSIBLE_UI, ExtUI::onAxisEnabled(ExtUI::axis_to_axis_t(axis)));
 }
 
 /**
@@ -589,8 +588,7 @@ bool Stepper::disable_axis(const AxisEnum axis) {
       MAIN_AXIS_MAP(_CASE_DISABLE)
       default: break;
     }
-    // fixme
-    // TERN_(EXTENSIBLE_UI, ExtUI::onAxisDisabled(ExtUI::axis_to_axis_t(axis)));
+    TERN_(EXTENSIBLE_UI, ExtUI::onAxisDisabled(ExtUI::axis_to_axis_t(axis)));
   }
 
   return can_disable;
