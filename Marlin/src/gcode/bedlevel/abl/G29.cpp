@@ -134,7 +134,7 @@ public:
 
     #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
       float Z_offset;
-      bed_mesh_t z_values;
+      bed_mesh_new_t z_values;
     #endif
 
     #if ENABLED(AUTO_BED_LEVELING_LINEAR)

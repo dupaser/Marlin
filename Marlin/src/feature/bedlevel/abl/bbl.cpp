@@ -21,6 +21,7 @@
  */
 
 #include "../../../inc/MarlinConfig.h"
+#include "../../../MarlinCore.h"
 
 #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
 
@@ -33,20 +34,37 @@
 
 #if ENABLED(EXTENSIBLE_UI)
   #include "../../../lcd/extui/ui_api.h"
+#include "bbl.h"
 #endif
+
+#include "../../../module/temperature.h"
+
+#include "../../../lcd/extui/dgus/mks/DGUSScreenHandler.h"
 
 LevelingBilinear bedlevel;
 
 xy_pos_t LevelingBilinear::grid_spacing,
          LevelingBilinear::grid_start;
 xy_float_t LevelingBilinear::grid_factor;
-bed_mesh_t LevelingBilinear::z_values;
+
+bed_mesh_new_t LevelingBilinear::z_values;
+bed_mesh_new_t LevelingBilinear::new_z_values_1; // TODO сделать отдельной структурой с температурой и методами установки значений
+bed_mesh_new_t LevelingBilinear::new_z_values_2;
+bed_mesh_new_t* LevelingBilinear::mesh_in_use = &LevelingBilinear::z_values;
+LevelingBilinear::Mesh LevelingBilinear::mesh_type_in_use = LevelingBilinear::Mesh::ORIGINAL;
+uint16_t LevelingBilinear::temp_mesh;
+uint16_t LevelingBilinear::temp_new_mesh_1;
+uint16_t LevelingBilinear::temp_new_mesh_2;
+
 xy_pos_t LevelingBilinear::cached_rel;
 xy_int8_t LevelingBilinear::cached_g;
+
+float LevelingBilinear::z_home_pos_shift;
 
 /**
  * Extrapolate a single point from its neighbors
  */
+// TODO тут используется только z_values
 void LevelingBilinear::extrapolate_one_point(const uint8_t x, const uint8_t y, const int8_t xdir, const int8_t ydir) {
   if (!isnan(z_values[x][y])) return;
   if (DEBUGGING(LEVELING)) {
@@ -86,6 +104,43 @@ void LevelingBilinear::extrapolate_one_point(const uint8_t x, const uint8_t y, c
   //                                : ((c < b) ? b : (a < c) ? a : c);
 }
 
+bool LevelingBilinear::are_new_meshes_filled()
+{
+  bool mesh_result_1 = false;
+  bool mesh_result_2 = false;
+
+    for (uint8_t i = 0; i < GRID_MAX_POINTS_X; i++){
+      for (uint8_t j = 0; j < GRID_MAX_POINTS_Y; j++)
+      {
+        if(new_z_values_1[i][j] != 0){
+         mesh_result_1 = true; 
+        }
+        if(new_z_values_2[i][j] != 0){
+          mesh_result_2 = true;
+        }
+      }
+    }
+
+    if(mesh_result_1 == true && mesh_result_2 == true){
+      return true;
+    } else {
+      return false;
+    }
+}
+
+bed_mesh_new_t &LevelingBilinear::get_mesh_from_type(Mesh mesh_type)
+{
+    if (mesh_type == Mesh::ORIGINAL)
+    {
+      return z_values;
+    } else if (mesh_type == Mesh::FIRST)
+    {
+      return new_z_values_1;
+    } else {
+      return new_z_values_2;
+    }
+}
+
 //Enable this if your SCARA uses 180° of total area
 //#define EXTRAPOLATE_FROM_EDGE
 
@@ -97,13 +152,166 @@ void LevelingBilinear::extrapolate_one_point(const uint8_t x, const uint8_t y, c
   #endif
 #endif
 
+void LevelingBilinear::set_mesh_in_use(Mesh mesh)
+{
+  switch (mesh)
+  {
+  case Mesh::ORIGINAL:
+    mesh_in_use = &z_values;
+    break;
+  case Mesh::FIRST:
+    mesh_in_use = &new_z_values_1;
+    break;
+  case Mesh::SECOND:
+    mesh_in_use = &new_z_values_2;
+    break;
+  default:
+    // TODO: Выводить ошибку
+    break;
+  }
+
+  mesh_type_in_use = mesh;
+}
+
+LevelingBilinear::Mesh LevelingBilinear::get_mesh_type_from_number(uint8_t number)
+{
+  if(number > 2){
+    number = 0;
+  }
+  // TODO: Выводить ошибку, а не просто уменьшать до нуля
+  return static_cast<Mesh>(number);
+}
+
+LevelingBilinear::Mesh LevelingBilinear::get_mesh_type_in_use(){
+  return mesh_type_in_use;
+}
+
+float LevelingBilinear::get_mesh_average(Mesh mesh_type)
+{
+    float sum = 0;
+    int count = 0;
+
+    bed_mesh_new_t& mesh = get_mesh_from_type(mesh_type);
+
+    for (size_t i = 0; i < GRID_MAX_POINTS_X; i++)
+    {
+      for (size_t j = 0; j < GRID_MAX_POINTS_Y; j++){
+        sum += mesh[i][j];    
+        count++;
+      }
+    }
+
+    return round(sum / count * 100) / 100;
+}
+
+void LevelingBilinear::set_temp_for_new_map(Mesh mesh_number, uint16_t temp)
+{
+  switch (mesh_number)
+  {
+  case Mesh::ORIGINAL:
+    temp_mesh = temp;
+    break;
+  case Mesh::FIRST:
+    temp_new_mesh_1 = temp;
+    break;
+  case Mesh::SECOND:
+    temp_new_mesh_2 = temp;
+    break;
+  default:
+    // TODO: Выводить ошибку
+    break;
+  }
+}
+
+  uint16_t& LevelingBilinear::get_mesh_temp(Mesh mesh_type) {
+    switch (mesh_type)
+    {
+    case Mesh::ORIGINAL:
+      return temp_mesh;
+      break;
+    case Mesh::FIRST:
+      return temp_new_mesh_1;
+      break;
+    case Mesh::SECOND:
+      return temp_new_mesh_2;
+      break;
+    default:
+      break;
+    }
+  }
+
+    void LevelingBilinear::set_mesh_value(uint8_t x, uint8_t y, float value)
+    {
+       (*mesh_in_use)[x][y] = value;
+    }
+
+    float LevelingBilinear::get_mesh_value(uint8_t x, uint8_t y)
+    {
+      if(mesh_type_in_use == Mesh::ORIGINAL){
+        return (*mesh_in_use)[x][y];
+      } else if(mesh_type_in_use == Mesh::FIRST || !are_new_meshes_filled()){
+        // TODO выдавать ошибку
+        DEBUG_ERROR_MSG("EEPROM datasize error.");
+        return 0;
+      } else {
+        // TODO: Апроксимировать тут
+        float z1 = new_z_values_1[x][y];
+        float z2 = new_z_values_2[x][y];
+        uint16_t temp_real = thermalManager.temp_bed.target;
+
+        if(temp_real == 0){
+          temp_real = (temp_new_mesh_1 + temp_new_mesh_2) / 2;
+        }
+
+        float z_real = z1 + ((temp_real - temp_new_mesh_1) * (z2 - z1)) / (temp_new_mesh_2 - temp_new_mesh_1);
+        z_real += 0,01;
+        return z_real;
+      }
+    }
+
+    bed_mesh_new_t LevelingBilinear::get_mesh(){
+      return *mesh_in_use;
+    }
+
+    void LevelingBilinear::copy_in_mesh(bed_mesh_new_t mesh)
+    {
+      // TODO: нужна более серьезная проверка на границы
+      for(int i = 0; i < GRID_MAX_POINTS_X; i++){
+        for (int j = 0; j < GRID_MAX_POINTS_Y; j++)
+        {
+           (*mesh_in_use)[i][j] = mesh[i][j];
+        }
+      }
+    }
+
+    bool LevelingBilinear::set_z_home_pos_shift(float value)
+    {
+      if (std::abs(z_home_pos_shift) < Z_HOME_POS_SHIFT_LIMIT)
+      {
+        z_home_pos_shift = value;
+        return true;
+      } else {
+        // TODO fixme
+        // DGUSScreenHandlerMKS::Error(GET_TEXT_F(MSG_LCD_Z_SHIFT_FAILED), 1);
+        // kill(GET_TEXT_F(MSG_LCD_Z_SHIFT_FAILED));
+        return false;
+      }
+    }
+
 void LevelingBilinear::reset() {
   grid_start.reset();
   grid_spacing.reset();
   GRID_LOOP(x, y) {
     z_values[x][y] = NAN;
+    new_z_values_1[x][y] = NAN;
+    new_z_values_2[x][y] = NAN;
     TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(x, y, 0));
   }
+  set_mesh_in_use(Mesh::ORIGINAL);
+  set_temp_for_new_map(Mesh::ORIGINAL, 0);
+  set_temp_for_new_map(Mesh::FIRST, 0);
+  set_temp_for_new_map(Mesh::SECOND, 0);
+  z_home_pos_shift  = 0;
 }
 
 void LevelingBilinear::set_grid(const xy_pos_t& _grid_spacing, const xy_pos_t& _grid_start) {
@@ -153,10 +361,12 @@ void LevelingBilinear::extrapolate_unprobed_bed_level() {
     }
 }
 
-void LevelingBilinear::print_leveling_grid(const bed_mesh_t* _z_values/*=nullptr*/) {
+void LevelingBilinear::print_leveling_grid(const bed_mesh_new_t* _z_values/*=nullptr*/) {
   // print internal grid(s) or just the one passed as a parameter
   SERIAL_ECHOLNPGM("Bilinear Leveling Grid:");
-  print_2d_array(GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y, 3, _z_values ? *_z_values[0] : z_values[0]);
+  // TODO: посмотреть как переписать _z_values->data()->data() ; выводить не только z_values
+  bool a = _z_values != nullptr;
+  print_2d_array(GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y, 3, a ? _z_values->at(0).data() : (*mesh_in_use).at(0).data());
 
   #if ENABLED(ABL_BILINEAR_SUBDIVISION)
     if (!_z_values) {
@@ -331,10 +541,11 @@ float LevelingBilinear::get_z_correction(const xy_pos_t &raw) {
     if (cached_g != thisg) {
       cached_g = thisg;
       // Z at the box corners
-      z1 = ABL_BG_GRID(thisg.x, thisg.y);       // left-front
-      d2 = ABL_BG_GRID(thisg.x, nextg.y) - z1;  // left-back (delta)
-      z3 = ABL_BG_GRID(nextg.x, thisg.y);       // right-front
-      d4 = ABL_BG_GRID(nextg.x, nextg.y) - z3;  // right-back (delta)
+      // свое тут раньше стояли макросы ABL_BG_GRID(thisg.x, thisg.y);
+      z1 = get_mesh_value(thisg.x, thisg.y);       // left-front
+      d2 = get_mesh_value(thisg.x, nextg.y) - z1;  // left-back (delta)
+      z3 = get_mesh_value(nextg.x, thisg.y);       // right-front
+      d4 = get_mesh_value(nextg.x, nextg.y) - z3;  // right-back (delta)
     }
 
     // Bilinear interpolate. Needed since rel.y or thisg.x has changed.

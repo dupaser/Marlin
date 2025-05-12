@@ -97,6 +97,7 @@ namespace ExtUI {
 
   #if HAS_MESH
     typedef float bed_mesh_t[GRID_MAX_POINTS_X][GRID_MAX_POINTS_Y];
+    using bed_mesh_new_t = std::array<std::array<float, GRID_MAX_POINTS_Y>, GRID_MAX_POINTS_X>;
   #endif
 
   /**
@@ -240,7 +241,7 @@ namespace ExtUI {
     #endif
     #if HAS_MESH
       // Mesh data, utilities, events
-      bed_mesh_t& getMeshArray();
+      bed_mesh_new_t& getMeshArray();
       float getMeshPoint(const xy_uint8_t &pos);
       void setMeshPoint(const xy_uint8_t &pos, const_float_t zval);
       void moveToMeshPoint(const xy_uint8_t &pos, const_float_t z);

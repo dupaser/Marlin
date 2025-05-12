@@ -633,17 +633,15 @@ void DGUSScreenHandlerMKS::KFactorSave(DGUS_VP_Variable &var, void *val_ptr) {
       bool is_success = true;
       if (!ExtUI::isPrintingFromMedia()) {
         float result;
-        // fixme
-        // if(bedlevel.get_mesh_type_in_use() == LevelingBilinear::Mesh::ORIGINAL){
-        //    result = bedlevel.get_mesh_average(LevelingBilinear::Mesh::ORIGINAL);
-        // } else {
-        //   float first_mesh_av = bedlevel.get_mesh_average(LevelingBilinear::Mesh::FIRST);
-        //   float second_mesh_av = bedlevel.get_mesh_average(LevelingBilinear::Mesh::SECOND);
-        //   result = round((first_mesh_av + second_mesh_av) / 2 * 100) / 100;
-        // }
+        if(bedlevel.get_mesh_type_in_use() == LevelingBilinear::Mesh::ORIGINAL){
+           result = bedlevel.get_mesh_average(LevelingBilinear::Mesh::ORIGINAL);
+        } else {
+          float first_mesh_av = bedlevel.get_mesh_average(LevelingBilinear::Mesh::FIRST);
+          float second_mesh_av = bedlevel.get_mesh_average(LevelingBilinear::Mesh::SECOND);
+          result = round((first_mesh_av + second_mesh_av) / 2 * 100) / 100;
+        }
         
-        // fixme
-        // is_success = bedlevel.set_z_home_pos_shift(bedlevel.get_z_home_pos_shift()-result); //TODO внутри функции сделать проверку на пределы
+        is_success = bedlevel.set_z_home_pos_shift(bedlevel.get_z_home_pos_shift()-result); //TODO внутри функции сделать проверку на пределы
         rewriteBedGrid(-result);
         probe.offset.z = probe.offset.z - result;
         if (IsRunning()
@@ -1982,41 +1980,39 @@ void DGUSScreenHandler::handleManualMoveToPos(DGUS_VP_Variable &var, void *val_p
     {
       for (uint16_t j = 0; j < GRID_MAX_POINTS_Y; j++)
       {
-        // fixme
-        // if(LevelingBilinear::get_mesh_type_in_use() == LevelingBilinear::Mesh::ORIGINAL){
-        //   bedlevel.z_values[i][j] += grid_step;
-        // } else {
-        //   bedlevel.new_z_values_1[i][j] += grid_step;
-        //   bedlevel.new_z_values_2[i][j] += grid_step;
-        // }
-        /////
+        if(LevelingBilinear::get_mesh_type_in_use() == LevelingBilinear::Mesh::ORIGINAL){
+          bedlevel.z_values[i][j] += grid_step;
+        } else {
+          bedlevel.new_z_values_1[i][j] += grid_step;
+          bedlevel.new_z_values_2[i][j] += grid_step;
+        }
       }
     }
   }
 
-  //Свое - действия при нажатии на кнопку выставить зазор
+  // Свое - действия при нажатии на кнопку выставить зазор
   void DGUSScreenHandler::zOffset_Start(DGUS_VP_Variable &var, void *val_ptr) {
+    using Mesh = LevelingBilinear::Mesh;
+    float offset = probe.offset.z;
+    //bedlevel.set_z_home_pos_shift(0);
+    rewriteBedGrid(-offset);
+    probe.offset.z = 0;
+    char buf[60] = {0};
+    int speed = homing_feedrate_mm_m.x; 
+    int bed_temp = 60;
+    auto mesh_type_in_use = LevelingBilinear::get_mesh_type_in_use();
+    if( mesh_type_in_use == Mesh::ORIGINAL){
+      bed_temp = LevelingBilinear::get_mesh_temp(Mesh::ORIGINAL); //короче надо просто вытащить условия которые были при калибровке. Если двойная то среднее значение пусть будет
+    } else if (mesh_type_in_use == Mesh::FIRST || mesh_type_in_use == Mesh::SECOND){
+      bed_temp = (LevelingBilinear::get_mesh_temp(Mesh::FIRST) + LevelingBilinear::get_mesh_temp(Mesh::SECOND)) / 2;
+    }
+
     // fixme
-    // using Mesh = LevelingBilinear::Mesh;
-    // float offset = probe.offset.z;
-    // //bedlevel.set_z_home_pos_shift(0);
-    // rewriteBedGrid(-offset);
-    // probe.offset.z = 0;
-    // char buf[60] = {0};
-    // int speed = homing_feedrate_mm_m.x; 
-    // int bed_temp = 60;
-    // auto mesh_type_in_use = LevelingBilinear::get_mesh_type_in_use();
-    // if( mesh_type_in_use == Mesh::ORIGINAL){
-    //   bed_temp = LevelingBilinear::get_mesh_temp(Mesh::ORIGINAL); //короче надо просто вытащить условия которые были при калибровке. Если двойная то среднее значение пусть будет
-    // } else if (mesh_type_in_use == Mesh::FIRST || mesh_type_in_use == Mesh::SECOND){
-    //   bed_temp = (LevelingBilinear::get_mesh_temp(Mesh::FIRST) + LevelingBilinear::get_mesh_temp(Mesh::SECOND)) / 2;
-    // }
-
     // dgus.WriteString(VP_Zoffset_Status, GET_TEXT_F(MSG_PREPARATION), VP_Status_LEN);
-
-    // sprintf_P(buf, PSTR("M104 S%d\nM190 S%d\nM09 S%d\nG28\nG0 X%d Y10 F%d\nG0 Z0.1"),EXTRUDE_MINTEMP, bed_temp, EXTRUDE_MINTEMP, (X_BED_SIZE/2), speed); //вставить нагрев сопла на минимум и ожидание + нагрев стола до температуры средней между калибровками
-    // queue.inject(buf);
     /////
+    
+    sprintf_P(buf, PSTR("M104 S%d\nM190 S%d\nM09 S%d\nG28\nG0 X%d Y10 F%d\nG0 Z0.1"),EXTRUDE_MINTEMP, bed_temp, EXTRUDE_MINTEMP, (X_BED_SIZE/2), speed); //вставить нагрев сопла на минимум и ожидание + нагрев стола до температуры средней между калибровками
+    queue.inject(buf);
   }
 
 #endif // Zoffset

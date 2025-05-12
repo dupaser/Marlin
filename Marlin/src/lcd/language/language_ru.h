@@ -724,6 +724,11 @@ namespace LanguageNarrow_ru {
   LSTR MSG_MPC_HEATING_PAST_200             = _UxGT("Нагрев выше >200C");
   LSTR MSG_MPC_COOLING_TO_AMBIENT           = _UxGT("Охлаждение до окружающей");
   LSTR MSG_MPC_AUTOTUNE                     = _UxGT("Автонастройка MPC");
+  LSTR MSG_KILL_HOMING_FAILED               = _UxGT("ПАРКОВКА НЕ УДАЛАСЬ");
+  LSTR MSG_LCD_PROBING_FAILED               = _UxGT("КАЛИБРОВКА НЕ УДАЛАСЬ");
+  LSTR MSG_LCD_Z_SHIFT_FAILED               = _UxGT("НЕВЕРНЫЙ ЗАЗОР");
+
+  LSTR MSG_MMU2_CHOOSE_FILAMENT_HEADER      = _UxGT("ВЫБИРЕТЕ ФИЛАМЕНТ");
   LSTR MSG_MPC_EDIT                         = _UxGT("Изменить * MPC");
   LSTR MSG_MPC_POWER                        = _UxGT("Мощность нагревателя");
   LSTR MSG_MPC_POWER_E                      = _UxGT("Мощность *");
