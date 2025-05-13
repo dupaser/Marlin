@@ -299,7 +299,10 @@ typedef struct SettingsDataStruct {
   uint16_t grid_check;                                  // Hash to check against X/Y
   xy_pos_t bilinear_grid_spacing, bilinear_start;       // G29 L F
   #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
-    bed_mesh_t z_values;                                // G29
+    bed_mesh_new_t z_values, new_z_values_1, new_z_values_2; // G29
+    uint16_t temp_orig, temp_1, temp_2;
+    LevelingBilinear::Mesh mesh_type_in_use;
+    float z_home_pos_shift;
   #else
     float z_values[3][3];
   #endif
@@ -1040,13 +1043,6 @@ void MarlinSettings::postprocess() {
     // Bilinear Auto Bed Leveling
     //
     {
-      #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
-        static_assert(
-          sizeof(bedlevel.z_values) == GRID_MAX_POINTS * sizeof(bedlevel.z_values[0][0]),
-          "Bilinear Z array is the wrong size."
-        );
-      #endif
-
       const uint8_t grid_max_x = TERN(AUTO_BED_LEVELING_BILINEAR, GRID_MAX_POINTS_X, 3),
                     grid_max_y = TERN(AUTO_BED_LEVELING_BILINEAR, GRID_MAX_POINTS_Y, 3);
       EEPROM_WRITE(grid_max_x);
@@ -1066,7 +1062,31 @@ void MarlinSettings::postprocess() {
       #endif
 
       #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
-        EEPROM_WRITE(bedlevel.z_values);              // 9-256 floats
+      std::function<void(bed_mesh_new_t&)> abc = [&](bed_mesh_new_t& mesh){
+        static_assert(
+          sizeof(mesh) == (GRID_MAX_POINTS) * sizeof(mesh[0][0]),
+          "Bilinear Z array is the wrong size."
+        );
+
+        EEPROM_WRITE(mesh);              // 9-256 floats
+      };
+
+      std::function<void(uint16_t)> write_temp = [&](uint16_t temp){
+        EEPROM_WRITE(temp);              
+      };
+
+      abc(bedlevel.z_values);
+      abc(bedlevel.new_z_values_1);
+      abc(bedlevel.new_z_values_2);
+
+      write_temp(bedlevel.get_mesh_temp(LevelingBilinear::Mesh::ORIGINAL));
+      write_temp(bedlevel.get_mesh_temp(LevelingBilinear::Mesh::FIRST));
+      write_temp(bedlevel.get_mesh_temp(LevelingBilinear::Mesh::SECOND));
+
+      EEPROM_WRITE(bedlevel.get_mesh_type_in_use());   
+
+      EEPROM_WRITE(bedlevel.get_z_home_pos_shift());              
+
       #else
         dummyf = 0;
         for (uint16_t q = grid_max_x * grid_max_y; q--;) EEPROM_WRITE(dummyf);
@@ -2137,7 +2157,33 @@ void MarlinSettings::postprocess() {
             eeprom_error = ERR_EEPROM_CORRUPT;
             break;
           }
-          else // EEPROM data is stale
+
+          std::function<void(bed_mesh_new_t&)> abc = [&](bed_mesh_new_t& mesh){
+            if (grid_max_x == (GRID_MAX_POINTS_X) && grid_max_y == (GRID_MAX_POINTS_Y)) {
+              EEPROM_READ(mesh);                 // 9 to 256 floats
+            }
+          };
+
+          std::function<void(uint16_t&)> read_temp = [&](uint16_t& mesh_temp){
+            EEPROM_READ(mesh_temp);
+          };
+
+          abc(bedlevel.z_values);
+          abc(bedlevel.new_z_values_1);
+          abc(bedlevel.new_z_values_2);
+
+          read_temp(bedlevel.get_mesh_temp(LevelingBilinear::Mesh::ORIGINAL));
+          read_temp(bedlevel.get_mesh_temp(LevelingBilinear::Mesh::FIRST)); 
+          read_temp(bedlevel.get_mesh_temp(LevelingBilinear::Mesh::SECOND));
+
+          LevelingBilinear::Mesh mesh_in_use;
+          EEPROM_READ(mesh_in_use);
+          bedlevel.set_mesh_in_use(mesh_in_use);
+
+          float z_home_pos_shift;
+          EEPROM_READ(z_home_pos_shift);
+          bedlevel.set_z_home_pos_shift(z_home_pos_shift);
+
         #endif // AUTO_BED_LEVELING_BILINEAR
           {
             // Skip past disabled (or stale) Bilinear Grid data
@@ -3992,16 +4038,24 @@ void MarlinSettings::reset() {
                                            // solution needs to be found.
 
       #elif ENABLED(AUTO_BED_LEVELING_BILINEAR)
-
-        if (leveling_is_valid()) {
+        std::function<void(bed_mesh_new_t&)> print_mesh = [&](bed_mesh_new_t& mesh){          
           for (uint8_t py = 0; py < GRID_MAX_POINTS_Y; ++py) {
             for (uint8_t px = 0; px < GRID_MAX_POINTS_X; ++px) {
               CONFIG_ECHO_START();
-              SERIAL_ECHOLN(F("  G29 W I"), px, F(" J"), py, FPSTR(SP_Z_STR), p_float_t(LINEAR_UNIT(bedlevel.z_values[px][py]), 5));
+              SERIAL_ECHOPGM("  G29 W I", px, " J", py);
+              SERIAL_ECHOLNPGM_P(SP_Z_STR, LINEAR_UNIT(mesh[px][py]), 5);
             }
           }
+        };
+
+        if (leveling_is_valid()) {
+          print_mesh(bedlevel.z_values);
+          print_mesh(bedlevel.new_z_values_1);
+          print_mesh(bedlevel.new_z_values_2);
         }
 
+        SERIAL_ECHOPGM("  G29 TEMP ORIGINAL: ", bedlevel.get_mesh_temp(LevelingBilinear::Mesh::ORIGINAL), " TEMP 1: ", bedlevel.get_mesh_temp(LevelingBilinear::Mesh::FIRST), " TEMP 2: ", bedlevel.get_mesh_temp(LevelingBilinear::Mesh::SECOND), "\n");
+        SERIAL_ECHOPGM("  G29 MESH IN USE: ", static_cast<uint8_t>(bedlevel.get_mesh_type_in_use()), "\n");
       #endif
 
     #endif // HAS_LEVELING
